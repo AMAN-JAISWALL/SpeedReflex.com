@@ -1,0 +1,334 @@
+---
+import { ArrowRight } from '@lucide/astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Section from '../components/Section.astro';
+import DataTable from '../components/DataTable.astro';
+import Faq from '../components/Faq.astro';
+import ToolCard from '../components/ToolCard.astro';
+import { toolById } from '../lib/site';
+import { articlePage, type Crumb, type FaqItem } from '../lib/schema';
+import { ANTICIPATION_MS, POPULATION, REACTION_TIERS, percentFasterThan } from '../lib/reaction';
+
+const href = '/average-reaction-time/';
+const title = 'Average Reaction Time: What’s Normal, Good and Fast?';
+const description =
+  'Average reaction time is about 190 ms in lab studies and 250–275 ms in online tests. What’s normal by age, for sound vs sight, and for athletes and drivers.';
+const published = '2026-09-28';
+const modified = '2026-09-28';
+const crumbs: Crumb[] = [
+  { name: 'Home', href: '/' },
+  { name: 'Average Reaction Time', href },
+];
+
+const pct = (ms: number) => Math.round(percentFasterThan(ms));
+let lower = 0;
+const tierRows = REACTION_TIERS.map((t) => {
+  const range = t.max === Infinity ? `${lower} ms or slower` : lower === 0 ? `Under ${t.max} ms` : `${lower}–${t.max - 1} ms`;
+  const faster = t.max === Infinity ? `Under ${pct(lower)}%` : lower === 0 ? `Over ${pct(t.max)}%` : `${pct(t.max)}–${pct(lower)}%`;
+  lower = t.max;
+  return [range, t.label, faster];
+});
+
+const stats = [
+  { value: '≈190 ms', label: 'Simple reaction to a light, young adults in lab studies' },
+  { value: '≈160 ms', label: 'Simple reaction to a sound, in the same studies' },
+  { value: '250–275 ms', label: 'Typical average in an online test, including device lag' },
+  { value: '0.100 s', label: 'The fastest start athletics accepts as a genuine reaction' },
+];
+
+const sources = [
+  { t: 'Kosinski, R. J. — A Literature Review on Reaction Time, Clemson University', href: 'https://facultypsy.hope.edu/psychlabs/exp/reactiontime/docs/RT_Literature_Review.pdf' },
+  { t: 'Der, G. & Deary, I. J. (2006) — Age and sex differences in reaction time in adulthood, Psychology and Aging 21(1)', href: 'https://pubmed.ncbi.nlm.nih.gov/16594792/' },
+  { t: 'Green, M. (2000) — “How long does it take to stop?” Driver perception-brake times, Transportation Human Factors 2(3)', href: 'https://www.tandfonline.com/doi/abs/10.1207/STHF0203_1' },
+  { t: 'Williamson, A. M. & Feyer, A.-M. (2000) — Moderate sleep deprivation and alcohol, Occupational and Environmental Medicine 57(10)', href: 'https://pubmed.ncbi.nlm.nih.gov/10984335/' },
+  { t: 'World Athletics — Technical Rules, TR 16.6 (false starts)', href: 'https://worldathletics.org/about-iaaf/documents/book-of-rules' },
+  { t: 'World Athletics — Bolt’s 9.58 world record in Berlin, 2009', href: 'https://worldathletics.org/news/news/bolt-again-958-world-record-in-berlin-updat' },
+  { t: 'Human Benchmark — Reaction time statistics', href: 'https://humanbenchmark.com/tests/reactiontime/statistics' },
+];
+
+const faqs: FaqItem[] = [
+  {
+    q: 'Is 250 ms a good reaction time?',
+    a: `On an online test, yes — it’s a little quicker than the typical adult. On the SpeedReflex scale an average of 250 ms is faster than about ${pct(250)}% of people. In a lab with dedicated hardware the same person would usually score faster, because the screen and input lag disappear.`,
+  },
+  {
+    q: 'Is a 150 ms reaction time possible?',
+    a: `As a single lucky click, yes. As an average over several attempts it’s rare and usually needs a fast monitor, a wired mouse and a lot of practice. Anything under ${ANTICIPATION_MS} ms is almost certainly a guess, which is why tests and sprint starts don’t count it.`,
+  },
+  {
+    q: 'Are men or women faster?',
+    a: 'In the UK Health and Lifestyle Survey of 7,130 adults, men averaged slightly faster reaction times and women’s were a little more variable. The difference is small next to the differences between individuals.',
+  },
+  {
+    q: 'Do gamers have faster reactions?',
+    a: 'Regular players of fast action games often score better on reaction tests. Part of that is practice at the task, and part is hardware: high-refresh monitors and wired mice cut tens of milliseconds of lag.',
+  },
+  {
+    q: 'At what age does reaction time start to slow?',
+    a: 'For simple reactions, surprisingly late. A large UK study found little slowing until around 50. Choice reactions — where you must decide which of several responses to make — slow gradually from your twenties.',
+  },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  ogType="article"
+  jsonLd={articlePage({ href, headline: title, description, datePublished: published, dateModified: modified, crumbs, faq: faqs })}
+>
+  <article>
+    <header class="relative isolate overflow-hidden border-b border-hairline">
+      <div class="mesh pointer-events-none absolute -top-48 left-1/2 -z-10 h-[30rem] w-[56rem] -translate-x-1/2 opacity-40 dark:opacity-25" aria-hidden="true"></div>
+      <div class="shell pb-12 pt-6 sm:pb-16 sm:pt-8">
+        <Breadcrumbs crumbs={crumbs} />
+        <div class="mt-6 max-w-3xl">
+          <p class="eyebrow">Guide · Reaction time</p>
+          <h1 class="mt-3 text-display-sm sm:text-display">Average Reaction Time</h1>
+          <p class="mt-4 text-lg leading-7 text-body">
+            The average person reacts to a light in about <strong class="font-medium text-ink">190 milliseconds</strong> in a lab —
+            and in about <strong class="font-medium text-ink">250–275 ms</strong> on an online test, where your screen and mouse add
+            their own delay. Here’s what’s normal, what’s good, and what changes it.
+          </p>
+          <p class="mt-4 text-sm text-mute">
+            By the SpeedReflex team · Updated <time datetime={modified}>September 28, 2026</time>
+          </p>
+        </div>
+
+        <dl class="mt-10 grid gap-px overflow-hidden rounded-md border border-hairline bg-hairline sm:grid-cols-2 lg:grid-cols-4">
+          {
+            stats.map((s) => (
+              <div class="flex flex-col-reverse gap-2 bg-surface p-5">
+                <dt class="text-sm leading-6 text-body">{s.label}</dt>
+                <dd class="text-heading-lg tabular-nums">{s.value}</dd>
+              </div>
+            ))
+          }
+        </dl>
+
+        <a
+          href="/reaction-time-test/"
+          class="group mt-6 flex items-center justify-between gap-4 rounded-md border border-hairline bg-surface p-5 transition-colors hover:border-hairline-strong"
+        >
+          <span>
+            <span class="block text-label text-ink">Measure yours in 30 seconds</span>
+            <span class="mt-1 block text-sm text-body">Five attempts, frame-accurate timing, and your percentile.</span>
+          </span>
+          <span class="btn btn-md btn-primary shrink-0">
+            Take the Test <ArrowRight size={16} class="transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none" />
+          </span>
+        </a>
+      </div>
+    </header>
+
+    <Section id="lab-vs-online" eyebrow="The short answer" title="What Is the Average Reaction Time?">
+      <div class="prose-sr max-w-3xl">
+        <p>
+          It depends on what you measure and how. The classic figure comes from more than a century of lab research: for
+          college-age adults, a simple reaction to a light averages about <strong>190 ms</strong> and a reaction to a sound
+          about <strong>160 ms</strong>. “Simple” means one signal and one response that you’re already waiting to make.
+        </p>
+        <p>
+          Online tests land higher. Human Benchmark, which has recorded tens of millions of clicks, reports a median of
+          roughly <strong>273 ms</strong>, and the population model SpeedReflex uses puts the median at <strong>{POPULATION.medianMs} ms</strong>.
+          People aren’t slower online — the extra time is mostly the equipment between your eyes and the result.
+        </p>
+      </div>
+    </Section>
+
+    <Section
+      id="device-lag"
+      eyebrow="Methodology"
+      title="Why Online Tests Read Slower Than the Lab"
+      intro="Every browser test measures you plus your hardware. These are the delays that stack up before your press is recorded."
+    >
+      <DataTable
+        caption="Delays that add to reaction times measured on a computer or phone"
+        head={['Source of delay', 'How much it can add']}
+        rows={[
+          ['Waiting for the next screen refresh', 'Up to 16.7 ms at 60 Hz, 6.9 ms at 144 Hz'],
+          ['Display processing and pixel response', 'A few ms on gaming monitors, more on TVs'],
+          ['Wired mouse or keyboard (USB polling)', '1 ms at 1000 Hz, 8 ms at 125 Hz'],
+          ['Wireless and Bluetooth devices', 'Usually more than wired, and less consistent'],
+          ['Touchscreens', 'Often tens of ms — touch scanning and processing'],
+          ['Tests that wait for a full click', 'Adds the time to lift your finger as well'],
+        ]}
+        note="SpeedReflex removes what software can: the clock starts on the frame the signal is painted and stops on the press, not the release."
+      />
+      <div class="prose-sr mt-8 max-w-3xl">
+        <p>
+          The practical takeaway: <strong>compare yourself on the same device</strong>. A score from your phone and a score from a
+          gaming PC aren’t measuring quite the same thing.
+        </p>
+      </div>
+    </Section>
+
+    <Section
+      id="good-reaction-time"
+      eyebrow="Benchmarks"
+      title="What Is a Good Reaction Time?"
+      intro="On a typical online test, under 250 ms is good and under 200 ms is genuinely fast. Here’s the scale the SpeedReflex test uses for a five-attempt average."
+    >
+      <DataTable
+        caption="Reaction time ratings and the share of people slower than each band"
+        head={['Average', 'Rating', 'Faster than about']}
+        rows={tierRows}
+        note={`Percentages come from a log-normal model of online reaction times with a median of ${POPULATION.medianMs} ms — an approximation, not a live leaderboard.`}
+      />
+    </Section>
+
+    <Section
+      id="by-age"
+      eyebrow="Age"
+      title="Reaction Time by Age"
+      intro="Simple reaction time changes less with age than most people expect — until later in life."
+    >
+      <DataTable
+        caption="How simple and choice reaction times change across life"
+        head={['Age', 'What research shows']}
+        rows={[
+          ['Childhood', 'Slower and more variable; reactions speed up steadily through the teens'],
+          ['Late teens to late 20s', 'The fastest simple reaction times of your life'],
+          ['30s and 40s', 'Simple reactions barely change; choice reactions slow gradually'],
+          ['50s and 60s', 'Simple reactions start to slow'],
+          ['70 and over', 'Slowing speeds up, and results become more variable'],
+        ]}
+        note="Based on Kosinski’s literature review and Der & Deary’s study of 7,130 UK adults (2006)."
+      />
+      <div class="prose-sr mt-8 max-w-3xl">
+        <p>
+          Because individual differences are large, your age is a weak predictor of your own score. Sleep, practice and the device
+          you test on usually move the number more than a decade of birthdays.
+        </p>
+      </div>
+    </Section>
+
+    <Section id="stimulus" eyebrow="Senses" title="Sight vs Sound: Which Is Faster?">
+      <div class="grid gap-4 md:grid-cols-2">
+        <div class="card p-6">
+          <p class="eyebrow">Visual</p>
+          <p class="mt-3 text-heading-lg">≈190 ms</p>
+          <p class="mt-2 text-sm leading-6 text-body">
+            Light has to be turned into a nerve signal by the retina and processed by the visual system — about 20–40 ms before it
+            even reaches the brain.
+          </p>
+        </div>
+        <div class="card p-6">
+          <p class="eyebrow">Auditory</p>
+          <p class="mt-3 text-heading-lg">≈160 ms</p>
+          <p class="mt-2 text-sm leading-6 text-body">
+            A sound reaches the brain in about 8–10 ms. That head start makes sound one of the quickest signals to react to.
+          </p>
+        </div>
+      </div>
+      <div class="prose-sr mt-8 max-w-3xl">
+        <p>
+          Want your own numbers? Take the <a href="/audio-reaction-time-test/">audio reaction time test</a> and
+          the <a href="/reaction-time-test/">visual test</a> on the same device — the audio results page shows the gap between your ears
+          and your eyes.
+        </p>
+      </div>
+    </Section>
+
+    <Section id="simple-vs-choice" eyebrow="Test types" title="Simple vs Choice Reaction Time">
+      <div class="prose-sr max-w-3xl">
+        <p>
+          In a <strong>simple</strong> reaction test there’s one signal and one response, so all you do is wait and press. In
+          a <strong>choice</strong> reaction test you must first decide — which colour, which side, which key — and every extra option
+          adds time. That’s why choice reactions are slower and slow down earlier with age.
+        </p>
+        <p>
+          The <a href="/reaction-time-test/">SpeedReflex reaction time test</a> is a simple test.
+          The <a href="/f1-reaction-time-test/">F1 reaction test</a> is simple too, but adds something harder: five lights of build-up
+          and a random hold, so you also have to stop yourself from jumping the start.
+        </p>
+      </div>
+    </Section>
+
+    <Section
+      id="sport-and-driving"
+      eyebrow="Real world"
+      title="Reaction Times in Sport and Driving"
+      intro="Outside a test, reaction time includes whatever your body has to do next — which is why real-world figures are longer."
+    >
+      <DataTable
+        caption="Reaction times in sport and driving"
+        head={['Situation', 'Typical reaction', 'Why']}
+        rows={[
+          ['Sprint start (athletics)', 'Under 0.2 s for elites', 'Usain Bolt reacted in 0.146 s in his 9.58 s world record'],
+          ['False start threshold', 'Under 0.100 s', 'World Athletics treats anything faster as anticipation'],
+          ['Formula 1 start', 'About 0.2 s', 'From lights out, including getting the car moving'],
+          ['Braking when you expect it', '0.7–0.75 s', 'See, decide, move your foot to the pedal'],
+          ['Brake lights ahead', 'About 1.25 s', 'Unexpected but familiar signal'],
+          ['A genuine surprise on the road', 'About 1.5 s', 'Expectation roughly doubles the time'],
+        ]}
+        note="Driving figures from Green (2000). Sprint data from World Athletics."
+      />
+      <div class="prose-sr mt-8 max-w-3xl">
+        <p>
+          Those driving numbers turn into distance fast: at 70 mph a car covers over 3 metres every tenth of a second. Try your own
+          numbers in the <a href="/stopping-distance-calculator/">stopping distance calculator</a>.
+        </p>
+      </div>
+    </Section>
+
+    <Section id="factors" eyebrow="Factors" title="What Affects Your Reaction Time">
+      <div class="grid gap-px overflow-hidden rounded-md border border-hairline bg-hairline sm:grid-cols-2 lg:grid-cols-3">
+        {
+          [
+            { t: 'Sleep', d: 'After 17–19 hours awake, some test scores matched a 0.05% blood-alcohol level; after longer, responses were up to 50% slower (Williamson & Feyer, 2000).' },
+            { t: 'Alcohol', d: 'Slows reactions and impairs judgement. In the same study, performance fell steadily as blood alcohol rose towards 0.1%.' },
+            { t: 'Attention', d: 'A second task — a conversation, a phone, lyrics in your ears — takes attention away from the signal you’re waiting for.' },
+            { t: 'Practice', d: 'Scores improve over the first few sessions as you learn the rhythm of the test. Compare your later sessions, not the first.' },
+            { t: 'Age', d: 'Simple reactions hold steady until around 50; choice reactions slow earlier.' },
+            { t: 'Hardware', d: 'Refresh rate, input device and touchscreen lag can add more time than a bad night’s sleep.' },
+          ].map((f) => (
+            <div class="bg-surface p-6">
+              <h3 class="text-label text-ink">{f.t}</h3>
+              <p class="mt-2 text-sm leading-6 text-body">{f.d}</p>
+            </div>
+          ))
+        }
+      </div>
+      <div class="prose-sr mt-8 max-w-3xl">
+        <p>
+          Want to get faster? The <a href="/reaction-time-test/#improve">reaction time test page</a> has practical training tips, and
+          your saved history shows whether they’re working.
+        </p>
+      </div>
+    </Section>
+
+    <Section id="fastest" eyebrow="Limits" title="What Is the Fastest Possible Reaction Time?">
+      <div class="prose-sr max-w-3xl">
+        <p>
+          About 100 milliseconds is treated as the floor for a genuine reaction. That’s the line World Athletics draws: when its
+          start system measures a sprinter pushing the blocks less than 0.100 s after the gun, it’s a false start, because nobody
+          can hear the gun and respond that fast. SpeedReflex uses the same rule — presses under {ANTICIPATION_MS} ms count as
+          guesses and aren’t recorded.
+        </p>
+      </div>
+    </Section>
+
+    <Faq items={faqs} title="Average Reaction Time FAQ" />
+
+    <Section id="sources" eyebrow="References" title="Sources">
+      <ol class="prose-sr max-w-3xl list-decimal pl-5 text-sm marker:text-faint">
+        {
+          sources.map((s) => (
+            <li>
+              <a href={s.href} rel="noopener" target="_blank">
+                {s.t}
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </Section>
+  </article>
+
+  <Section id="try-it" eyebrow="Try it" title="Test Your Reactions">
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {[toolById('reaction'), toolById('f1'), toolById('stopping')].map((t) => <ToolCard tool={t} />)}
+    </div>
+  </Section>
+</BaseLayout>

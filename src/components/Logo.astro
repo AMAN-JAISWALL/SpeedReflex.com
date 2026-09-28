@@ -1,0 +1,14 @@
+---
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+---
+
+<span class:list={['inline-flex items-center gap-2', className]}>
+  <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" class="shrink-0">
+    <rect width="24" height="24" rx="6" class="fill-ink" />
+    <path d="M6.5 7.5 11 12l-4.5 4.5M12.5 7.5 17 12l-4.5 4.5" fill="none" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" class="stroke-canvas" />
+  </svg>
+  <span class="text-[1.0625rem] font-semibold tracking-[-0.03em] text-ink" translate="no">SpeedReflex</span>
+</span>

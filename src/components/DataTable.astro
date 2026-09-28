@@ -1,0 +1,25 @@
+---
+interface Props {
+  caption: string;
+  head: string[];
+  rows: string[][];
+  note?: string;
+}
+
+const { caption, head, rows, note } = Astro.props;
+---
+
+<div class="max-w-3xl">
+  <div class="overflow-x-auto rounded-md border border-hairline bg-surface">
+    <table class="data-table">
+      <caption class="sr-only">{caption}</caption>
+      <thead>
+        <tr>{head.map((h) => <th scope="col">{h}</th>)}</tr>
+      </thead>
+      <tbody>
+        {rows.map((r) => <tr>{r.map((c) => <td>{c}</td>)}</tr>)}
+      </tbody>
+    </table>
+  </div>
+  {note && <p class="mt-3 text-xs text-mute">{note}</p>}
+</div>

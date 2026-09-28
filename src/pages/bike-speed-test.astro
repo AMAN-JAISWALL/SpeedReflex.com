@@ -1,0 +1,123 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ToolHero from '../components/ToolHero.astro';
+import Speedometer from '../components/Speedometer.astro';
+import Section from '../components/Section.astro';
+import StepList from '../components/StepList.astro';
+import DataTable from '../components/DataTable.astro';
+import Faq from '../components/Faq.astro';
+import RelatedTools from '../components/RelatedTools.astro';
+import { toolById } from '../lib/site';
+import { toolCrumbs, toolPage, type FaqItem } from '../lib/schema';
+
+const tool = toolById('bike');
+const title = 'Bike Speed Test — Free GPS Cycling Speedometer';
+const description =
+  'Measure your bike speed with just your phone: live GPS speed, moving average, distance and moving time for bikes and e-bikes, plus GPX export for Strava.';
+
+const faqs: FaqItem[] = [
+  {
+    q: 'Is a phone as accurate as a bike computer?',
+    a: 'Wheel-sensor bike computers count wheel turns; GPS measures your speed over the ground. Under open sky the two agree closely. Under trees, in tunnels or between tall buildings GPS can wander, especially at low speed, so short dips and spikes are normal there.',
+  },
+  {
+    q: 'How do I upload my ride to Strava or Komoot?',
+    a: 'After your ride, tap Export GPX. Then upload the file on the Strava website (Upload activity → File) or import it into Komoot, Garmin Connect or any app that accepts GPX tracks.',
+  },
+  {
+    q: 'What is moving average speed?',
+    a: 'Moving average only counts time when you are actually moving (faster than about 3 km/h), so traffic lights and café stops don’t drag it down. It’s the same way cycling computers calculate average speed.',
+  },
+  {
+    q: 'Does it work for motorbikes and scooters?',
+    a: 'Yes. The gauge starts at a cycling-friendly scale and extends automatically as you go faster. Use a secure handlebar mount and follow local laws on phone use while riding.',
+  },
+  {
+    q: 'Will my screen stay on during the ride?',
+    a: 'Yes, in browsers that support the Screen Wake Lock API — current Chrome, Edge and Safari on iOS 16.4 or later. The “Screen stays on” label appears when it’s active.',
+  },
+  {
+    q: 'Does it measure cadence, heart rate or power?',
+    a: 'No. Those need Bluetooth sensors. SpeedReflex focuses on GPS speed, distance, time, altitude and heading — no pairing, no app.',
+  },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  jsonLd={toolPage(tool, title, description, faqs)}
+>
+  <ToolHero
+    crumbs={toolCrumbs(tool)}
+    eyebrow="GPS speed test"
+    title="Bike Speed Test"
+    lede="Measure your cycling speed with just your phone — no sensor, no app. Live speed, moving average, distance and moving time for bicycles, e-bikes and motorbikes, with an optional speed alert."
+    features={['No sensor or app needed', 'Moving average & moving time', 'Auto-ranging gauge', 'Speed alert', 'Altitude & heading', 'GPX export for Strava']}
+  >
+    <Speedometer preset="bike" />
+  </ToolHero>
+
+  <Section id="how-to" eyebrow="How to" title="How to Measure Your Bike Speed">
+    <StepList
+      steps={[
+        { title: 'Mount Your Phone', text: 'A handlebar or stem mount keeps the screen visible and the GPS antenna facing the sky.' },
+        { title: 'Start Before You Roll', text: 'Press Start and allow location. Wait until the dot turns blue for an accurate first reading.' },
+        { title: 'Ride', text: 'Speed updates every second. Stops don’t count against your moving average.' },
+        { title: 'Save Your Ride', text: 'Export GPX at the end to keep your route or upload it to Strava or Komoot.' },
+      ]}
+    />
+  </Section>
+
+  <Section
+    id="cycling-speeds"
+    eyebrow="Benchmarks"
+    title="How Fast Do Cyclists Ride?"
+    intro="Speeds vary hugely with terrain, wind and bike, but these typical figures help you place your number."
+  >
+    <DataTable
+      caption="Typical cycling speeds"
+      head={['Rider', 'Typical speed']}
+      rows={[
+        ['Relaxed city or leisure riding', '12–18 km/h (7–11 mph)'],
+        ['Commuting on a road or hybrid bike', '18–25 km/h (11–16 mph)'],
+        ['E-bike, EU (pedelec)', 'Assistance stops at 25 km/h (15.5 mph)'],
+        ['E-bike, US Class 1 & 2', 'Assistance up to 20 mph (32 km/h)'],
+        ['E-bike, US Class 3', 'Assistance up to 28 mph (45 km/h)'],
+        ['Fit club cyclist, solo on the flat', '28–35 km/h (17–22 mph)'],
+        ['Tour de France stage average', 'Around 40 km/h (25 mph) and above'],
+      ]}
+      note="E-bike rules differ by country and state. Check local regulations."
+    />
+  </Section>
+
+  <Section id="moving-average" eyebrow="Metrics" title="Moving Average, Moving Time and Trip Time">
+    <div class="grid gap-4 md:grid-cols-3">
+      <div class="card p-6">
+        <h3 class="text-heading-md">Moving Average</h3>
+        <p class="mt-2 text-sm leading-6 text-body">Distance divided by moving time. Red lights and coffee stops don’t drag it down — just like a bike computer.</p>
+      </div>
+      <div class="card p-6">
+        <h3 class="text-heading-md">Moving Time</h3>
+        <p class="mt-2 text-sm leading-6 text-body">Only counts while you’re faster than about 3 km/h, so it reflects the time you actually spent riding.</p>
+      </div>
+      <div class="card p-6">
+        <h3 class="text-heading-md">Trip Time</h3>
+        <p class="mt-2 text-sm leading-6 text-body">Total time since you pressed Start, including stops. Pause the trip to stop the clock completely.</p>
+      </div>
+    </div>
+    <div class="prose-sr mt-8 max-w-3xl">
+      <p>
+        Riding an e-bike or e-scooter? Switch on the <strong>speed alert</strong> and set it to your local limit — for example 25 km/h for
+        EU pedelecs. You’ll get a beep and a vibration the moment you cross it.
+      </p>
+      <p>
+        Driving instead? The <a href="/car-speed-test/">car speed test</a> compares GPS with your dashboard and adds a windshield
+        HUD. For running, skiing or anything else, use the general <a href="/speedometer/">online speedometer</a>.
+      </p>
+    </div>
+  </Section>
+
+  <Faq items={faqs} title="Bike Speed Test FAQ" />
+  <RelatedTools current={tool.id} />
+</BaseLayout>

@@ -1,0 +1,18 @@
+---
+import Section from './Section.astro';
+import ToolCard from './ToolCard.astro';
+import { toolById, type ToolId } from '../lib/site';
+
+interface Props {
+  current: ToolId;
+}
+
+const { current } = Astro.props;
+const tools = toolById(current).related.map(toolById);
+---
+
+<Section id="more-tests" eyebrow="Keep going" title="More Tests on SpeedReflex">
+  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    {tools.map((t) => <ToolCard tool={t} />)}
+  </div>
+</Section>

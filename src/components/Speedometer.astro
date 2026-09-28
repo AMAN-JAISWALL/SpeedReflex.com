@@ -1,0 +1,223 @@
+---
+import { Play, Pause, RotateCcw, TrianglesCenterlineDashedHorizontal, Maximize, Download, X, Sun } from '@lucide/astro';
+import { GAUGE, PRESETS, UNITS, arcPath, gaugeTicks, initialRange, type SpeedPresetId } from '../lib/speed';
+
+interface Props {
+  preset: SpeedPresetId;
+}
+
+const { preset } = Astro.props;
+const p = PRESETS[preset];
+const unit = 'kmh';
+const range = initialRange(p, unit);
+const ticks = gaugeTicks(range);
+const track = arcPath(GAUGE.start, GAUGE.start + GAUGE.sweep);
+const id = `speedo-${preset}`;
+
+const tiles = [
+  { key: 'max', label: 'Max speed' },
+  { key: 'avg', label: 'Avg (moving)' },
+  { key: 'distance', label: 'Distance' },
+  { key: 'elapsed', label: 'Trip time' },
+  { key: 'moving', label: 'Moving time' },
+  { key: 'heading', label: 'Heading' },
+  ...(p.showAltitude ? [{ key: 'altitude', label: 'Altitude' }] : []),
+];
+---
+
+<gps-speedometer class="block" data-preset={preset}>
+  <div class="card overflow-hidden shadow-whisper fullscreen:overflow-y-auto fullscreen:rounded-none" data-tool>
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-hairline px-4 py-3 sm:px-5">
+      <div class="flex min-w-0 items-center gap-3">
+        <span class="inline-flex items-center gap-2 text-sm text-body">
+          <span data-gps-dot data-level="off" class="size-2 shrink-0 rounded-full bg-faint data-[level=fair]:bg-warning data-[level=good]:bg-link data-[level=poor]:bg-error"></span>
+          <span data-gps-text class="truncate">GPS off</span>
+        </span>
+        <span data-wake hidden class="hidden items-center gap-1 text-xs text-mute sm:inline-flex">
+          <Sun size={12} /> Screen stays on
+        </span>
+      </div>
+      <div class="segmented" role="group" aria-label="Speed unit" data-units>
+        {
+          p.units.map((u) => (
+            <button type="button" data-unit={u} aria-pressed={u === unit ? 'true' : 'false'}>
+              {UNITS[u].label}
+            </button>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="grid lg:grid-cols-[minmax(0,1fr)_21rem]">
+      <div class="flex flex-col items-center px-4 pb-8 pt-6 sm:pt-8">
+        <div class="@container relative aspect-square w-full max-w-[21rem]">
+          <svg viewBox="0 0 320 320" class="absolute inset-0 h-full w-full text-ink" aria-hidden="true">
+            <path d={track} fill="none" stroke-width="10" stroke-linecap="round" class="stroke-hairline" />
+            <path
+              d={track}
+              data-arc
+              fill="none"
+              stroke-width="10"
+              stroke-linecap="round"
+              pathLength="100"
+              stroke-dasharray="100"
+              stroke-dashoffset="100"
+              opacity="0"
+              class="stroke-ink transition-[stroke-dashoffset] duration-500 ease-out data-over:stroke-error motion-reduce:transition-none"
+            />
+            <line data-limit-mark stroke-width="3" stroke-linecap="round" class="hidden stroke-error" />
+            <g data-ticks>
+              {
+                ticks.map((t) => (
+                  <>
+                    <line x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} stroke-width={t.major ? 1.5 : 1} class={t.major ? 'stroke-body' : 'stroke-hairline-strong'} />
+                    {t.major && (
+                      <text x={t.lx} y={t.ly} text-anchor="middle" dominant-baseline="middle" class="fill-mute font-mono text-[12px]">
+                        {t.value}
+                      </text>
+                    )}
+                  </>
+                ))
+              }
+            </g>
+          </svg>
+          <div class="absolute inset-0 flex flex-col items-center justify-center pt-6">
+            <span class="sr-only">Current speed</span>
+            <span data-speed class="text-[26cqw] font-semibold leading-none tracking-[-0.05em] tabular-nums data-long:text-[18cqw]">0</span>
+            <span data-unit-label class="eyebrow mt-3">{UNITS[unit].short}</span>
+            <span data-over-badge hidden class="mt-3 rounded-pill bg-error px-2.5 py-0.5 text-xs font-medium text-white">Over your alert</span>
+          </div>
+        </div>
+
+        <div class="mt-2 flex flex-wrap justify-center gap-2">
+          <button type="button" class="btn btn-md btn-primary min-w-32 max-sm:basis-full" data-toggle>
+            <Play size={16} data-icon-play />
+            <Pause size={16} data-icon-pause class="hidden" />
+            <span data-toggle-label>Start</span>
+          </button>
+          <button type="button" class="btn btn-md btn-secondary" data-reset>
+            <RotateCcw size={16} />
+            Reset
+          </button>
+          {
+            p.hud && (
+              <button type="button" class="btn btn-md btn-secondary" data-hud-open>
+                <TrianglesCenterlineDashedHorizontal size={16} />
+                HUD
+              </button>
+            )
+          }
+          <button type="button" class="btn btn-md btn-secondary w-10 px-0" data-fullscreen aria-label="Full screen" hidden>
+            <Maximize size={16} />
+          </button>
+        </div>
+        <p data-message class="mt-4 min-h-10 max-w-md text-center text-sm text-body" aria-live="polite"></p>
+      </div>
+
+      <div class="border-t border-hairline lg:border-l lg:border-t-0">
+        <dl class="grid grid-cols-2 gap-px bg-hairline [&>div:last-child:nth-child(odd)]:col-span-2">
+          {
+            tiles.map((t) => (
+              <div class="bg-surface px-4 py-3.5">
+                <dt class="text-xs text-mute">{t.label}</dt>
+                <dd class="mt-1 flex items-baseline gap-1">
+                  <span class="text-heading-md tabular-nums" data-stat={t.key}>
+                    —
+                  </span>
+                  <span class="text-xs text-mute" data-stat-unit={t.key} />
+                </dd>
+              </div>
+            ))
+          }
+        </dl>
+
+        {
+          p.speedAlert && (
+            <div class="border-t border-hairline px-4 py-4">
+              <div class="flex items-center justify-between gap-3">
+                <span class="text-label text-ink" id={`${id}-alert-label`}>
+                  Speed alert
+                </span>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked="false"
+                  aria-labelledby={`${id}-alert-label`}
+                  data-alert-toggle
+                  class="group/switch relative inline-flex h-6 w-10 shrink-0 items-center rounded-full bg-hairline-strong transition-colors aria-checked:bg-ink"
+                >
+                  <span class="size-5 translate-x-0.5 rounded-full bg-surface shadow-float transition-transform group-aria-checked/switch:translate-x-[1.125rem]" />
+                </button>
+              </div>
+              <div class="mt-3 flex items-center gap-2">
+                <label for={`${id}-alert-value`} class="text-sm text-body">
+                  Alert above
+                </label>
+                <input
+                  id={`${id}-alert-value`}
+                  name="speed-alert"
+                  type="number"
+                  inputmode="numeric"
+                  min="1"
+                  max="999"
+                  step="1"
+                  autocomplete="off"
+                  data-alert-value
+                  class="h-9 w-20 rounded-sm border border-hairline px-2.5 text-base tabular-nums focus-visible:border-link sm:text-sm"
+                />
+                <span class="text-sm text-mute" data-alert-unit>km/h</span>
+              </div>
+              <p class="mt-2 text-xs text-mute">Beeps and vibrates once each time you cross it.</p>
+            </div>
+          )
+        }
+
+        <div class="flex items-center justify-between gap-3 border-t border-hairline px-4 py-4">
+          <div class="min-w-0">
+            <p class="text-label text-ink">Trip log</p>
+            <p class="text-xs text-mute" data-points>No points recorded yet</p>
+          </div>
+          <button type="button" class="btn btn-sm btn-secondary" data-export disabled>
+            <Download size={14} />
+            Export GPX
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {
+    p.hud && (
+      <dialog
+        data-hud
+        aria-label="Head-up display"
+        class="fixed inset-0 m-0 size-full max-h-none max-w-none flex-col overflow-hidden border-0 bg-black p-0 text-white open:flex"
+      >
+        <div class="flex items-center justify-between px-4 pb-2 pt-[max(1rem,env(safe-area-inset-top))]">
+          <button type="button" data-hud-mirror aria-pressed="true" class="btn btn-sm border-white/20 bg-white/10 text-white hover:bg-white/20 aria-pressed:bg-white aria-pressed:text-black">
+            <TrianglesCenterlineDashedHorizontal size={14} />
+            Mirror
+          </button>
+          <button type="button" data-hud-close aria-label="Close HUD" class="btn btn-icon border-white/20 bg-white/10 text-white hover:bg-white/20">
+            <X size={18} />
+          </button>
+        </div>
+        <div data-hud-body class="flex flex-1 flex-col items-center justify-center" style="transform: scaleX(-1)">
+          <span data-hud-speed class="text-[min(40vw,55vh)] font-semibold leading-none tracking-[-0.05em] tabular-nums data-over:text-[#ff4d4f]">
+            0
+          </span>
+          <span data-hud-unit class="font-mono text-[min(6vw,5vh)] text-white/60">
+            KM/H
+          </span>
+        </div>
+        <p class="px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-2 text-center text-xs text-white/50">
+          Lay the phone flat below the windshield at night. Turn Mirror off to read it directly.
+        </p>
+      </dialog>
+    )
+  }
+</gps-speedometer>
+
+<script>
+  import '../scripts/gps-speedometer';
+</script>

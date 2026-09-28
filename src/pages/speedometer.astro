@@ -1,0 +1,185 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ToolHero from '../components/ToolHero.astro';
+import Speedometer from '../components/Speedometer.astro';
+import Section from '../components/Section.astro';
+import ToolCard from '../components/ToolCard.astro';
+import DataTable from '../components/DataTable.astro';
+import Faq from '../components/Faq.astro';
+import RelatedTools from '../components/RelatedTools.astro';
+import { VEHICLE_TOOLS, toolById } from '../lib/site';
+import { toolCrumbs, toolPage, type FaqItem } from '../lib/schema';
+import { UNITS } from '../lib/speed';
+
+const tool = toolById('speedometer');
+const title = 'Online Speedometer — How Fast Am I Going? (Free GPS)';
+const description =
+  'See how fast you’re going right now with a free online GPS speedometer. Live speed in km/h, mph or knots, plus max, average and distance — no app needed.';
+
+// Common speeds in every unit the speedometer shows, so the table matches the gauge.
+const fmt = (v: number) => (v >= 100 ? Math.round(v).toLocaleString('en-US') : v.toFixed(v < 10 ? 1 : 0));
+const conversions = [10, 30, 50, 80, 100, 120, 300, 900].map((kmh) => {
+  const ms = kmh / 3.6;
+  return [`${kmh} km/h`, `${fmt(ms * UNITS.mph.perMs)} mph`, `${fmt(ms * UNITS.kn.perMs)} kn`, `${fmt(ms)} m/s`];
+});
+
+const faqs: FaqItem[] = [
+  {
+    q: 'How do I check how fast I’m going right now?',
+    a: 'Open this page on your phone, press Start and allow location access. Your current speed appears within a few seconds once the GPS has a fix — the signal dot turns blue when the reading is reliable.',
+  },
+  {
+    q: 'Does the online speedometer work on iPhone and Android?',
+    a: 'Yes. It runs in Safari, Chrome, Edge, Firefox and Samsung Internet on any phone with GPS. On iPhone, Safari needs Location Services turned on for Safari Websites. The screen stays awake during a trip in current Chrome and in Safari on iOS 16.4 or later.',
+  },
+  {
+    q: 'Why does it show 0 on my laptop?',
+    a: 'Most laptops and desktops have no GPS chip. They can estimate where you are from Wi-Fi networks, but that doesn’t report speed. Use a phone or a tablet with GPS.',
+  },
+  {
+    q: 'Does it use mobile data?',
+    a: 'Only to load the page. GPS itself uses no data, and your location is never uploaded. Without a data connection the first fix can take longer, because your phone has to download satellite positions from the satellites themselves.',
+  },
+  {
+    q: 'Why does my speed read 0 when I’m walking slowly?',
+    a: 'GPS positions wobble by a few metres even when you stand still. To stop that jitter showing up as fake movement, speeds under about 2 km/h are shown as 0 and don’t count towards distance or moving time.',
+  },
+  {
+    q: 'Is GPS more accurate than my car’s speedometer?',
+    a: 'Usually, yes. Car speedometers are designed to read a little high, while GPS measures your true speed over the ground. With a clear view of the sky, GPS is typically within a couple of km/h.',
+  },
+  {
+    q: 'Can it keep measuring in the background?',
+    a: 'No. Browsers stop sending location to pages that aren’t on screen, to protect your privacy and battery. Keep the page open — it keeps your screen awake while a trip is running.',
+  },
+];
+---
+
+<BaseLayout title={title} description={description} jsonLd={toolPage(tool, title, description, faqs)}>
+  <ToolHero
+    crumbs={toolCrumbs(tool)}
+    eyebrow="GPS speedometer"
+    title="Online Speedometer"
+    lede="How fast am I going right now? Open this page on your phone, press Start and see your live GPS speed in km/h, mph, knots or m/s — with your top speed, moving average, distance and trip time. No app, no sign-up."
+    features={['Live GPS speed', 'km/h, mph, knots & m/s', 'Max & moving average', 'Speed alert', 'HUD windshield mode', 'Location stays on your device']}
+  >
+    <Speedometer preset="general" />
+  </ToolHero>
+
+  <Section
+    id="by-vehicle"
+    eyebrow="By vehicle"
+    title="Speed Tests for Every Kind of Trip"
+    intro="This speedometer works for any journey. The vehicle pages add the right units, gauge range and advice for each one — from dashboard accuracy in a car to ground speed at 35,000 ft."
+  >
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {VEHICLE_TOOLS.map((t) => <ToolCard tool={t} />)}
+    </div>
+  </Section>
+
+  <Section id="how-it-works" eyebrow="How it works" title="How an Online Speedometer Measures Your Speed">
+    <div class="grid gap-10 lg:grid-cols-2">
+      <div class="prose-sr">
+        <p>
+          When you press Start, your browser asks the phone’s satellite receiver for updates about once a second. Modern receivers
+          work out speed from the tiny <strong>Doppler shift</strong> in the satellite signals, which is far steadier than dividing
+          the distance between two positions by the time between them. SpeedReflex uses that speed whenever your phone provides
+          it, and falls back to the change in position when it doesn’t.
+        </p>
+        <p>
+          SpeedReflex then cleans the stream up: fixes with poor accuracy don’t count towards distance or top speed, impossible jumps
+          (a position suddenly hundreds of metres away after a tunnel) are ignored, and the wobble you get when standing still is
+          shown as zero rather than as a slow crawl.
+        </p>
+        <p>
+          It all happens on your device. Nothing is sent to a server, which is also why it keeps working when you lose mobile signal
+          — as long as the page stays open.
+        </p>
+      </div>
+      <ol class="grid content-start gap-3">
+        {
+          [
+            { t: 'Satellites', d: 'Your phone receives GPS, Galileo, GLONASS or BeiDou signals — no data connection needed.' },
+            { t: 'Receiver', d: 'The chip calculates position and speed and passes them to the browser.' },
+            { t: 'Speedometer', d: 'We filter glitches and update speed, max, averages and distance every second.' },
+          ].map((s, i) => (
+            <li class="card flex gap-4 p-5">
+              <span class="font-mono text-xs text-mute">{String(i + 1).padStart(2, '0')}</span>
+              <span>
+                <span class="block text-label text-ink">{s.t}</span>
+                <span class="mt-1 block text-sm leading-6 text-body">{s.d}</span>
+              </span>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </Section>
+
+  <Section
+    id="accuracy"
+    eyebrow="Accuracy"
+    title="How Accurate Is GPS Speed?"
+    intro="Under open sky, phone GPS speed is typically within a couple of km/h. What’s around you matters more than which phone you have."
+  >
+    <DataTable
+      caption="What to expect from GPS speed in different places"
+      head={['Where you are', 'What to expect']}
+      rows={[
+        ['Open road, clear sky', 'Steady readings, typically within a couple of km/h'],
+        ['City centre, tall buildings', 'Signals bounce off walls — expect some jumps'],
+        ['Under trees or bridges', 'Brief dips; readings recover in seconds'],
+        ['Inside a bus, train or plane', 'Works best right next to a window'],
+        ['Tunnels, subways, car parks', 'No signal — speed freezes until you’re back outside'],
+        ['Walking pace', 'Noisy; under about 2 km/h shows as 0'],
+      ]}
+      note="The ± figure next to the signal dot is the accuracy of the current position fix. Below about 20 m, speed readings are reliable."
+    />
+    <div class="prose-sr mt-8 max-w-3xl">
+      <p>
+        Comparing with a dashboard? Car speedometers are allowed to over-read, so GPS usually shows a little less.
+        The <a href="/car-speed-test/">car speed test</a> explains the legal tolerance and how big the gap should be.
+      </p>
+    </div>
+  </Section>
+
+  <Section id="location-help" eyebrow="Troubleshooting" title="Location Not Working? How to Allow It">
+    <div class="grid gap-4 md:grid-cols-2">
+      <div class="card p-6">
+        <h3 class="text-heading-md">iPhone and iPad (Safari)</h3>
+        <ol class="prose-sr mt-4 list-decimal pl-5 text-sm leading-6 marker:text-faint">
+          <li>Open <strong>Settings → Privacy &amp; Security → Location Services</strong> and make sure it’s on.</li>
+          <li>In the same list, tap <strong>Safari Websites</strong> and choose <strong>While Using the App</strong> or <strong>Ask Next Time</strong>.</li>
+          <li>Back in Safari, tap the <strong>page menu</strong> in the address bar → <strong>Website Settings</strong> → set <strong>Location</strong> to Allow.</li>
+          <li>Reload this page and press Start.</li>
+        </ol>
+      </div>
+      <div class="card p-6">
+        <h3 class="text-heading-md">Android (Chrome)</h3>
+        <ol class="prose-sr mt-4 list-decimal pl-5 text-sm leading-6 marker:text-faint">
+          <li>Swipe down from the top of the screen and make sure <strong>Location</strong> is on.</li>
+          <li>In Chrome, tap the icon to the left of the web address → <strong>Permissions</strong> → <strong>Location</strong> → Allow.</li>
+          <li>If Chrome itself is blocked: <strong>Settings → Apps → Chrome → Permissions → Location</strong>.</li>
+          <li>Reload this page and press Start.</li>
+        </ol>
+      </div>
+    </div>
+  </Section>
+
+  <Section
+    id="units"
+    eyebrow="Units"
+    title="km/h, mph, Knots and m/s"
+    intro="Switch units with one tap above the gauge. Road signs use km/h or mph, pilots and sailors use knots, and scientists use metres per second."
+  >
+    <DataTable
+      caption="Common speeds in km/h, mph, knots and metres per second"
+      head={['km/h', 'mph', 'Knots', 'm/s']}
+      rows={conversions}
+      note="1 mph = 1.609344 km/h · 1 knot = 1.852 km/h · 1 m/s = 3.6 km/h."
+    />
+  </Section>
+
+  <Faq items={faqs} title="Online Speedometer FAQ" />
+  <RelatedTools current={tool.id} />
+</BaseLayout>

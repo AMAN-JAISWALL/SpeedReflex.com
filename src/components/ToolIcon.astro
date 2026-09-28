@@ -1,0 +1,27 @@
+---
+import { Zap, Flag, Ear, Gauge, Car, Bike, Bus, TrainFront, Plane, OctagonAlert, BookOpenText } from '@lucide/astro';
+import type { ToolId } from '../lib/site';
+
+interface Props {
+  id: ToolId | 'guide';
+  size?: number;
+  class?: string;
+}
+
+const { id, size = 20, class: className } = Astro.props;
+const Icon = {
+  reaction: Zap,
+  f1: Flag,
+  audio: Ear,
+  speedometer: Gauge,
+  car: Car,
+  bike: Bike,
+  bus: Bus,
+  train: TrainFront,
+  flight: Plane,
+  stopping: OctagonAlert,
+  guide: BookOpenText,
+}[id];
+---
+
+<Icon size={size} stroke-width={1.75} class={className} />

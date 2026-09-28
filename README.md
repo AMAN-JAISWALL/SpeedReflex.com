@@ -1,46 +1,19 @@
-# Astro Starter Kit: Basics
+# SpeedReflex.com
 
-```sh
-npm create astro@latest -- --template basics
-```
+Free reaction time tests and GPS speedometers that run in the browser — no app, no sign-up.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+- **Reflex tests:** reaction time, audio reaction time and F1 start-lights tests, plus an average reaction time guide
+- **GPS speed tests:** an online speedometer with car, bike, bus, train and flight versions
+- **Stopping distance calculator:** thinking + braking distance from speed, reaction time and road surface
 
-## 🚀 Project Structure
+Built with [Astro](https://astro.build) and Tailwind CSS. Location and test history stay on the visitor's device.
 
-Inside of your Astro project, you'll see the following folders and files:
+## Development
 
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
-```
-
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+| Command           | Action                                      |
+| :---------------- | :------------------------------------------ |
+| `npm install`     | Install dependencies                        |
+| `npm run dev`     | Start the dev server at `localhost:4321`    |
+| `npm run build`   | Build the production site to `./dist/`      |
+| `npm run preview` | Preview the production build locally        |
+| `npx astro check` | Type-check the project                      |

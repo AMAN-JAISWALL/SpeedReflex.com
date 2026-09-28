@@ -1,0 +1,21 @@
+---
+import { Moon, Sun } from '@lucide/astro';
+
+// One-click light/dark switch for the header. The footer switch still offers "System".
+// Icons swap in CSS off [data-theme], so the right one shows before any JS runs.
+---
+
+<button type="button" class="btn btn-icon btn-ghost text-ink" data-theme-toggle aria-pressed="false" aria-label="Dark mode" title="Toggle dark mode">
+  <Moon size={18} class="dark:hidden" />
+  <Sun size={18} class="hidden dark:block" />
+</button>
+
+<script>
+  import { isDark, onThemeChange, setThemePref } from '../scripts/theme';
+
+  const toggle = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+  if (toggle) {
+    toggle.addEventListener('click', () => setThemePref(isDark() ? 'light' : 'dark'));
+    onThemeChange(() => toggle.setAttribute('aria-pressed', String(isDark())));
+  }
+</script>

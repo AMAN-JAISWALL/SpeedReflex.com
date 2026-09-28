@@ -1,0 +1,74 @@
+---
+import { Monitor, Sun, Moon } from '@lucide/astro';
+import Logo from './Logo.astro';
+import { GUIDES, REFLEX_TOOLS, SITE, SPEED_TOOLS, TOOLS } from '../lib/site';
+
+const columns = [
+  { label: 'Reflex tests', links: REFLEX_TOOLS.map((t) => ({ href: t.href, text: t.name })) },
+  { label: 'GPS speed tests', links: SPEED_TOOLS.map((t) => ({ href: t.href, text: t.name })) },
+  {
+    label: 'Driving & guides',
+    links: [...TOOLS.filter((t) => t.category === 'driving'), ...GUIDES].map((t) => ({ href: t.href, text: t.name })),
+  },
+  {
+    label: 'SpeedReflex',
+    links: [
+      { href: '/about/', text: 'About' },
+      { href: '/privacy/', text: 'Privacy' },
+    ],
+  },
+];
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-hairline bg-canvas">
+  <div class="shell grid grid-cols-2 gap-x-6 gap-y-10 py-16 md:grid-cols-4 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1fr]">
+    <div class="col-span-2 max-w-xs md:col-span-4 lg:col-span-1">
+      <a href="/" class="-m-1 inline-flex rounded-sm p-1" aria-label="SpeedReflex home"><Logo /></a>
+      <p class="mt-4 text-sm text-body">{SITE.tagline}. Accurate, private, and free — everything runs in your browser.</p>
+    </div>
+    {
+      columns.map((c) => (
+        <nav aria-label={c.label}>
+          <p class="text-label text-ink">{c.label}</p>
+          <ul class="mt-4 grid gap-2.5">
+            {c.links.map((l) => (
+              <li>
+                <a href={l.href} class="text-sm text-body transition-colors hover:text-ink">
+                  {l.text}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      ))
+    }
+  </div>
+  <div class="border-t border-hairline">
+    <div class="shell flex flex-col-reverse items-start gap-4 py-6 sm:flex-row sm:items-center sm:justify-between">
+      <p class="text-sm text-mute">© {year} <span translate="no">{SITE.domain}</span></p>
+      <div class="segmented" role="group" aria-label="Color theme" data-theme-switch>
+        <button type="button" data-theme-option="system" aria-pressed="true" aria-label="Use system theme" title="System">
+          <Monitor size={14} class="mx-auto" />
+        </button>
+        <button type="button" data-theme-option="light" aria-pressed="false" aria-label="Use light theme" title="Light">
+          <Sun size={14} class="mx-auto" />
+        </button>
+        <button type="button" data-theme-option="dark" aria-pressed="false" aria-label="Use dark theme" title="Dark">
+          <Moon size={14} class="mx-auto" />
+        </button>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  import { onThemeChange, setThemePref, themePref, type ThemePref } from '../scripts/theme';
+
+  const buttons = document.querySelectorAll<HTMLButtonElement>('[data-theme-option]');
+  buttons.forEach((b) => b.addEventListener('click', () => setThemePref((b.dataset.themeOption as ThemePref | undefined) ?? 'system')));
+  onThemeChange(() => {
+    const pref = themePref();
+    buttons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.themeOption === pref)));
+  });
+</script>

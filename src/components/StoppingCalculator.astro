@@ -1,0 +1,156 @@
+---
+import { Timer } from '@lucide/astro';
+import { CAR_LENGTH_M, M_TO_FT, MS_PER, REACTION_PRESETS, ROADS, stoppingDistance } from '../lib/stopping';
+
+// Server render shows 30 mph on a dry road with Highway Code thinking time; the script takes over from there.
+const initial = { speed: 30, unit: 'mph' as const, reaction: 0.67, road: 'dry' as const };
+const r = stoppingDistance(initial.speed * MS_PER[initial.unit], initial.reaction, initial.road);
+const m = (v: number) => `${Math.round(v)} m`;
+const thinkingPct = (r.thinking / r.total) * 100;
+---
+
+<stopping-distance class="block">
+  <div class="card overflow-hidden shadow-whisper">
+    <div class="grid grid-cols-1 lg:grid-cols-2">
+      <form class="grid content-start gap-6 p-5 sm:p-6" data-form>
+        <div>
+          <div class="flex items-center justify-between gap-3">
+            <label for="sd-speed" class="text-label text-ink">Speed</label>
+            <div class="segmented" role="group" aria-label="Speed unit" data-units>
+              <button type="button" data-unit="mph" aria-pressed="true">mph</button>
+              <button type="button" data-unit="kmh" aria-pressed="false">km/h</button>
+            </div>
+          </div>
+          <div class="mt-3 flex items-center gap-3">
+            <input
+              id="sd-speed"
+              name="speed"
+              type="number"
+              inputmode="decimal"
+              min="1"
+              max="250"
+              step="1"
+              value={initial.speed}
+              autocomplete="off"
+              data-speed
+              class="h-11 w-28 rounded-sm border border-hairline px-3 text-base tabular-nums focus-visible:border-link"
+            />
+            <input
+              type="range"
+              min="5"
+              max="80"
+              step="1"
+              value={initial.speed}
+              aria-label="Speed slider"
+              data-speed-range
+              class="h-11 min-w-0 flex-1 accent-ink"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label for="sd-reaction" class="text-label text-ink">Reaction time</label>
+          <div class="mt-3 flex items-center gap-3">
+            <input
+              id="sd-reaction"
+              name="reaction"
+              type="number"
+              inputmode="decimal"
+              min="0.1"
+              max="5"
+              step="0.01"
+              value={initial.reaction}
+              autocomplete="off"
+              data-reaction
+              aria-describedby="sd-reaction-note"
+              class="h-11 w-28 rounded-sm border border-hairline px-3 text-base tabular-nums focus-visible:border-link"
+            />
+            <span class="text-sm text-mute">seconds</span>
+          </div>
+          <div class="mt-3 flex flex-wrap gap-2" role="group" aria-label="Reaction time presets" data-presets>
+            {
+              REACTION_PRESETS.map((p) => (
+                <button
+                  type="button"
+                  data-preset={p.s}
+                  aria-pressed={p.s === initial.reaction ? 'true' : 'false'}
+                  class="btn btn-sm btn-secondary aria-pressed:border-ink aria-pressed:bg-ink aria-pressed:text-canvas"
+                >
+                  {p.label} · {p.s} s
+                </button>
+              ))
+            }
+          </div>
+          <p id="sd-reaction-note" class="mt-2 min-h-5 text-xs text-mute" data-preset-note>
+            {REACTION_PRESETS[0].note}
+          </p>
+        </div>
+
+        <div>
+          <span class="text-label text-ink" id="sd-road-label">Road surface</span>
+          <div class="segmented mt-3" role="group" aria-labelledby="sd-road-label" data-roads>
+            {
+              Object.entries(ROADS).map(([id, road]) => (
+                <button type="button" data-road={id} aria-pressed={id === initial.road ? 'true' : 'false'}>
+                  {road.label}
+                </button>
+              ))
+            }
+          </div>
+        </div>
+      </form>
+
+      <div class="border-t border-hairline bg-canvas p-5 sm:p-6 lg:border-l lg:border-t-0" aria-live="polite">
+        <p class="eyebrow">Total stopping distance</p>
+        <p class="mt-2 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <span class="text-[3rem] font-semibold leading-none tracking-[-0.05em] tabular-nums" data-total>{m(r.total)}</span>
+          <span class="text-sm text-body" data-total-alt>
+            {Math.round(r.total * M_TO_FT)} ft · about {Math.round(r.total / CAR_LENGTH_M)} car lengths
+          </span>
+        </p>
+
+        <div class="mt-6 flex h-3 overflow-hidden rounded-full bg-hairline-soft" aria-hidden="true">
+          <span class="block h-full bg-link" style={`width: ${thinkingPct}%`} data-bar-thinking></span>
+          <span class="block h-full flex-1 bg-ink"></span>
+        </div>
+
+        <dl class="mt-5 grid grid-cols-2 gap-4">
+          <div>
+            <dt class="flex items-center gap-1.5 text-sm text-body">
+              <span class="size-2 rounded-full bg-link"></span> Thinking distance
+            </dt>
+            <dd class="mt-1 text-heading-md tabular-nums" data-thinking>{m(r.thinking)}</dd>
+          </div>
+          <div>
+            <dt class="flex items-center gap-1.5 text-sm text-body">
+              <span class="size-2 rounded-full bg-ink"></span> Braking distance
+            </dt>
+            <dd class="mt-1 text-heading-md tabular-nums" data-braking>{m(r.braking)}</dd>
+          </div>
+        </dl>
+
+        <p class="mt-5 border-t border-hairline pt-4 text-sm leading-6 text-body" data-sensitivity>
+          At this speed, every extra 0.1 s of reaction time adds {(initial.speed * MS_PER[initial.unit] * 0.1).toFixed(1)} m before
+          you even touch the brake.
+        </p>
+
+        <div class="mt-4 flex gap-3 rounded-md border border-hairline bg-surface p-4 text-sm leading-6" data-personal hidden>
+          <Timer size={18} class="mt-0.5 shrink-0 text-ink" />
+          <p class="text-body" data-personal-text></p>
+        </div>
+        <div class="mt-4 flex gap-3 rounded-md border border-hairline bg-surface p-4 text-sm leading-6" data-personal-empty>
+          <Timer size={18} class="mt-0.5 shrink-0 text-ink" />
+          <p class="text-body">
+            How quick are your
+            reflexes? <a href="/reaction-time-test/" class="font-medium text-link hover:text-link-deep">Take the reaction time test</a>{' '}
+            and your result will show up here.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</stopping-distance>
+
+<script>
+  import '../scripts/stopping-distance';
+</script>

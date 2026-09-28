@@ -1,0 +1,226 @@
+---
+import { Timer, MousePointerClick, ShieldCheck, Shuffle } from '@lucide/astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ToolHero from '../components/ToolHero.astro';
+import ReactionTest from '../components/ReactionTest.astro';
+import Section from '../components/Section.astro';
+import Faq from '../components/Faq.astro';
+import RelatedTools from '../components/RelatedTools.astro';
+import { toolById } from '../lib/site';
+import { toolCrumbs, toolPage, type FaqItem } from '../lib/schema';
+import { ANTICIPATION_MS, POPULATION, REACTION_TIERS, percentFasterThan } from '../lib/reaction';
+
+const tool = toolById('reaction');
+const title = 'Reaction Time Test — Measure Your Reflexes in Milliseconds';
+const description =
+  'Free reaction time test with frame-accurate timing. Five attempts give your average, best, consistency and percentile — with mouse, touch or keyboard.';
+
+const pct = (ms: number) => Math.round(percentFasterThan(ms));
+let lower = 0;
+const tierRows = REACTION_TIERS.map((t) => {
+  const range = t.max === Infinity ? `${lower} ms or slower` : lower === 0 ? `Under ${t.max} ms` : `${lower}–${t.max - 1} ms`;
+  const faster = t.max === Infinity ? `under ${pct(lower)}%` : lower === 0 ? `over ${pct(t.max)}%` : `${pct(t.max)}–${pct(lower)}%`;
+  lower = t.max;
+  return { range, label: t.label, faster };
+});
+
+const faqs: FaqItem[] = [
+  {
+    q: 'What is the average human reaction time?',
+    a: `For a simple visual reaction in a browser test, most adults average roughly 250–275 ms. SpeedReflex models the population with a median of ${POPULATION.medianMs} ms. Lab studies with dedicated hardware usually report faster times, often around 200–250 ms, because they remove screen and input lag.`,
+  },
+  {
+    q: 'Is 200 ms a good reaction time?',
+    a: `Yes. A 200 ms average is faster than about ${pct(200)}% of people in our model, which puts you in the Excellent band. Averages under 170 ms are rare and usually come from practised gamers or athletes on low-latency hardware.`,
+  },
+  {
+    q: 'Why is my reaction time slower on my phone?',
+    a: 'Touchscreens scan for touches at a fixed rate and phone displays and browsers add processing time, so mobile results are often a few tens of milliseconds slower than a wired mouse on a fast monitor. Compare scores on the same device to track real progress.',
+  },
+  {
+    q: 'Why was my attempt not counted?',
+    a: `Attempts are discarded if you respond before the panel turns blue, if you respond in under ${ANTICIPATION_MS} ms (faster than a genuine visual reaction, so it was a guess), or if you switch tabs mid-attempt. Just retry — only valid attempts count towards your five.`,
+  },
+  {
+    q: 'Does this reaction test save my results?',
+    a: 'Your sessions are saved in your browser’s local storage on this device only, so you can see your personal best and progress over time. Nothing is uploaded, and you can wipe it with Clear History.',
+  },
+  {
+    q: 'Can I challenge a friend?',
+    a: 'Yes. After a session, use Share Result or Copy Challenge Link. Your friend opens the test with your average shown as the target, and their result tells them whether they beat it.',
+  },
+  {
+    q: 'How is this different from the F1 reaction time test?',
+    a: 'This test measures a single, sudden flash. The F1 test recreates the five-light Formula 1 start, where the lights go out after a random hold — resisting the urge to jump the start is part of the challenge.',
+  },
+];
+
+const accuracy = [
+  {
+    icon: Timer,
+    title: 'Timed From the Painted Frame',
+    text: 'The clock starts when the blue frame is actually presented on screen, not when the code asked for it — removing up to a full frame (about 17 ms at 60 Hz) of error.',
+  },
+  {
+    icon: MousePointerClick,
+    title: 'Press, Not Release',
+    text: 'We react to pointer-down and key-down and use the event’s own hardware timestamp. Tests that wait for a full click also measure how long your finger takes to lift.',
+  },
+  {
+    icon: ShieldCheck,
+    title: 'Anticipation Filter',
+    text: `Responses before the signal, or under ${ANTICIPATION_MS} ms after it, are thrown out. Lucky guesses can’t inflate your score or your personal best.`,
+  },
+  {
+    icon: Shuffle,
+    title: 'Unpredictable Delay',
+    text: 'The wait changes every attempt, anywhere from 1.5 to 4.5 seconds, so you can’t settle into a rhythm and time the flash.',
+  },
+];
+
+const factors = [
+  { title: 'Sleep and Fatigue', text: 'Even one short night measurably slows simple reactions. Test yourself at the same time of day for fair comparisons.' },
+  { title: 'Age', text: 'Simple reaction time tends to be quickest in your twenties and slows gradually with age — practice narrows the gap.' },
+  { title: 'Attention', text: 'Notifications, music with lyrics and conversation all steal attention. Your best scores come when the panel is the only thing you watch.' },
+  { title: 'Warm-Up', text: 'Your first session is rarely your best. Two or three rounds settle your hand position and focus.' },
+  { title: 'Caffeine', text: 'A moderate amount of caffeine can sharpen alertness for tired people. It won’t turn an average score into an elite one.' },
+  { title: 'Your Hardware', text: 'Wireless mice, touchscreens and 60 Hz displays add delay. A wired mouse on a high-refresh monitor is the fastest setup.' },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  jsonLd={toolPage(tool, title, description, faqs)}
+>
+  <ToolHero
+    crumbs={toolCrumbs(tool)}
+    eyebrow="Reflex test"
+    title="Reaction Time Test"
+    lede="Wait for the panel to turn blue, then react as fast as you can. Five attempts give you an average, a best, a consistency score and an honest percentile — timed from the frame the colour actually appeared."
+    features={['Frame-synced timing', 'Mouse, touch or keyboard', 'Colour-blind-safe signal', 'Progress saved on this device', 'No sign-up']}
+  >
+    <ReactionTest />
+  </ToolHero>
+
+  <Section id="how-it-works" eyebrow="How it works" title="Five Attempts, One Honest Number">
+    <ol class="grid gap-4 md:grid-cols-3">
+      {
+        [
+          { n: '01', t: 'Start', d: 'Click, tap or press Space. The panel turns dark — keep your finger ready.' },
+          { n: '02', t: 'Wait for Blue', d: 'After a random pause the panel flashes blue. React the instant you see it. Go early and the attempt is thrown out.' },
+          { n: '03', t: 'Read Your Result', d: 'After five valid attempts you get your average, best, median, consistency and where you stand against a typical population.' },
+        ].map((s) => (
+          <li class="card p-6">
+            <span class="font-mono text-xs text-mute">{s.n}</span>
+            <h3 class="mt-4 text-heading-md">{s.t}</h3>
+            <p class="mt-2 text-sm leading-6 text-body">{s.d}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </Section>
+
+  <Section
+    id="scores"
+    eyebrow="Benchmarks"
+    title="How Your Reaction Time Score Compares"
+    intro="For a simple visual reaction — one signal, one response — most adults land between 200 and 300 milliseconds in a browser. Here’s how to read your average."
+  >
+    <div class="max-w-3xl overflow-x-auto rounded-md border border-hairline bg-surface">
+      <table class="data-table">
+        <caption class="sr-only">Reaction time ratings and how they compare</caption>
+        <thead>
+          <tr><th scope="col">Average</th><th scope="col">Rating</th><th scope="col">Faster than about</th></tr>
+        </thead>
+        <tbody>
+          {
+            tierRows.map((r) => (
+              <tr>
+                <td>{r.range}</td>
+                <td>{r.label}</td>
+                <td>{r.faster} of people</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+    <div class="prose-sr mt-8 max-w-3xl">
+      <p>
+        Percentages come from a log-normal model with a median of {POPULATION.medianMs} ms, fitted to typical browser-based results. Your
+        own number depends on your device as much as your nerves, so the most useful comparison is you against yourself — your saved
+        history below the test tracks exactly that.
+      </p>
+      <p>
+        Anything under {ANTICIPATION_MS} ms is faster than the brain can process a visual signal and send a response to your hand, which
+        is why those presses are treated as guesses rather than records.
+      </p>
+      <p>
+        How does that compare with lab studies, other ages, or reacting to a sound? Our guide
+        to <a href="/average-reaction-time/">average reaction time</a> covers it, with sources.
+      </p>
+    </div>
+  </Section>
+
+  <Section
+    id="accuracy"
+    eyebrow="Accuracy"
+    title="Why SpeedReflex Timing Is More Accurate"
+    intro="Every online test measures your reaction plus your hardware. We remove every part of the delay that software can control."
+  >
+    <div class="grid gap-4 sm:grid-cols-2">
+      {
+        accuracy.map((a) => (
+          <div class="card p-6">
+            <a.icon size={20} stroke-width={1.75} class="text-ink" />
+            <h3 class="mt-4 text-heading-md">{a.title}</h3>
+            <p class="mt-2 text-sm leading-6 text-body">{a.text}</p>
+          </div>
+        ))
+      }
+    </div>
+    <div class="prose-sr mt-8 max-w-3xl">
+      <p>
+        <strong>Your device still matters.</strong> A 144 Hz display shows the signal sooner than a 60 Hz one, and wired mice respond
+        faster than Bluetooth ones or touchscreens. That’s not something a website can fix, so for fair comparisons use the same device
+        each time.
+      </p>
+    </div>
+  </Section>
+
+  <Section id="factors" eyebrow="Science" title="What Affects Your Reaction Time">
+    <div class="grid gap-px overflow-hidden rounded-md border border-hairline bg-hairline sm:grid-cols-2 lg:grid-cols-3">
+      {
+        factors.map((f) => (
+          <div class="bg-surface p-6">
+            <h3 class="text-label text-ink">{f.title}</h3>
+            <p class="mt-2 text-sm leading-6 text-body">{f.text}</p>
+          </div>
+        ))
+      }
+    </div>
+    <div class="prose-sr mt-8 max-w-3xl">
+      <p>
+        Where reaction time matters most is on the road: at 50 mph every extra tenth of a second is another 2 metres before you
+        brake. The <a href="/stopping-distance-calculator/">stopping distance calculator</a> shows how it adds up.
+      </p>
+    </div>
+  </Section>
+
+  <Section id="improve" eyebrow="Training" title="How to Improve Your Reaction Time">
+    <div class="prose-sr max-w-3xl">
+      <ol>
+        <li><strong>Practise little and often.</strong> Three or four sessions a day beats one marathon; your progress chart shows the trend.</li>
+        <li><strong>Watch the whole panel, not one spot.</strong> A relaxed, wide focus catches the change sooner than staring at the centre.</li>
+        <li><strong>Rest your finger on the button.</strong> Hover with light pressure so the only movement left is the press itself.</li>
+        <li><strong>Don’t guess.</strong> Early presses cost you the attempt. Reacting to the flash is always faster over a full session.</li>
+        <li><strong>Sleep well and remove distractions.</strong> Alertness is the single biggest factor you control.</li>
+        <li><strong>Play fast games and sports.</strong> Racquet sports, rhythm games and shooters train visual reactions in a fun way.</li>
+      </ol>
+    </div>
+  </Section>
+
+  <Faq items={faqs} title="Reaction Time Test FAQ" />
+  <RelatedTools current={tool.id} />
+</BaseLayout>

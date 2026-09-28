@@ -1,0 +1,135 @@
+---
+import { Flag, Share2, Link2, Trash, Trophy, Volume2, VolumeX, TriangleAlert } from '@lucide/astro';
+
+const panels = 5;
+---
+
+<f1-start class="block">
+  <div class="card overflow-hidden shadow-whisper">
+    <div data-challenge hidden class="flex items-center gap-2 border-b border-hairline bg-link-soft/50 px-4 py-2.5 text-sm text-ink sm:px-5">
+      <Trophy size={16} class="shrink-0 text-link" />
+      <p data-challenge-text></p>
+    </div>
+
+    <div class="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-b border-hairline px-4 py-3 sm:px-5">
+      <dl class="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm">
+        <div class="flex gap-1.5">
+          <dt class="text-mute">Personal best</dt>
+          <dd class="font-medium tabular-nums" data-pb>—</dd>
+        </div>
+        <div class="flex gap-1.5">
+          <dt class="text-mute">Session average</dt>
+          <dd class="font-medium tabular-nums" data-session-avg>—</dd>
+        </div>
+        <div class="hidden gap-1.5 sm:flex">
+          <dt class="text-mute">Starts</dt>
+          <dd class="font-medium tabular-nums" data-session-count>0</dd>
+        </div>
+      </dl>
+      <button type="button" class="btn btn-sm btn-ghost group/sound" data-sound aria-pressed="false">
+        <VolumeX size={16} class="group-aria-pressed/sound:hidden" />
+        <Volume2 size={16} class="hidden group-aria-pressed/sound:block" />
+        <span>Light Beeps</span>
+      </button>
+    </div>
+
+    <button
+      type="button"
+      data-stage
+      data-state="idle"
+      aria-describedby="f1-instructions"
+      class="group relative flex min-h-[24rem] w-full cursor-pointer select-none flex-col items-center justify-center gap-8 bg-gantry px-4 py-10 text-center text-white outline-offset-[-6px] [-webkit-touch-callout:none] sm:min-h-[27rem]"
+    >
+      {/* Max widths are the natural size (36px / 56px lamps); on narrower phones the lamps shrink instead of clipping. */}
+      <span class="grid w-full max-w-[18.25rem] grid-cols-5 gap-2 sm:max-w-[29rem] sm:gap-4" aria-hidden="true" data-gantry>
+        {
+          Array.from({ length: panels }, () => (
+            <span class="flex flex-col gap-2 rounded-md bg-gantry-panel p-2 ring-1 ring-white/10 sm:gap-3 sm:p-3" data-panel>
+              <span class="aspect-square rounded-full bg-lamp-off" />
+              <span class="aspect-square rounded-full bg-lamp-off" />
+              <span class="aspect-square rounded-full bg-lamp-off data-on:bg-lamp-on data-on:shadow-lamp" data-lamp />
+              <span class="aspect-square rounded-full bg-lamp-off data-on:bg-lamp-on data-on:shadow-lamp" data-lamp />
+            </span>
+          ))
+        }
+      </span>
+      <span class="flex flex-col items-center gap-2">
+        <span class="hidden items-center gap-1.5 text-warning group-data-[state=jump]:flex">
+          <TriangleAlert size={16} />
+        </span>
+        <span data-stage-kicker class="font-mono text-xs font-medium uppercase text-white/60">F1 start simulator</span>
+        <span data-stage-title class="text-display-sm sm:text-display">Tap to start</span>
+        <span data-stage-sub class="max-w-md text-base text-white/70">Five red lights come on one by one. When they all go out — go.</span>
+      </span>
+    </button>
+
+    <div class="flex flex-wrap items-center gap-3 border-t border-hairline bg-canvas px-4 py-3 sm:px-5">
+      <span class="eyebrow shrink-0">This session</span>
+      <ol class="flex min-w-0 flex-1 flex-wrap gap-1.5 max-sm:basis-full" data-session-list>
+        <li class="text-sm text-mute" data-session-empty>Your starts will appear here.</li>
+      </ol>
+      <div class="flex gap-2" data-actions hidden>
+        <button type="button" class="btn btn-sm btn-secondary" data-share>
+          <Share2 size={14} />
+          Share
+        </button>
+        <button type="button" class="btn btn-sm btn-secondary" data-copy-challenge>
+          <Link2 size={14} />
+          Challenge Link
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <p id="f1-instructions" class="sr-only">
+    Activate to begin the start sequence. Five pairs of red lights turn on one second apart, then all go out after a random delay. React as soon as they go out by pressing Space, Enter, or tapping. Reacting before lights out is a jump start.
+  </p>
+  <div class="sr-only" aria-live="polite" data-announce></div>
+  <div aria-live="polite" class="pointer-events-none fixed inset-x-0 bottom-6 z-50 flex justify-center px-4">
+    <p data-toast hidden class="rounded-pill bg-primary px-4 py-2 text-sm font-medium text-on-primary shadow-float"></p>
+  </div>
+
+  <section data-history hidden class="mt-6 card p-4 sm:p-6" aria-labelledby="f1-history-title">
+    <div class="flex flex-wrap items-start justify-between gap-4">
+      <div>
+        <h2 id="f1-history-title" class="flex items-center gap-2 text-heading-md"><Flag size={18} /> Your Starts</h2>
+        <p class="mt-1 text-sm text-body">Saved on this device only. Lower is better.</p>
+      </div>
+      <button type="button" class="btn btn-sm btn-ghost" data-clear-history>
+        <Trash size={14} />
+        Clear History
+      </button>
+    </div>
+    <dl class="mt-5 grid grid-cols-3 gap-4 border-y border-hairline py-4 text-sm [&>div]:flex [&>div]:flex-col [&>div]:justify-between">
+      <div>
+        <dt class="text-mute">Personal best</dt>
+        <dd class="mt-1 text-heading-md" data-hist-pb>—</dd>
+      </div>
+      <div>
+        <dt class="text-mute">Average</dt>
+        <dd class="mt-1 text-heading-md" data-hist-avg>—</dd>
+      </div>
+      <div>
+        <dt class="text-mute">Clean starts</dt>
+        <dd class="mt-1 text-heading-md" data-hist-count>—</dd>
+      </div>
+    </dl>
+    <div data-hist-trend-wrap>
+      <p class="mt-5 text-label text-ink">Last 30 starts</p>
+      <div data-hist-trend tabindex="0" aria-label="Trend of your recent start reaction times. Use arrow keys to inspect starts." class="relative mt-3 h-28 text-ink"></div>
+    </div>
+    <div class="mt-5 overflow-x-auto rounded-sm border border-hairline">
+      <table class="data-table [&_td+td]:whitespace-nowrap">
+        <caption class="sr-only">Recent starts</caption>
+        <thead>
+          <tr><th scope="col">When</th><th scope="col">Reaction</th><th scope="col">Rating</th><th scope="col">Grid slot</th></tr>
+        </thead>
+        <tbody data-hist-rows></tbody>
+      </table>
+    </div>
+  </section>
+</f1-start>
+
+<script>
+  import '../scripts/f1-start';
+</script>

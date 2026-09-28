@@ -1,0 +1,190 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ToolHero from '../components/ToolHero.astro';
+import StoppingCalculator from '../components/StoppingCalculator.astro';
+import Section from '../components/Section.astro';
+import Callout from '../components/Callout.astro';
+import Faq from '../components/Faq.astro';
+import RelatedTools from '../components/RelatedTools.astro';
+import { toolById } from '../lib/site';
+import { toolCrumbs, toolPage, type FaqItem } from '../lib/schema';
+import { HIGHWAY_CODE } from '../lib/stopping';
+
+const tool = toolById('stopping');
+const title = 'Stopping Distance Calculator — Thinking + Braking Distance';
+const description =
+  'Calculate stopping distance at any speed from your reaction time and the road surface: thinking distance, braking distance and the total, in metres and feet.';
+
+const faqs: FaqItem[] = [
+  {
+    q: 'What is the stopping distance at 30 mph?',
+    a: 'The UK Highway Code gives 23 metres (75 feet) for a car on a dry road: 9 m of thinking distance and 14 m of braking distance. On a wet road it’s at least double.',
+  },
+  {
+    q: 'What is the stopping distance at 70 mph?',
+    a: '96 metres (315 feet) in good conditions, according to the Highway Code — 21 m thinking and 75 m braking. That’s about 24 car lengths.',
+  },
+  {
+    q: 'What is the difference between thinking distance and braking distance?',
+    a: 'Thinking distance is how far you travel between seeing a hazard and pressing the brake. Braking distance is how far the car then travels until it stops. Stopping distance is the two added together.',
+  },
+  {
+    q: 'Why does braking distance grow so fast with speed?',
+    a: 'Braking distance depends on the square of your speed. Double your speed and the braking distance roughly quadruples, while thinking distance only doubles.',
+  },
+  {
+    q: 'What reaction time does the Highway Code assume?',
+    a: 'Its thinking distances work out at about 0.67 seconds, which describes an alert driver. Studies of real drivers find about 0.7 s when they expect to brake and around 1.5 s for a genuine surprise.',
+  },
+  {
+    q: 'Is this calculator accurate for my car?',
+    a: 'It gives typical figures for a car with good brakes and tyres on a level road. Worn tyres, a heavy load, a downhill slope or a poor surface all add distance, so treat the result as a minimum rather than a guarantee.',
+  },
+];
+---
+
+<BaseLayout title={title} description={description} jsonLd={toolPage(tool, title, description, faqs)}>
+  <ToolHero
+    crumbs={toolCrumbs(tool)}
+    eyebrow="Driving · Speed & reaction time"
+    title="Stopping Distance Calculator"
+    lede="How far does a car travel before it stops? Enter your speed, how quickly you react and the road conditions to see your thinking distance, braking distance and total stopping distance — in metres, feet and car lengths."
+    features={['Any speed in mph or km/h', 'Your own reaction time', 'Dry, wet and icy roads', 'Matches Highway Code figures']}
+  >
+    <StoppingCalculator />
+  </ToolHero>
+
+  <Section
+    id="formula"
+    eyebrow="How it works"
+    title="How Stopping Distance Is Calculated"
+    intro="Stopping distance has two parts, and they grow in very different ways as you go faster."
+  >
+    <div class="grid gap-4 md:grid-cols-3">
+      <div class="card p-6">
+        <p class="eyebrow">Part 1</p>
+        <h3 class="mt-3 text-heading-md">Thinking Distance</h3>
+        <p class="mt-2 font-mono text-sm text-ink">speed × reaction time</p>
+        <p class="mt-3 text-sm leading-6 text-body">
+          The distance covered before your foot reaches the brake. It grows in step with speed — twice as fast, twice as far.
+        </p>
+      </div>
+      <div class="card p-6">
+        <p class="eyebrow">Part 2</p>
+        <h3 class="mt-3 text-heading-md">Braking Distance</h3>
+        <p class="mt-2 font-mono text-sm text-ink">speed² ÷ (2 × deceleration)</p>
+        <p class="mt-3 text-sm leading-6 text-body">
+          The distance the car needs to stop once braking. It grows with the square of speed — twice as fast, four times as far.
+        </p>
+      </div>
+      <div class="card p-6">
+        <p class="eyebrow">Total</p>
+        <h3 class="mt-3 text-heading-md">Stopping Distance</h3>
+        <p class="mt-2 font-mono text-sm text-ink">thinking + braking</p>
+        <p class="mt-3 text-sm leading-6 text-body">
+          The calculator brakes at about 0.66 g on a dry road — the rate the Highway Code’s figures imply — then doubles braking
+          distance for wet roads and multiplies it by ten for ice.
+        </p>
+      </div>
+    </div>
+  </Section>
+
+  <Section
+    id="highway-code"
+    eyebrow="Reference"
+    title="Typical Stopping Distances (Highway Code)"
+    intro="These are the figures learner drivers memorise for the UK theory test, from Rule 126 of the Highway Code. They assume an alert driver, a car in good condition and a dry road."
+  >
+    <div class="max-w-3xl">
+      <div class="overflow-x-auto rounded-md border border-hairline bg-surface">
+        <table class="data-table">
+          <caption class="sr-only">Typical stopping distances by speed from the UK Highway Code</caption>
+          <thead>
+            <tr><th scope="col">Speed</th><th scope="col">Thinking</th><th scope="col">Braking</th><th scope="col">Total</th></tr>
+          </thead>
+          <tbody>
+            {
+              HIGHWAY_CODE.map((r) => (
+                <tr>
+                  <td>{r.mph} mph</td>
+                  <td>{r.thinking} m</td>
+                  <td>{r.braking} m</td>
+                  <td>
+                    <strong class="font-medium text-ink">{r.total} m</strong> <span class="text-mute">({r.feet} ft)</span>
+                  </td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+      <p class="mt-3 text-xs text-mute">Source: The Highway Code, Rule 126 (GOV.UK). In the wet, allow at least double; on ice, up to ten times.</p>
+    </div>
+  </Section>
+
+  <Section
+    id="reaction-time"
+    eyebrow="Reaction time"
+    title="Your Reaction Time Behind the Wheel"
+    intro="Reaction time is the part of stopping distance you control. At 70 mph a car covers more than 3 metres every tenth of a second."
+  >
+    <div class="grid gap-10 lg:grid-cols-2">
+      <div class="prose-sr">
+        <p>
+          A <a href="/reaction-time-test/">reaction time test</a> measures a simple reaction: you know exactly what’s coming and you
+          only have to press. Most people average around a quarter of a second. Braking takes longer because you first have to
+          notice the hazard, decide to stop and move your foot from the accelerator to the brake.
+        </p>
+        <p>
+          In a review of driver braking studies, Marc Green found that drivers who expect to brake respond in
+          about <strong>0.7–0.75 seconds</strong>, that unexpected but common signals like brake lights take
+          about <strong>1.25 seconds</strong>, and that true surprises take around <strong>1.5 seconds</strong>. Expectation roughly
+          doubles or halves your time — more than age or reflexes do.
+        </p>
+        <p>
+          That’s why following distance matters: you can’t react to the car in front any faster than you can see it braking. See
+          how the numbers compare in our guide to <a href="/average-reaction-time/">average reaction time</a>.
+        </p>
+      </div>
+      <div class="grid content-start gap-px overflow-hidden rounded-md border border-hairline bg-hairline sm:grid-cols-2">
+        {
+          [
+            { t: 'Tiredness', d: 'After 17–19 hours awake, some test scores matched a 0.05% blood-alcohol level (Williamson & Feyer, 2000).' },
+            { t: 'Phones', d: 'Reading or typing takes your eyes off the road, so the hazard isn’t even seen until you look up.' },
+            { t: 'Alcohol and Drugs', d: 'Slower reactions and poorer judgement together — and both are illegal to drive with above set limits.' },
+            { t: 'Surprise', d: 'The same driver brakes about twice as fast for an expected event as for a surprise.' },
+          ].map((f) => (
+            <div class="bg-surface p-6">
+              <h3 class="text-label text-ink">{f.t}</h3>
+              <p class="mt-2 text-sm leading-6 text-body">{f.d}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </Section>
+
+  <Section id="conditions" eyebrow="Conditions" title="Wet, Icy and Downhill Roads">
+    <div class="grid gap-4 md:grid-cols-2">
+      <Callout tone="warning" title="Wet Roads: At Least Double">
+        Tyres grip less on wet roads, so the Highway Code says stopping distances will be at least double those on dry roads (Rule
+        227). Leave at least a four-second gap to the vehicle in front.
+      </Callout>
+      <Callout tone="warning" title="Ice and Snow: Up to Ten Times">
+        On icy or snowy roads stopping distances can be ten times greater than on dry roads (Rule 230). Drive slowly and brake
+        gently well in advance.
+      </Callout>
+    </div>
+    <div class="prose-sr mt-8 max-w-3xl">
+      <p>
+        Worn tyres, a heavy load and a downhill slope all add braking distance too. Anti-lock brakes (ABS) help you keep steering
+        while braking hard, but they don’t make up for too little distance. Checking how fast you’re really going helps:
+        a <a href="/car-speed-test/">GPS car speed test</a> shows your true speed, which is usually a little below what the dashboard
+        says.
+      </p>
+    </div>
+  </Section>
+
+  <Faq items={faqs} title="Stopping Distance FAQ" />
+  <RelatedTools current={tool.id} />
+</BaseLayout>

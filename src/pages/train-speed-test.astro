@@ -1,0 +1,142 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ToolHero from '../components/ToolHero.astro';
+import Speedometer from '../components/Speedometer.astro';
+import Section from '../components/Section.astro';
+import StepList from '../components/StepList.astro';
+import DataTable from '../components/DataTable.astro';
+import Callout from '../components/Callout.astro';
+import Faq from '../components/Faq.astro';
+import RelatedTools from '../components/RelatedTools.astro';
+import { toolById } from '../lib/site';
+import { toolCrumbs, toolPage, type FaqItem } from '../lib/schema';
+
+const tool = toolById('train');
+const title = 'Train Speed Test — How Fast Is My Train Going? (GPS)';
+const description =
+  'Check your train’s live speed with your phone’s GPS — from commuter lines to 300 km/h high-speed rail. See top speed, distance and accuracy, no app needed.';
+
+const faqs: FaqItem[] = [
+  {
+    q: 'Can I check the speed of the train I’m on?',
+    a: 'Yes. Your phone travels with the train, so the GPS speed on screen is the train’s speed. Sit by a window, open this page, press Start and allow location. Once the signal dot turns blue, the reading is reliable.',
+  },
+  {
+    q: 'Does it work on the metro, subway or underground?',
+    a: 'Only on sections above ground. GPS needs a view of the sky, so in tunnels and underground stations the speed freezes until the train comes back out.',
+  },
+  {
+    q: 'Why does the speed freeze or jump after a tunnel?',
+    a: 'In a tunnel your phone loses the satellites, so the last speed stays on screen. When the signal returns, the first position can be far from the last one. SpeedReflex ignores those impossible jumps so they don’t show up as a record top speed.',
+  },
+  {
+    q: 'Does it work on high-speed trains like the Shinkansen or TGV?',
+    a: 'Yes. The gauge starts at 200 km/h and extends automatically, and readings up to about 430 km/h are accepted. The hard part on high-speed trains is the signal — many have coated windows that weaken GPS, so try a different window if it struggles.',
+  },
+  {
+    q: 'Why is my reading different from the speed on the train’s screen?',
+    a: 'Trains measure their own speed with sensors on the wheels and track, while your phone measures speed over the ground by satellite. On a straight line they usually agree within a few km/h. Right after a tunnel or in weak signal, trust the train’s display.',
+  },
+  {
+    q: 'Do I need mobile data?',
+    a: 'Only to open the page. GPS itself uses no data and your location never leaves your phone, so it keeps working between stations with no coverage — just don’t reload it.',
+  },
+];
+---
+
+<BaseLayout title={title} description={description} jsonLd={toolPage(tool, title, description, faqs)}>
+  <ToolHero
+    crumbs={toolCrumbs(tool)}
+    eyebrow="GPS speed test"
+    title="Train Speed Test"
+    lede="How fast is your train going right now? Sit by a window, press Start and watch the live speed — on a commuter line, an intercity express or a 300 km/h high-speed train. You also get top speed, distance travelled and how strong the GPS signal is."
+    features={['Live train speed', 'Up to 400+ km/h', 'Top speed & distance', 'Shows GPS accuracy', 'Works between stations with no data', 'GPX route export']}
+  >
+    <Speedometer preset="train" />
+    <div class="mt-4 max-w-3xl">
+      <Callout title="Underground? It Won’t Work There">
+        GPS needs a view of the sky. On the subway or metro and in long tunnels, the speed freezes until the train is back in the
+        open — then it picks up again automatically.
+      </Callout>
+    </div>
+  </ToolHero>
+
+  <Section id="how-to" eyebrow="How to" title="How to Check Your Train’s Speed">
+    <StepList
+      steps={[
+        { title: 'Sit by a Window', text: 'The carriage roof blocks satellites. The closer your phone is to the glass, the faster and steadier the fix.' },
+        { title: 'Open Before You Leave', text: 'Load this page in the station. After that it needs no data, so dead zones between stations don’t matter.' },
+        { title: 'Press Start', text: 'Allow location. Your position is used on this phone only and never uploaded.' },
+        { title: 'Wait for Blue', text: 'When the dot turns blue and accuracy drops below about 20 m, the speed is reliable.' },
+      ]}
+    />
+  </Section>
+
+  <Section
+    id="no-signal"
+    eyebrow="Signal"
+    title="Why Your Phone Loses GPS on a Train"
+    intro="Trains are one of the hardest places for phone GPS. If the speed won’t appear, it’s almost always one of these."
+  >
+    <div class="grid gap-px overflow-hidden rounded-md border border-hairline bg-hairline sm:grid-cols-2 lg:grid-cols-4">
+      {
+        [
+          {
+            t: 'Coated Windows',
+            d: 'Many modern trains use heat-reflecting glass with a thin metal coating. Research on high-speed train windows found it can weaken satellite signals by 10–30 dB.',
+          },
+          { t: 'Metal Carriages', d: 'The body of the carriage blocks most of the sky. Seats in the middle of the car, away from windows, struggle most.' },
+          { t: 'Tunnels and Cuttings', d: 'Deep cuttings hide satellites low in the sky; tunnels hide all of them. Expect gaps on mountain and city routes.' },
+          { t: 'Cold Start', d: 'With no data connection your phone must download satellite positions over the air, which can take a few minutes the first time.' },
+        ].map((f) => (
+          <div class="bg-surface p-6">
+            <h3 class="text-label text-ink">{f.t}</h3>
+            <p class="mt-2 text-sm leading-6 text-body">{f.d}</p>
+          </div>
+        ))
+      }
+    </div>
+    <div class="prose-sr mt-8 max-w-3xl">
+      <p>
+        <strong>Tip:</strong> if the signal won’t come, hold the phone flat against the glass for a minute, or try a window on the
+        other side of the carriage — the sky view and the glass can differ a lot between seats.
+      </p>
+    </div>
+  </Section>
+
+  <Section
+    id="train-speeds"
+    eyebrow="Reference"
+    title="How Fast Do Trains Go?"
+    intro="Top speeds are only reached on the fastest stretches of line. Station stops, curves and speed restrictions mean the average speed of a journey is much lower."
+  >
+    <DataTable
+      caption="Top speeds in passenger service of well-known trains"
+      head={['Train', 'Top speed in service']}
+      rows={[
+        ['CR400 Fuxing (China)', '350 km/h (217 mph)'],
+        ['TGV (France)', '320 km/h (199 mph)'],
+        ['Shinkansen, Tōhoku line (Japan)', '320 km/h (199 mph)'],
+        ['ICE, Eurostar and AVE (Europe)', 'Around 300 km/h (186 mph)'],
+        ['NextGen Acela (USA)', '160 mph (257 km/h) on the fastest sections'],
+        ['UK intercity main lines', '125 mph (200 km/h)'],
+        ['Vande Bharat Express (India)', '160 km/h (99 mph) on the fastest section'],
+      ]}
+      note="Speeds as of 2026. Lines are regularly upgraded, and each service’s limit depends on the track it runs on."
+    />
+  </Section>
+
+  <Section id="compare" eyebrow="Compare" title="Train, Bus or Plane?">
+    <div class="prose-sr max-w-3xl">
+      <p>
+        The same GPS speedometer works on any journey — only the gauge range and the tips change. On a coach,
+        the <a href="/bus-speed-test/">bus speed test</a> shows how speed limiters and traffic shape the trip. In the air,
+        the <a href="/flight-speed-test/">flight speed test</a> adds altitude, heading and knots, and explains why ground speed can beat
+        a jet’s top speed. For everything else there’s the general <a href="/speedometer/">online speedometer</a>.
+      </p>
+    </div>
+  </Section>
+
+  <Faq items={faqs} title="Train Speed Test FAQ" />
+  <RelatedTools current={tool.id} />
+</BaseLayout>

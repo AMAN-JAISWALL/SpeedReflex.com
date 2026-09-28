@@ -1,0 +1,116 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ToolHero from '../components/ToolHero.astro';
+import Speedometer from '../components/Speedometer.astro';
+import Section from '../components/Section.astro';
+import StepList from '../components/StepList.astro';
+import DataTable from '../components/DataTable.astro';
+import Faq from '../components/Faq.astro';
+import RelatedTools from '../components/RelatedTools.astro';
+import { toolById } from '../lib/site';
+import { toolCrumbs, toolPage, type FaqItem } from '../lib/schema';
+
+const tool = toolById('bus');
+const title = 'Bus Speed Test — How Fast Is My Bus Going? (GPS)';
+const description =
+  'Check the live speed of the bus or coach you’re on with a free GPS speedometer. See max and average speed, distance and GPS accuracy — no app needed.';
+
+const faqs: FaqItem[] = [
+  {
+    q: 'Can I check the speed of the bus I’m riding on?',
+    a: 'Yes. Your phone moves with the bus, so the GPS speed on screen is the bus’s speed. Open this page, press Start, allow location and wait for the signal dot to turn blue.',
+  },
+  {
+    q: 'Why does it take a while to get a signal on a bus?',
+    a: 'A bus roof and body block much of the satellite signal. Sit by a window, hold the phone close to the glass, and give it a moment — upper decks and front seats usually lock on fastest.',
+  },
+  {
+    q: 'How accurate is the bus speed reading?',
+    a: 'Once the accuracy figure is below about 20 m, speed is usually within a couple of km/h. Tall buildings and tunnels reduce accuracy, and the reading may briefly jump when the signal returns.',
+  },
+  {
+    q: 'Can I track a bus I’m waiting for?',
+    a: 'No — this measures the speed of your own phone. To see where a bus is before you board, use your transport operator’s live-tracking app or website.',
+  },
+  {
+    q: 'Does it use a lot of mobile data?',
+    a: 'Almost none. The page loads once, and GPS itself uses no data. Your location is never uploaded.',
+  },
+  {
+    q: 'What if I think a bus is going too fast?',
+    a: 'Note the time, route and vehicle number and report it to the operator or local transport authority. Don’t confront or distract the driver.',
+  },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  jsonLd={toolPage(tool, title, description, faqs)}
+>
+  <ToolHero
+    crumbs={toolCrumbs(tool)}
+    eyebrow="GPS speed test"
+    title="Bus Speed Test"
+    lede="Wondering how fast your bus or coach is really going? Open this page on your phone, press Start and see the live speed from your seat — with GPS accuracy, max speed and distance travelled."
+    features={['Works from any seat', 'Shows GPS accuracy', 'Max & moving average', 'Distance travelled', 'No app, no sign-up']}
+  >
+    <Speedometer preset="bus" />
+  </ToolHero>
+
+  <Section id="how-to" eyebrow="How to" title="How to Check Your Bus Speed">
+    <StepList
+      steps={[
+        { title: 'Pick a Window Seat', text: 'Glass lets satellite signals through; the metal roof doesn’t. The upper deck is even better.' },
+        { title: 'Press Start', text: 'Allow location access. Nothing leaves your phone — it’s only used to calculate speed.' },
+        { title: 'Wait for Blue', text: 'When the signal dot turns blue and accuracy drops below ~20 m, readings are reliable.' },
+      ]}
+    />
+  </Section>
+
+  <Section
+    id="bus-speeds"
+    eyebrow="Reference"
+    title="How Fast Do Buses Usually Go?"
+    intro="Buses spend a lot of time at stops and in traffic, so their average speed is much lower than their top speed. Many countries also limit how fast buses and coaches can go."
+  >
+    <DataTable
+      caption="Typical bus and coach speeds"
+      head={['Situation', 'Typical speed']}
+      rows={[
+        ['City bus, average including stops', 'Often 15–25 km/h (9–16 mph)'],
+        ['Coach on a motorway, EU & UK', 'Speed limiters cap coaches at 100 km/h (62 mph)'],
+        ['Transport vehicles in India', 'Speed governors, commonly set to 80 km/h'],
+        ['Coaches in the US', 'Posted limits apply; many fleets set their own caps'],
+      ]}
+      note="Figures are typical and rules differ by country, operator and road. Speed limits for buses may be lower than for cars."
+    />
+  </Section>
+
+  <Section id="jumpy-readings" eyebrow="Accuracy" title="Why the Speed Jumps Around on a Bus">
+    <div class="grid gap-px overflow-hidden rounded-md border border-hairline bg-hairline sm:grid-cols-2 lg:grid-cols-4">
+      {
+        [
+          { t: 'Metal Roof', d: 'The bus body blocks satellites. Near a window the signal is far steadier.' },
+          { t: 'Tall Buildings', d: 'Signals bounce off glass and concrete in city centres, adding noise.' },
+          { t: 'Stops and Starts', d: 'Frequent braking is real — your max and moving average smooth it out.' },
+          { t: 'Tunnels', d: 'GPS drops out underground. We ignore glitches when the signal returns.' },
+        ].map((f) => (
+          <div class="bg-surface p-6">
+            <h3 class="text-label text-ink">{f.t}</h3>
+            <p class="mt-2 text-sm leading-6 text-body">{f.d}</p>
+          </div>
+        ))
+      }
+    </div>
+    <div class="prose-sr mt-8 max-w-3xl">
+      <p>
+        Taking the train instead? The <a href="/train-speed-test/">train speed test</a> is tuned for high-speed rail and explains
+        why coated train windows block GPS.
+      </p>
+    </div>
+  </Section>
+
+  <Faq items={faqs} title="Bus Speed Test FAQ" />
+  <RelatedTools current={tool.id} />
+</BaseLayout>

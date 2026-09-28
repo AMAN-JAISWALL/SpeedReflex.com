@@ -1,0 +1,154 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ToolHero from '../components/ToolHero.astro';
+import Speedometer from '../components/Speedometer.astro';
+import Section from '../components/Section.astro';
+import StepList from '../components/StepList.astro';
+import DataTable from '../components/DataTable.astro';
+import Callout from '../components/Callout.astro';
+import Faq from '../components/Faq.astro';
+import RelatedTools from '../components/RelatedTools.astro';
+import { toolById } from '../lib/site';
+import { toolCrumbs, toolPage, type FaqItem } from '../lib/schema';
+
+const tool = toolById('car');
+const title = 'Car Speed Test — Check Your True Speed vs the Dashboard';
+const description =
+  'Check your true driving speed with a free GPS speedometer. Compare it with your dashboard, set a speed alert and use HUD mode at night — no app needed.';
+
+const r39 = [30, 50, 80, 100, 120].map((v) => [`${v} km/h`, `${v}–${Math.floor(v * 1.1 + 4)} km/h`]);
+
+const faqs: FaqItem[] = [
+  {
+    q: 'How accurate is a GPS car speedometer?',
+    a: 'With a clear view of the sky, modern phones usually measure driving speed to within a couple of km/h, because speed is calculated from the Doppler shift of satellite signals rather than from jumps in position. Accuracy drops in tunnels, dense city centres and multi-storey car parks. The ± figure at the top of the speedometer shows your current GPS accuracy.',
+  },
+  {
+    q: 'Why is my GPS speed lower than my dashboard speedometer?',
+    a: 'Car speedometers are designed to over-read. Under UN ECE Regulation 39, used across Europe and many other countries, a speedometer may never show less than your true speed but may show up to 10% plus 4 km/h more. GPS shows your true speed, so it is normally a little lower.',
+  },
+  {
+    q: 'Does the speedometer work without mobile data?',
+    a: 'Yes. GPS doesn’t need a data connection. Open the page while you have signal; after that it keeps working if coverage drops, as long as you don’t reload. The first fix can take longer without data.',
+  },
+  {
+    q: 'Can it run in the background while I use maps?',
+    a: 'No — browsers pause location updates for pages that aren’t visible, to protect your privacy and battery. Keep SpeedReflex on screen; it keeps the display awake automatically while a trip is running.',
+  },
+  {
+    q: 'How does HUD mode work?',
+    a: 'HUD mode shows your speed in huge, mirrored digits on a black background. Lay your phone flat on the dashboard below the windshield at night and the reflection reads the right way round. Turn Mirror off to read the phone directly.',
+  },
+  {
+    q: 'Is my location stored or shared?',
+    a: 'No. Your position is processed in your browser and never sent to SpeedReflex or anyone else. The trip disappears when you close the page, unless you export it as a GPX file yourself.',
+  },
+  {
+    q: 'How do I switch between mph and km/h?',
+    a: 'Use the unit switch above the gauge. SpeedReflex picks mph or km/h based on your browser’s region the first time and remembers your choice after that.',
+  },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  jsonLd={toolPage(tool, title, description, faqs)}
+>
+  <ToolHero
+    crumbs={toolCrumbs(tool)}
+    eyebrow="GPS speed test"
+    title="Car Speed Test"
+    lede="A live GPS speedometer for your car. Check your true speed against the dashboard, set a speed alert, or flip to HUD mode and read your speed off the windshield at night."
+    features={['Live GPS speed', 'HUD windshield mode', 'Speed alert with beep', 'Keeps the screen on', 'GPX trip export', 'Location stays on your device']}
+  >
+    <Speedometer preset="car" />
+    <div class="mt-4 max-w-3xl">
+      <Callout tone="warning" title="Set Up Before You Drive">
+        Never handle your phone while driving. Mount it, press Start before you pull away, or let a passenger run the speedometer —
+        and follow local laws on phone use.
+      </Callout>
+    </div>
+  </ToolHero>
+
+  <Section id="how-to" eyebrow="How to" title="How to Check Your Car’s Speed With Your Phone">
+    <StepList
+      steps={[
+        { title: 'Mount Your Phone', text: 'Use a dashboard or vent mount with a view of the sky through the windshield.' },
+        { title: 'Press Start', text: 'Allow location access when asked. Your position is only used on this device.' },
+        { title: 'Wait for a Fix', text: 'The dot turns blue once accuracy is good — usually a few seconds outdoors.' },
+        { title: 'Drive', text: 'Read live speed, max, moving average, distance and trip time. Export the trip as GPX when you’re done.' },
+      ]}
+    />
+  </Section>
+
+  <Section
+    id="gps-vs-dashboard"
+    eyebrow="Accuracy"
+    title="Why GPS Speed Is Lower Than Your Dashboard"
+    intro="Almost every car speedometer reads high on purpose. Under UN ECE Regulation 39, a speedometer must never show less than your true speed, but it may show up to 10% plus 4 km/h more. GPS measures your true speed over the ground, so it usually reads a little lower."
+  >
+    <DataTable
+      caption="Allowed speedometer reading for a given true speed under UN ECE Regulation 39"
+      head={['True speed (GPS)', 'Dashboard may legally show']}
+      rows={r39}
+      note="Worn or non-standard tyres change the gap too: smaller rolling diameter makes the dashboard read higher still."
+    />
+  </Section>
+
+  <Section id="hud" eyebrow="Night driving" title="HUD Mode: Your Speed on the Windshield">
+    <div class="grid gap-10 lg:grid-cols-2">
+      <div class="prose-sr">
+        <p>
+          A head-up display keeps your eyes on the road. Tap <strong>HUD</strong> and SpeedReflex fills the screen with huge, mirrored digits
+          on pure black. Lay the phone flat on the dashboard just below the windshield and the glass reflects your speed the right way
+          round.
+        </p>
+        <ul>
+          <li>Works best at night or in low light, with screen brightness turned up.</li>
+          <li>The screen stays awake while HUD is open.</li>
+          <li>Digits turn red when you pass your speed alert.</li>
+          <li>Turn <strong>Mirror</strong> off to read the phone directly, like a big digital speedometer.</li>
+        </ul>
+      </div>
+      <div class="flex items-center justify-center rounded-md border border-hairline bg-black p-10" aria-hidden="true">
+        <div class="text-center text-white" style="transform: scaleX(-1)">
+          <p class="text-[5rem] font-semibold leading-none tracking-[-0.05em] tabular-nums">88</p>
+          <p class="mt-2 font-mono text-sm text-white/60">KM/H</p>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <Section
+    id="speed-limits"
+    eyebrow="Reference"
+    title="Typical Motorway Speed Limits for Cars"
+    intro="Set your speed alert to the limit where you drive. These are typical national maximums for cars on motorways and freeways — posted signs always take priority."
+  >
+    <DataTable
+      caption="Typical motorway speed limits for cars by country"
+      head={['Country', 'Typical motorway limit']}
+      rows={[
+        ['United States', '55–85 mph (set by each state)'],
+        ['United Kingdom', '70 mph'],
+        ['Germany', '130 km/h advisory; some sections unrestricted'],
+        ['France', '130 km/h (110 km/h in rain)'],
+        ['India', 'Up to 120 km/h on expressways'],
+        ['Australia', '100–110 km/h (up to 130 km/h in parts of the NT)'],
+        ['Canada', '100–120 km/h (set by each province)'],
+      ]}
+      note="Limits change and vary by road, vehicle type and conditions. Always follow posted signs."
+    />
+    <div class="prose-sr mt-8 max-w-3xl">
+      <p>
+        Knowing your true speed is half the picture; the other half is how far you need to stop. At 70 mph that’s around 96 metres on
+        a dry road — try your own speed and reaction time in the <a href="/stopping-distance-calculator/">stopping distance
+        calculator</a>. Not in a car? The general <a href="/speedometer/">online speedometer</a> works for any trip.
+      </p>
+    </div>
+  </Section>
+
+  <Faq items={faqs} title="Car Speed Test FAQ" />
+  <RelatedTools current={tool.id} />
+</BaseLayout>

@@ -1,0 +1,27 @@
+---
+import { ArrowRight } from '@lucide/astro';
+import ToolIcon from './ToolIcon.astro';
+import type { ToolId } from '../lib/site';
+
+interface Props {
+  tool: { id: ToolId | 'guide'; href: string; name: string; summary: string };
+  cta?: string;
+}
+
+const { tool, cta = tool.id === 'guide' ? 'Read Guide' : 'Open Test' } = Astro.props;
+---
+
+<a
+  href={tool.href}
+  class="group card flex flex-col p-6 transition-[border-color,box-shadow] duration-200 hover:border-hairline-strong hover:shadow-float"
+>
+  <span class="flex size-10 items-center justify-center rounded-sm border border-hairline bg-canvas text-ink">
+    <ToolIcon id={tool.id} />
+  </span>
+  <h3 class="mt-5 text-heading-md">{tool.name}</h3>
+  <p class="mt-2 flex-1 text-sm leading-6 text-body">{tool.summary}</p>
+  <span class="mt-6 inline-flex items-center gap-1 text-sm font-medium text-ink">
+    {cta}
+    <ArrowRight size={14} class="transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transition-none" />
+  </span>
+</a>

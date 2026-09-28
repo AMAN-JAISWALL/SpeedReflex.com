@@ -1,0 +1,62 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../lib/site';
+import { webPage } from '../lib/schema';
+
+const title = 'Privacy Policy — SpeedReflex';
+const description = 'How SpeedReflex handles your data: location stays on your device, test history stays in your browser, and there are no accounts.';
+const updated = 'September 28, 2026';
+---
+
+<BaseLayout title={title} description={description} jsonLd={webPage({ href: '/privacy/', name: title, description })}>
+  <article class="shell max-w-3xl py-16 sm:py-24">
+    <p class="eyebrow">Legal</p>
+    <h1 class="mt-3 text-display-sm sm:text-display">Privacy Policy</h1>
+    <p class="mt-4 text-sm text-mute">Last updated {updated}</p>
+
+    <div class="prose-sr mt-10">
+      <p>
+        <span translate="no">{SITE.domain}</span> (“SpeedReflex”, “we”) is built so that we don’t need your personal data. This page explains
+        exactly what happens when you use the site.
+      </p>
+
+      <h2 class="mt-10! text-heading-md text-ink">Location (GPS Speed Tests)</h2>
+      <p>
+        The online speedometer and the car, bike, bus, train and flight speed tests ask your browser for your location only after you press Start. Positions are processed
+        in your browser to calculate speed, distance, altitude and heading. <strong>They are never sent to our servers or to anyone
+        else.</strong> When you close the page the trip is gone, unless you choose to export it as a GPX file to your own device.
+      </p>
+
+      <h2 class="mt-10! text-heading-md text-ink">Test History and Settings</h2>
+      <p>
+        Reaction test results, F1 start times, your preferred units (including on the stopping distance calculator), speed-alert settings and theme are saved in your browser’s local
+        storage so they’re there next time. This data stays on your device. You can remove test history with the Clear History button,
+        or remove everything by clearing this site’s data in your browser settings.
+      </p>
+
+      <h2 class="mt-10! text-heading-md text-ink">Accounts, Cookies and Tracking</h2>
+      <p>
+        There are no accounts. We don’t set advertising or tracking cookies, and fonts are served from our own domain rather than from a
+        third party.
+      </p>
+
+      <h2 class="mt-10! text-heading-md text-ink">Server Logs</h2>
+      <p>
+        Like any website, our hosting provider may keep short-lived technical logs (such as IP address, browser type and the page
+        requested) to deliver the site and protect it from abuse. We don’t use them to identify you.
+      </p>
+
+      <h2 class="mt-10! text-heading-md text-ink">Sharing Results</h2>
+      <p>
+        When you share a result or challenge link, the link contains only your score (for example <code>?challenge=231</code>). You choose
+        where to send it.
+      </p>
+
+      <h2 class="mt-10! text-heading-md text-ink">Changes and Contact</h2>
+      <p>
+        If this policy changes we’ll update the date above. Questions?
+        Email <a href="mailto:privacy@speedreflex.com">privacy@speedreflex.com</a>.
+      </p>
+    </div>
+  </article>
+</BaseLayout>

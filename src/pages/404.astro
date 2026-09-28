@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ToolCard from '../components/ToolCard.astro';
+import { GUIDES, TOOLS } from '../lib/site';
+---
+
+<BaseLayout
+  title="Page Not Found — SpeedReflex"
+  description="This page doesn’t exist. Try one of our reaction time tests, the online GPS speedometer or the stopping distance calculator instead."
+  noindex
+>
+  <section class="shell py-16 sm:py-24">
+    <p class="eyebrow">404</p>
+    <h1 class="mt-3 text-display-sm sm:text-display">Too Fast — This Page Isn’t Here.</h1>
+    <p class="mt-4 max-w-xl text-lg leading-7 text-body">The link may be broken or the page may have moved. Pick a test instead:</p>
+    <h2 class="sr-only">All tests and guides</h2>
+    <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {TOOLS.map((t) => <ToolCard tool={t} />)}
+      {GUIDES.map((g) => <ToolCard tool={{ ...g, id: 'guide' }} />)}
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,196 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ToolHero from '../components/ToolHero.astro';
+import F1Start from '../components/F1Start.astro';
+import Section from '../components/Section.astro';
+import Faq from '../components/Faq.astro';
+import RelatedTools from '../components/RelatedTools.astro';
+import { toolById } from '../lib/site';
+import { toolCrumbs, toolPage, type FaqItem } from '../lib/schema';
+import { ANTICIPATION_MS, F1_TIERS } from '../lib/reaction';
+
+const tool = toolById('f1');
+const title = 'F1 Reaction Time Test — Beat the Formula 1 Start Lights';
+const description =
+  'F1 reaction time test with the real five-light start sequence, random hold and jump-start detection. Get your launch time and your slot on a 20-car grid.';
+
+let lower = 0;
+const tierRows = F1_TIERS.map((t) => {
+  const range =
+    t.max === Infinity ? `${lower.toFixed(3)} s or slower` : lower === 0 ? `Under ${t.max.toFixed(3)} s` : `${lower.toFixed(3)}–${(t.max - 0.001).toFixed(3)} s`;
+  lower = t.max;
+  return { range, label: t.label, note: t.note };
+});
+
+const faqs: FaqItem[] = [
+  {
+    q: 'What is a good F1 reaction time?',
+    a: 'In this test, anything under 0.220 s is F1 pace and under 0.180 s is exceptional. Most people who aren’t trained for starts land between 0.250 and 0.350 s.',
+  },
+  {
+    q: 'How fast do F1 drivers react to the start lights?',
+    a: 'Reaction times reported for Formula 1 drivers are commonly around 0.2 seconds from lights out, and that includes getting the car moving. Drivers train for it, because a few hundredths of a second can mean a place gained or lost before the first corner.',
+  },
+  {
+    q: 'Why do F1 lights go out instead of turning green?',
+    a: 'That is how a Formula 1 start works: five red lights come on one by one and the race starts when they all go out. Because the hold before lights out varies, drivers can’t predict the moment — they have to react.',
+  },
+  {
+    q: 'What counts as a jump start in this test?',
+    a: `Pressing while any lights are still on, or pressing less than ${ANTICIPATION_MS} ms after lights out. Nobody can genuinely react that fast, so it means you guessed. Jump starts aren’t saved to your stats.`,
+  },
+  {
+    q: 'Is the F1 reaction test harder than a normal reaction test?',
+    a: 'Usually yes. The build-up of five lights creates anticipation, and the random hold punishes guessing. Most people score slightly slower here than on a single-flash reaction time test — and jump start more often.',
+  },
+  {
+    q: 'Is the grid position real?',
+    a: 'It’s a simulation for fun. After each clean start we generate 19 rival reaction times around 0.215 s with a realistic spread and count how many you beat. It isn’t real driver data.',
+  },
+  {
+    q: 'Are my F1 start times saved?',
+    a: 'Yes, in your browser’s local storage on this device only. Your personal best, average and last 30 starts are shown below the test. Nothing is uploaded.',
+  },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  jsonLd={toolPage(tool, title, description, faqs)}
+>
+  <ToolHero
+    crumbs={toolCrumbs(tool)}
+    eyebrow="Reflex test · Motorsport"
+    title="F1 Reaction Time Test"
+    lede="Line up on the grid. Five red lights come on one by one, hold for a random moment, then go out — react the instant they do. Get your launch time to the millisecond and see where you’d slot into a 20-car field."
+    features={['Authentic five-light sequence', 'Jump-start detection', 'Simulated 20-car grid', 'Optional light beeps', 'Space, click or tap']}
+  >
+    <F1Start />
+  </ToolHero>
+
+  <Section
+    id="start-lights"
+    eyebrow="The start procedure"
+    title="How F1 Start Lights Work"
+    intro="At a Formula 1 start, five red light panels above the grid switch on one after another at one-second intervals. Once all five are lit, they hold for a variable, unannounced moment — then go out together. There is no green light: lights out means go."
+  >
+    <ol class="grid gap-4 md:grid-cols-3">
+      {
+        [
+          { n: '01', t: 'Lights On', d: 'In this simulator the first light comes on shortly after you start, then one more every second until all five are lit.' },
+          { n: '02', t: 'The Hold', d: 'All five stay lit for a random 0.2–3 seconds. You can’t count it — that’s the point.' },
+          { n: '03', t: 'Lights Out', d: 'React the instant the gantry goes dark. Your time is measured from the frame the lights disappeared.' },
+        ].map((s) => (
+          <li class="card p-6">
+            <span class="font-mono text-xs text-mute">{s.n}</span>
+            <h3 class="mt-4 text-heading-md">{s.t}</h3>
+            <p class="mt-2 text-sm leading-6 text-body">{s.d}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </Section>
+
+  <Section
+    id="good-f1-reaction-time"
+    eyebrow="Benchmarks"
+    title="What Is a Good F1 Reaction Time?"
+    intro="Reaction times reported for F1 drivers are commonly around 0.2 seconds. On a phone or computer, here’s how your launch compares."
+  >
+    <div class="max-w-3xl overflow-x-auto rounded-md border border-hairline bg-surface">
+      <table class="data-table">
+        <caption class="sr-only">F1 start reaction time ratings</caption>
+        <thead>
+          <tr><th scope="col">Reaction</th><th scope="col">Rating</th><th scope="col" class="max-sm:hidden">What it means</th></tr>
+        </thead>
+        <tbody>
+          {
+            tierRows.map((r) => (
+              <tr>
+                <td class="whitespace-nowrap">{r.range}</td>
+                <td>
+                  <span class="sm:whitespace-nowrap">{r.label}</span>
+                  <span class="mt-1 block text-mute sm:hidden">{r.note}</span>
+                </td>
+                <td class="max-sm:hidden">{r.note}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+    <div class="prose-sr mt-8 max-w-3xl">
+      <p>
+        For comparison, most people average around a quarter of a second on a simple online reaction test. Our guide
+        to <a href="/average-reaction-time/">average reaction time</a> shows how that varies with age, device and whether you react
+        to a light or a sound.
+      </p>
+    </div>
+  </Section>
+
+  <Section
+    id="reaction-time-test-f1"
+    eyebrow="Compare"
+    title="Reaction Time Test, F1-Style: What’s Different?"
+    intro="A classic reaction time test and an F1 start both measure how quickly you respond to what you see — but they test you in different ways."
+  >
+    <div class="grid gap-4 md:grid-cols-2">
+      <div class="card p-6">
+        <p class="eyebrow">Classic reaction test</p>
+        <ul class="prose-sr mt-4 text-sm leading-6">
+          <li>Something <strong>appears</strong> — a panel changes colour.</li>
+          <li>No build-up, so there’s little temptation to guess.</li>
+          <li>Measures pure visual reaction speed.</li>
+        </ul>
+        <a href="/reaction-time-test/" class="mt-5 inline-flex text-sm font-medium text-link hover:text-link-deep">Take the reaction time test →</a>
+      </div>
+      <div class="card p-6">
+        <p class="eyebrow">F1 start test</p>
+        <ul class="prose-sr mt-4 text-sm leading-6">
+          <li>Something <strong>disappears</strong> — the lights go out.</li>
+          <li>Five lights build tension; the random hold punishes anticipation.</li>
+          <li>Measures reaction speed and self-control together.</li>
+        </ul>
+      </div>
+    </div>
+  </Section>
+
+  <Section id="jump-starts" eyebrow="Rules" title="Jump Starts and the Simulated Grid">
+    <div class="prose-sr max-w-3xl">
+      <p>
+        In Formula 1, sensors detect a car that moves before the lights go out, and the stewards penalise the driver. Here, pressing
+        while any light is on — or less than {ANTICIPATION_MS} ms after lights out, which is faster than a human can genuinely react —
+        counts as a <strong>jump start</strong>. It isn’t saved, and you line up again.
+      </p>
+      <p>
+        After every clean start we draw 19 rival reaction times around 0.215 s with a realistic spread and count how many you beat.
+        That gives your <strong>grid slot off the line</strong> — P1 means you out-reacted the whole simulated field. It’s a bit of fun
+        rather than real driver data, but it shows how a few hundredths of a second reshuffle the order into turn one.
+      </p>
+    </div>
+  </Section>
+
+  <Section id="train" eyebrow="Training" title="Train Your Starts Like a Driver">
+    <div class="grid gap-px overflow-hidden rounded-md border border-hairline bg-hairline sm:grid-cols-2 lg:grid-cols-3">
+      {
+        [
+          { t: 'Soft Focus on the Gantry', d: 'Take in all five lights at once rather than fixing on the last one. The change registers sooner.' },
+          { t: 'Relaxed, Loaded Finger', d: 'Rest lightly on the key or screen. Tension slows the press; a relaxed hand fires faster.' },
+          { t: 'Never Count the Hold', d: 'The hold is random. Counting leads straight to jump starts — wait for the lights, not the clock.' },
+          { t: 'Short, Sharp Sessions', d: 'Ten starts, a break, ten more. Your history chart shows whether the trend is heading down.' },
+          { t: 'Use a Reaction Light Board', d: 'Drivers train on wall-mounted reaction lights. Any game that makes you hit random targets builds the same skill.' },
+          { t: 'Rest and Hydrate', d: 'Fatigue shows up first in reaction time. Your fastest starts come when you’re fresh.' },
+        ].map((f) => (
+          <div class="bg-surface p-6">
+            <h3 class="text-label text-ink">{f.t}</h3>
+            <p class="mt-2 text-sm leading-6 text-body">{f.d}</p>
+          </div>
+        ))
+      }
+    </div>
+  </Section>
+
+  <Faq items={faqs} title="F1 Reaction Test FAQ" />
+  <RelatedTools current={tool.id} />
+</BaseLayout>

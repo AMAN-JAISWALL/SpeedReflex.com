@@ -1,0 +1,134 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ToolHero from '../components/ToolHero.astro';
+import Speedometer from '../components/Speedometer.astro';
+import Section from '../components/Section.astro';
+import StepList from '../components/StepList.astro';
+import DataTable from '../components/DataTable.astro';
+import Callout from '../components/Callout.astro';
+import Faq from '../components/Faq.astro';
+import RelatedTools from '../components/RelatedTools.astro';
+import { toolById } from '../lib/site';
+import { toolCrumbs, toolPage, type FaqItem } from '../lib/schema';
+
+const tool = toolById('flight');
+const title = 'Flight Speed Test — How Fast Is My Plane Going? (GPS)';
+const description =
+  'Measure your plane’s ground speed, altitude and heading with your phone’s GPS, in km/h, mph or knots. Works in airplane mode once the page is loaded.';
+
+const faqs: FaqItem[] = [
+  {
+    q: 'Does GPS work in airplane mode?',
+    a: 'On most modern phones, yes. Airplane mode switches off the radios that transmit, while GPS only receives signals. If your phone turns location off in airplane mode, switch Location Services back on — it doesn’t transmit anything.',
+  },
+  {
+    q: 'Am I allowed to use GPS on a plane?',
+    a: 'Receiving GPS with your phone in airplane mode is generally fine, but airline policies differ. Always follow the crew’s instructions.',
+  },
+  {
+    q: 'Why can’t my phone get a GPS fix on the plane?',
+    a: 'The aircraft’s metal body blocks most satellite signals, and without mobile data your phone has to download satellite positions directly, which is slower. Hold the phone against a window and allow a few minutes for the first fix.',
+  },
+  {
+    q: 'Why is my ground speed faster than the plane’s top speed?',
+    a: 'GPS measures ground speed — your speed over the Earth. A strong tailwind, such as the jet stream on eastbound flights, adds to the plane’s airspeed and can push ground speed well past 1,000 km/h.',
+  },
+  {
+    q: 'Why does the GPS altitude differ from the in-flight map?',
+    a: 'Aircraft report pressure altitude, based on air pressure. GPS measures geometric height. The two routinely differ by a few hundred feet, and both are “right” for their purpose.',
+  },
+  {
+    q: 'What is a knot?',
+    a: 'A knot is one nautical mile per hour: 1.852 km/h or about 1.151 mph. Pilots and air traffic control use knots, so the Knots unit matches what the cockpit sees.',
+  },
+  {
+    q: 'Can I save my flight path?',
+    a: 'Yes. Tap Export GPX after landing to download your track, then open it in Google Earth or any mapping app that reads GPX.',
+  },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  jsonLd={toolPage(tool, title, description, faqs)}
+>
+  <ToolHero
+    crumbs={toolCrumbs(tool)}
+    eyebrow="GPS speed test"
+    title="Flight Speed Test"
+    lede="How fast is your plane flying right now? With a window seat and your phone’s GPS you can see ground speed, altitude and heading at cruise — no Wi-Fi or data needed once this page is loaded."
+    features={['Ground speed in km/h, mph or knots', 'Altitude in feet or metres', 'Compass heading', 'Works in airplane mode', 'GPX flight-track export']}
+  >
+    <Speedometer preset="flight" />
+    <div class="mt-4 max-w-3xl">
+      <Callout title="Load Before You Board">
+        Open this page while you still have a connection, then switch on airplane mode. It keeps working offline — just don’t reload it
+        in the air.
+      </Callout>
+    </div>
+  </ToolHero>
+
+  <Section id="how-to" eyebrow="How to" title="How to Measure Your Flight Speed">
+    <StepList
+      steps={[
+        { title: 'Open Before Boarding', text: 'Load this page on the ground. Once loaded it runs without Wi-Fi or data.' },
+        { title: 'Airplane Mode On', text: 'Keep Location Services on — GPS only receives, it never transmits.' },
+        { title: 'Get Close to the Window', text: 'The fuselage blocks satellites. A window seat and a few minutes’ patience give the first fix.' },
+        { title: 'Press Start', text: 'Choose knots, km/h or mph. Altitude, heading and distance flown update as you go.' },
+      ]}
+    />
+  </Section>
+
+  <Section
+    id="ground-speed-vs-airspeed"
+    eyebrow="Explained"
+    title="Ground Speed vs Airspeed"
+    intro="Your phone measures ground speed — how fast you cross the map. Pilots fly by airspeed — how fast the aircraft moves through the air. Wind is the difference."
+  >
+    <div class="grid gap-4 md:grid-cols-2">
+      <div class="card p-6">
+        <p class="eyebrow">What GPS shows</p>
+        <h3 class="mt-3 text-heading-md">Ground Speed</h3>
+        <p class="mt-2 text-sm leading-6 text-body">
+          Speed over the Earth’s surface. It decides when you land. A tailwind raises it; a headwind lowers it.
+        </p>
+      </div>
+      <div class="card p-6">
+        <p class="eyebrow">What pilots fly</p>
+        <h3 class="mt-3 text-heading-md">Airspeed</h3>
+        <p class="mt-2 text-sm leading-6 text-body">
+          Speed relative to the surrounding air, which is what keeps the wings flying. It’s shown in the cockpit, not on your phone.
+        </p>
+      </div>
+    </div>
+  </Section>
+
+  <Section
+    id="typical-speeds"
+    eyebrow="Reference"
+    title="How Fast Do Planes Fly? Typical Speeds and Altitudes"
+    intro="Numbers vary by aircraft, weight and weather, but here’s what you can expect to see on a typical jet airliner."
+  >
+    <DataTable
+      caption="Typical speeds and altitudes by phase of flight for commercial jets"
+      head={['Phase', 'Typical ground speed', 'Typical altitude']}
+      rows={[
+        ['Take-off (wheels leave the runway)', '240–290 km/h (130–160 kn)', 'Ground level'],
+        ['Climb, below 10,000 ft', 'Up to about 460 km/h (250 kn) plus wind', '0–10,000 ft'],
+        ['Cruise', '800–950 km/h (430–510 kn) plus wind', '31,000–41,000 ft'],
+        ['Approach & landing', '240–300 km/h (130–160 kn)', 'Descending to ground'],
+      ]}
+      note="Ground speed at cruise can be much higher with a tailwind or lower with a headwind."
+    />
+    <div class="prose-sr mt-8 max-w-3xl">
+      <p>
+        On the ground, the fastest high-speed trains run at 300–350 km/h — faster than a jet at take-off. Check yours with
+        the <a href="/train-speed-test/">train speed test</a>.
+      </p>
+    </div>
+  </Section>
+
+  <Faq items={faqs} title="Flight Speed Test FAQ" />
+  <RelatedTools current={tool.id} />
+</BaseLayout>
