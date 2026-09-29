@@ -12,9 +12,9 @@ import { toolById } from '../lib/site';
 import { toolCrumbs, toolPage, type FaqItem } from '../lib/schema';
 
 const tool = toolById('car');
-const title = 'Car Speed Test — Check Your True Speed vs the Dashboard';
+const title = 'Car Speed Test — Free GPS Speedometer vs Your Dashboard';
 const description =
-  'Check your true driving speed with a free GPS speedometer. Compare it with your dashboard, set a speed alert and use HUD mode at night — no app needed.';
+  'A free online GPS car speed test: check your driving speed against the dashboard, set a speed alert and use HUD mode at night — no app needed.';
 
 const r39 = [30, 50, 80, 100, 120].map((v) => [`${v} km/h`, `${v}–${Math.floor(v * 1.1 + 4)} km/h`]);
 
@@ -59,7 +59,7 @@ const faqs: FaqItem[] = [
     crumbs={toolCrumbs(tool)}
     eyebrow="GPS speed test"
     title="Car Speed Test"
-    lede="A live GPS speedometer for your car. Check your true speed against the dashboard, set a speed alert, or flip to HUD mode and read your speed off the windshield at night."
+    lede="This GPS car speed test turns your phone into a live speedometer. Compare your speed with the dashboard, set a speed alert, or flip to HUD mode and read your speed off the windshield at night."
     features={['Live GPS speed', 'HUD windshield mode', 'Speed alert with beep', 'Keeps the screen on', 'GPX trip export', 'Location stays on your device']}
   >
     <Speedometer preset="car" />
@@ -94,6 +94,16 @@ const faqs: FaqItem[] = [
       rows={r39}
       note="Worn or non-standard tyres change the gap too: smaller rolling diameter makes the dashboard read higher still."
     />
+    <div class="prose-sr mt-8 max-w-3xl">
+      <p>
+        <strong>For a fair comparison</strong>, let a passenger read the phone while you hold a steady speed on a straight, open road,
+        with the signal dot blue. Readings taken while speeding up, braking or under bridges will disagree more.
+      </p>
+      <p>
+        A phone’s GPS is a useful cross-check, not a calibrated instrument: its accuracy depends on the satellite signal at that moment.
+        If you need your speedometer checked officially, a garage or testing station uses calibrated equipment.
+      </p>
+    </div>
   </Section>
 
   <Section id="hud" eyebrow="Night driving" title="HUD Mode: Your Speed on the Windshield">

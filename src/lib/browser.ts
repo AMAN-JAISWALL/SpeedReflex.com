@@ -139,6 +139,12 @@ export const prefersReducedMotion = (): boolean => matchMedia('(prefers-reduced-
 const dateFmt = new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
 export const formatDate = (ts: number): string => dateFmt.format(new Date(ts));
 
+/** Is at least half of the element inside the viewport? */
+export const onScreen = (el: Element): boolean => {
+  const r = el.getBoundingClientRect();
+  return r.height > 0 && Math.min(r.bottom, innerHeight) - Math.max(r.top, 0) >= r.height / 2;
+};
+
 /** Is focus somewhere that uses the keyboard itself (so global shortcuts must stand down)? */
 export const isTypingTarget = (el: Element | null): boolean =>
   !!el && (el.matches('input, textarea, select, [contenteditable="true"]') || el.closest('[role="dialog"]') !== null);

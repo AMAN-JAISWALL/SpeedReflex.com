@@ -1,5 +1,5 @@
 import { ANTICIPATION_MS, F1_TIERS, mean, randomDelay, simulateGridPosition, tierFor } from '../lib/reaction';
-import { beep, copyText, eventTime, formatDate, paintStimulus, shareOrCopy, store } from '../lib/browser';
+import { beep, copyText, eventTime, formatDate, onScreen, paintStimulus, shareOrCopy, store } from '../lib/browser';
 import { renderTrend } from './trend-chart';
 
 type State = 'idle' | 'sequence' | 'out' | 'result' | 'jump';
@@ -66,9 +66,10 @@ class F1Start extends HTMLElement {
     });
     stage.addEventListener('contextmenu', (e) => e.preventDefault());
 
+    // Space/Enter anywhere on the page; before the first start only while the gantry is on screen.
     document.addEventListener('keydown', (e) => {
-      if ((e.key !== ' ' && e.key !== 'Enter') || e.repeat) return;
-      if (e.target !== document.body || this.state === 'idle') return;
+      if ((e.key !== ' ' && e.key !== 'Enter') || e.repeat || e.target !== document.body) return;
+      if (this.state === 'idle' && !onScreen(stage)) return;
       e.preventDefault();
       this.lastInputAt = performance.now();
       this.input(eventTime(e));

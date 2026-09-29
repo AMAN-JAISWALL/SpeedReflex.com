@@ -29,7 +29,8 @@
   --color-primary-hover: #383838;
   --color-on-primary: #ffffff;
 
-  --color-link: #0070f3;
+  /* DESIGN.md lists #0070f3; darkened a touch so links on the #fafafa canvas pass WCAG AA (4.5:1). */
+  --color-link: #006be6;
   --color-link-deep: #0761d1;
   --color-link-soft: #d3e5ff;
 
@@ -375,7 +376,8 @@
     font-size: 0.75rem;
     font-weight: 500;
     text-transform: uppercase;
-    color: var(--color-mute);
+    /* Body rather than mute: mute on the tinted header row is under 4.5:1. */
+    color: var(--color-body);
     padding: 0.75rem 1rem;
     border-bottom: 1px solid var(--color-hairline);
     background-color: var(--color-hairline-soft);

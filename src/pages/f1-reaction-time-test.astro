@@ -10,6 +10,9 @@ import { toolCrumbs, toolPage, type FaqItem } from '../lib/schema';
 import { ANTICIPATION_MS, F1_TIERS } from '../lib/reaction';
 
 const tool = toolById('f1');
+const FIA_REGS = 'https://www.fia.com/system/files/documents/fia_2026_f1_regulations_-_section_b_sporting_-_iss_05_-_2026-02-27.pdf';
+const F1_STARTS =
+  'https://www.formula1.com/en/latest/article/rapid-decisions-driver-skills-and-intricate-procedures-why-race-starts-are.3uziERC5iPE5EYOPRmerXU';
 const title = 'F1 Reaction Time Test — Beat the Formula 1 Start Lights';
 const description =
   'F1 reaction time test with the real five-light start sequence, random hold and jump-start detection. Get your launch time and your slot on a 20-car grid.';
@@ -29,7 +32,7 @@ const faqs: FaqItem[] = [
   },
   {
     q: 'How fast do F1 drivers react to the start lights?',
-    a: 'Reaction times reported for Formula 1 drivers are commonly around 0.2 seconds from lights out, and that includes getting the car moving. Drivers train for it, because a few hundredths of a second can mean a place gained or lost before the first corner.',
+    a: 'According to Formula 1, drivers launch their cars about 0.2 seconds after the lights go out on average — and that includes getting the car moving, not just the reaction. Drivers train for it, because a few hundredths of a second can mean a place gained or lost before the first corner.',
   },
   {
     q: 'Why do F1 lights go out instead of turning green?',
@@ -79,7 +82,7 @@ const faqs: FaqItem[] = [
       {
         [
           { n: '01', t: 'Lights On', d: 'In this simulator the first light comes on shortly after you start, then one more every second until all five are lit.' },
-          { n: '02', t: 'The Hold', d: 'All five stay lit for a random 0.2–3 seconds. You can’t count it — that’s the point.' },
+          { n: '02', t: 'The Hold', d: 'All five stay lit for a random 0.2–3 seconds, the same window Formula 1 describes for real starts. You can’t count it — that’s the point.' },
           { n: '03', t: 'Lights Out', d: 'React the instant the gantry goes dark. Your time is measured from the frame the lights disappeared.' },
         ].map((s) => (
           <li class="card p-6">
@@ -90,13 +93,18 @@ const faqs: FaqItem[] = [
         ))
       }
     </ol>
+    <p class="mt-6 text-xs text-mute">
+      Sources: <a href={FIA_REGS} rel="noopener" target="_blank" class="underline underline-offset-2 hover:text-ink">FIA 2026 Formula 1
+      Sporting Regulations</a>, Articles B5.7 (start procedure) and B5.11 (false start);
+      and <a href={F1_STARTS} rel="noopener" target="_blank" class="underline underline-offset-2 hover:text-ink">Formula1.com on race starts</a>.
+    </p>
   </Section>
 
   <Section
     id="good-f1-reaction-time"
     eyebrow="Benchmarks"
     title="What Is a Good F1 Reaction Time?"
-    intro="Reaction times reported for F1 drivers are commonly around 0.2 seconds. On a phone or computer, here’s how your launch compares."
+    intro="Formula 1 says its drivers launch about 0.2 seconds after lights out on average — including getting the car moving. On a phone or computer, here’s how your launch compares."
   >
     <div class="max-w-3xl overflow-x-auto rounded-md border border-hairline bg-surface">
       <table class="data-table">
@@ -159,9 +167,10 @@ const faqs: FaqItem[] = [
   <Section id="jump-starts" eyebrow="Rules" title="Jump Starts and the Simulated Grid">
     <div class="prose-sr max-w-3xl">
       <p>
-        In Formula 1, sensors detect a car that moves before the lights go out, and the stewards penalise the driver. Here, pressing
-        while any light is on — or less than {ANTICIPATION_MS} ms after lights out, which is faster than a human can genuinely react —
-        counts as a <strong>jump start</strong>. It isn’t saved, and you line up again.
+        In Formula 1, each car’s transponder shows whether it moved before the lights went out, and the stewards punish a false start
+        with a time, drive-through or stop-and-go penalty. Here, pressing while any light is on — or less than {ANTICIPATION_MS} ms
+        after lights out, which is faster than a human can genuinely react — counts as a <strong>jump start</strong>. It isn’t saved,
+        and you line up again.
       </p>
       <p>
         After every clean start we draw 19 rival reaction times around 0.215 s with a realistic spread and count how many you beat.

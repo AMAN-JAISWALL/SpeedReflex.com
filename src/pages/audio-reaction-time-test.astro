@@ -14,7 +14,7 @@ import { ANTICIPATION_MS } from '../lib/reaction';
 const tool = toolById('audio');
 const title = 'Audio Reaction Time Test — How Fast Do You React to Sound?';
 const description =
-  'React to a beep instead of a flash. Five attempts give your average, best and consistency — and show how your ears compare with your eyes.';
+  'Test your auditory reaction time: react to a beep, not a flash. Five attempts give your average, best and consistency — and how your ears compare with your eyes.';
 
 const faqs: FaqItem[] = [
   {
@@ -49,8 +49,8 @@ const faqs: FaqItem[] = [
     crumbs={toolCrumbs(tool)}
     eyebrow="Reflex test · Sound"
     title="Audio Reaction Time Test"
-    lede="Wait for the beep, then react as fast as you can. Sound reaches the brain sooner than light, so most people score faster here than on a visual test — take both and find out how big your own difference is."
-    features={['Timed from the speaker, not the code', 'No visual cue', 'Ears vs eyes comparison', 'Progress saved on this device', 'No sign-up']}
+    lede="An auditory reaction time test: wait for the beep, then click, tap or press the spacebar as fast as you can. Sound reaches the brain sooner than light, so most people score faster here than on a visual test — take both and find out how big your own difference is."
+    features={['Corrects for reported audio lag', 'No visual cue', 'Ears vs eyes comparison', 'Progress saved on this device', 'No sign-up']}
   >
     <ReactionTest stimulus="audio" />
     <div class="mt-4 max-w-3xl">
@@ -115,7 +115,7 @@ const faqs: FaqItem[] = [
   <Section
     id="audio-latency"
     eyebrow="Accuracy"
-    title="Speakers and Headphones Add Delay"
+    title="Speakers, Headphones and Your Device Add Delay"
     intro="Sound has to travel through your device before you hear it. SpeedReflex starts the clock when the browser says the beep reaches the output — which covers the delays the browser knows about."
   >
     <DataTable
@@ -129,13 +129,24 @@ const faqs: FaqItem[] = [
       ]}
       note="For a fair sound-vs-sight comparison, take both tests on the same device with the same setup."
     />
+    <div class="prose-sr mt-8 max-w-3xl">
+      <p>
+        Before a beep reaches your ears, the browser, the operating system and the sound hardware each hold it in a short buffer, and
+        how long varies from device to device. Browsers report part of that delay, but not always all of it, and a Bluetooth headset’s
+        delay isn’t always included. So an audio result that looks unusually slow is more likely your setup than your ears.
+      </p>
+      <p>
+        This is a reflex test for curiosity and practice. It isn’t a hearing test or a clinical measurement, and it can’t match the
+        dedicated hardware used in laboratory studies.
+      </p>
+    </div>
   </Section>
 
   <Section id="compare" eyebrow="Compare" title="Audio, Visual or F1: Which Test?">
     <div class="grid gap-4 md:grid-cols-3">
       <div class="card p-6">
         <p class="eyebrow">Audio test</p>
-        <p class="mt-3 text-sm leading-6 text-body">A beep with nothing on screen. Measures how fast you respond to sound — like a sprinter at the gun.</p>
+        <p class="mt-3 text-sm leading-6 text-body">A sound reaction test: a beep with nothing on screen. Measures how fast you respond to sound — like a sprinter at the gun.</p>
       </div>
       <div class="card p-6">
         <p class="eyebrow">Visual test</p>

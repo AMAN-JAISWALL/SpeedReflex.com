@@ -140,7 +140,7 @@ const faqs: FaqItem[] = [
     id="reflex-tests"
     eyebrow="Reflex"
     title="Reaction Time Tests"
-    intro="Measure how quickly you respond to what you see — from a single flash to a full Formula 1 start sequence."
+    intro="Measure how quickly you respond to what you see and hear — from a single flash or beep to a full Formula 1 start sequence."
   >
     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {REFLEX_TOOLS.map((t) => <ToolCard tool={t} />)}
@@ -195,6 +195,13 @@ const faqs: FaqItem[] = [
           </div>
         ))
       }
+    </div>
+    <div class="prose-sr mt-8 max-w-3xl">
+      <p>
+        The tests are built for everyday curiosity, practice and trips — not as medical, laboratory or calibrated instruments. Your
+        screen, input device and GPS signal all affect the result, so each tool says what it measures and what can skew it. The
+        details are on <a href="/about/">how SpeedReflex measures reaction time and speed</a>.
+      </p>
     </div>
   </Section>
 

@@ -11,9 +11,9 @@ import { toolCrumbs, toolPage, type FaqItem } from '../lib/schema';
 import { ANTICIPATION_MS, POPULATION, REACTION_TIERS, percentFasterThan } from '../lib/reaction';
 
 const tool = toolById('reaction');
-const title = 'Reaction Time Test — Measure Your Reflexes in Milliseconds';
+const title = 'Reaction Time Test Online — Click, Tap or Press Spacebar';
 const description =
-  'Free reaction time test with frame-accurate timing. Five attempts give your average, best, consistency and percentile — with mouse, touch or keyboard.';
+  'Free online reaction time test: when the panel turns blue, click, tap or hit the spacebar. Five frame-accurate attempts give your average, best and percentile.';
 
 const pct = (ms: number) => Math.round(percentFasterThan(ms));
 let lower = 0;
@@ -27,7 +27,7 @@ const tierRows = REACTION_TIERS.map((t) => {
 const faqs: FaqItem[] = [
   {
     q: 'What is the average human reaction time?',
-    a: `For a simple visual reaction in a browser test, most adults average roughly 250–275 ms. SpeedReflex models the population with a median of ${POPULATION.medianMs} ms. Lab studies with dedicated hardware usually report faster times, often around 200–250 ms, because they remove screen and input lag.`,
+    a: `For a simple visual reaction in a browser test, most adults average roughly 250–275 ms. SpeedReflex models the population with a median of ${POPULATION.medianMs} ms. Classic lab studies report faster times for young adults — about 190 ms for a light and about 160 ms for a sound — mostly because dedicated equipment removes screen and input lag.`,
   },
   {
     q: 'Is 200 ms a good reaction time?',
@@ -47,7 +47,7 @@ const faqs: FaqItem[] = [
   },
   {
     q: 'Can I challenge a friend?',
-    a: 'Yes. After a session, use Share Result or Copy Challenge Link. Your friend opens the test with your average shown as the target, and their result tells them whether they beat it.',
+    a: 'Yes — it turns the test into a head-to-head reaction game. After a session, use Share Result or Copy Challenge Link. Your friend opens the test with your average shown as the target, and their result tells them whether they beat it.',
   },
   {
     q: 'How is this different from the F1 reaction time test?',
@@ -97,8 +97,8 @@ const factors = [
     crumbs={toolCrumbs(tool)}
     eyebrow="Reflex test"
     title="Reaction Time Test"
-    lede="Wait for the panel to turn blue, then react as fast as you can. Five attempts give you an average, a best, a consistency score and an honest percentile — timed from the frame the colour actually appeared."
-    features={['Frame-synced timing', 'Mouse, touch or keyboard', 'Colour-blind-safe signal', 'Progress saved on this device', 'No sign-up']}
+    lede="Wait for the panel to turn blue, then click, tap or press the spacebar as fast as you can. Five attempts give you an average, a best, a consistency score and an honest percentile — timed from the frame the colour actually appeared."
+    features={['Frame-synced timing', 'Mouse, touch or spacebar', 'Colour-blind-safe signal', 'Progress saved on this device', 'No sign-up']}
   >
     <ReactionTest />
   </ToolHero>
@@ -125,7 +125,7 @@ const factors = [
     id="scores"
     eyebrow="Benchmarks"
     title="How Your Reaction Time Score Compares"
-    intro="For a simple visual reaction — one signal, one response — most adults land between 200 and 300 milliseconds in a browser. Here’s how to read your average."
+    intro="Human reaction time to a simple visual signal — one signal, one response — usually lands between 200 and 300 milliseconds in a browser. Here’s how to read your average."
   >
     <div class="max-w-3xl overflow-x-auto rounded-md border border-hairline bg-surface">
       <table class="data-table">
@@ -180,11 +180,30 @@ const factors = [
         ))
       }
     </div>
-    <div class="prose-sr mt-8 max-w-3xl">
+  </Section>
+
+  <Section
+    id="spacebar"
+    eyebrow="Controls"
+    title="Spacebar, Mouse or Touch?"
+    intro="Use whichever input you like — all three are timed the same way. What changes your score is the hardware in between."
+  >
+    <div class="prose-sr max-w-3xl">
       <p>
-        <strong>Your device still matters.</strong> A 144 Hz display shows the signal sooner than a 60 Hz one, and wired mice respond
-        faster than Bluetooth ones or touchscreens. That’s not something a website can fix, so for fair comparisons use the same device
-        each time.
+        <strong>With the spacebar:</strong> press Space or Enter to start while the test is on screen, then press it again the instant
+        the panel turns blue. The press counts the moment the key goes down, not when you let go. The same keys work on
+        the <a href="/f1-reaction-time-test/">F1 reaction time test</a> and the <a href="/audio-reaction-time-test/">audio reaction
+        time test</a>.
+      </p>
+      <p>
+        <strong>Which is fastest?</strong> Usually whatever is wired. Wireless and Bluetooth mice and keyboards can add delay, and
+        touchscreens tend to add the most because the screen has to detect and process your touch. Keyboards also differ in key travel
+        and in how they scan for presses, so the same person can score differently on two keyboards. The display matters too: a 144 Hz
+        screen shows the blue panel sooner than a 60 Hz one.
+      </p>
+      <p>
+        None of that is something a website can fix, so compare scores on the same device with the same input each time. For how much
+        each part of your setup can add, see <a href="/average-reaction-time/#device-lag">why online tests read slower than the lab</a>.
       </p>
     </div>
   </Section>

@@ -11,7 +11,7 @@ import {
   stdDev,
   tierFor,
 } from '../lib/reaction';
-import { copyText, eventTime, formatDate, paintStimulus, playTone, shareOrCopy, store, unlockAudio } from '../lib/browser';
+import { copyText, eventTime, formatDate, onScreen, paintStimulus, playTone, shareOrCopy, store, unlockAudio } from '../lib/browser';
 import { renderTrend } from './trend-chart';
 
 type State = 'idle' | 'waiting' | 'go' | 'result' | 'early' | 'anticipated' | 'done';
@@ -83,9 +83,10 @@ class ReactionTest extends HTMLElement {
     stage.addEventListener('contextmenu', (e) => e.preventDefault());
 
     // Space/Enter anywhere on the page while a session is running (Safari doesn't focus clicked buttons).
+    // Between sessions it only starts one while the panel is on screen, so elsewhere Space still scrolls.
     document.addEventListener('keydown', (e) => {
-      if ((e.key !== ' ' && e.key !== 'Enter') || e.repeat) return;
-      if (e.target !== document.body || this.state === 'idle' || this.state === 'done') return;
+      if ((e.key !== ' ' && e.key !== 'Enter') || e.repeat || e.target !== document.body) return;
+      if ((this.state === 'idle' || this.state === 'done') && !onScreen(stage)) return;
       e.preventDefault();
       this.lastInputAt = performance.now();
       this.input(eventTime(e));
