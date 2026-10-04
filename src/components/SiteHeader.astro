@@ -3,61 +3,114 @@ import { Menu, X } from '@lucide/astro';
 import Logo from './Logo.astro';
 import ThemeToggle from './ThemeToggle.astro';
 import ToolIcon from './ToolIcon.astro';
+import LanguagePicker from './LanguagePicker.astro';
 import { GUIDES, NAV_TOOLS, REFLEX_TOOLS, SPEED_TOOLS, TOOLS, toolById, type ToolId } from '../lib/site';
+import { getLocaleFromPath, getLocalizedPath, type Locale } from '../lib/i18n';
+import { getTranslations } from '../i18n';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = getLocaleFromPath(Astro.url.pathname) } = Astro.props;
+const t = getTranslations(locale);
 
 const path = Astro.url.pathname.endsWith('/') ? Astro.url.pathname : `${Astro.url.pathname}/`;
 const current = (href: string) => (path === href ? 'page' : undefined);
+
 type Item = { id: ToolId | 'guide'; href: string; name: string };
-const guides: Item[] = GUIDES.map((g) => ({ id: 'guide', href: g.href, name: g.name }));
+
+const guides: Item[] = GUIDES.map((g) => ({
+  id: 'guide',
+  href: getLocalizedPath(g.href, locale),
+  name: t.guides.averageReactionTime.name,
+}));
+
 const groups: { label: string; items: Item[] }[] = [
-  { label: 'Reflex tests', items: REFLEX_TOOLS },
-  { label: 'GPS speed tests', items: SPEED_TOOLS },
-  { label: 'Driving & guides', items: [...TOOLS.filter((t) => t.category === 'driving'), ...guides] },
+  {
+    label: t.nav.reflexTests,
+    items: REFLEX_TOOLS.map((tool) => ({
+      id: tool.id,
+      href: getLocalizedPath(tool.href, locale),
+      name: t.tools[tool.id]?.name ?? tool.name,
+    })),
+  },
+  {
+    label: t.nav.gpsSpeedTests,
+    items: SPEED_TOOLS.map((tool) => ({
+      id: tool.id,
+      href: getLocalizedPath(tool.href, locale),
+      name: t.tools[tool.id]?.name ?? tool.name,
+    })),
+  },
+  {
+    label: t.nav.drivingAndGuides,
+    items: [
+      ...TOOLS.filter((tool) => tool.category === 'driving').map((tool) => ({
+        id: tool.id,
+        href: getLocalizedPath(tool.href, locale),
+        name: t.tools[tool.id]?.name ?? tool.name,
+      })),
+      ...guides,
+    ],
+  },
 ];
-const nav = NAV_TOOLS.map(toolById);
+
+const nav = NAV_TOOLS.map((id) => {
+  const tool = toolById(id);
+  return {
+    ...tool,
+    href: getLocalizedPath(tool.href, locale),
+    name: t.tools[id]?.name ?? tool.name,
+    navLabel: t.tools[id]?.navLabel ?? tool.navLabel,
+  };
+});
 ---
 
 <header class="sticky top-0 z-40 border-b border-hairline bg-canvas/80 backdrop-blur-md" data-site-header>
   <div class="shell flex h-16 items-center gap-6">
-    <a href="/" class="-m-1 rounded-sm p-1" aria-label="SpeedReflex home">
+    <a href={getLocalizedPath('/', locale)} class="-m-1 rounded-sm p-1" aria-label={`${t.site.name} ${t.nav.home}`}>
       <Logo />
     </a>
     <nav aria-label="Main" class="hidden lg:block">
       <ul class="flex items-center gap-0.5">
         {
-          nav.map((t) => (
+          nav.map((tool) => (
             <li>
               <a
-                href={t.href}
-                aria-current={current(t.href)}
+                href={tool.href}
+                aria-current={current(tool.href)}
                 class="inline-flex h-8 items-center rounded-full px-3 text-sm text-body transition-colors hover:bg-hairline-soft hover:text-ink aria-[current=page]:text-ink"
               >
-                {t.navLabel}
+                {tool.navLabel}
               </a>
             </li>
           ))
         }
         <li>
           <a
-            href="/about/"
-            aria-current={current('/about/')}
+            href={getLocalizedPath('/about/', locale)}
+            aria-current={current(getLocalizedPath('/about/', locale))}
             class="inline-flex h-8 items-center rounded-full px-3 text-sm text-body transition-colors hover:bg-hairline-soft hover:text-ink aria-[current=page]:text-ink"
           >
-            About
+            {t.nav.about}
           </a>
         </li>
       </ul>
     </nav>
     <div class="ml-auto flex items-center gap-2">
       <ThemeToggle />
-      <a href="/reaction-time-test/" class="btn btn-sm btn-primary hidden sm:inline-flex">Start a Test</a>
+      <LanguagePicker currentLocale={locale} currentPath={Astro.url.pathname} />
+      <a href={getLocalizedPath('/reaction-time-test/', locale)} class="btn btn-sm btn-primary hidden sm:inline-flex">
+        {t.nav.startTest}
+      </a>
       <button
         type="button"
         class="btn btn-icon btn-ghost text-ink lg:hidden"
         data-menu-toggle
         aria-expanded="false"
         aria-controls="mobile-nav"
-        aria-label="Open menu"
+        aria-label={t.nav.openMenu}
       >
         <span data-icon-open><Menu size={20} /></span>
         <span data-icon-close hidden><X size={20} /></span>
@@ -72,17 +125,17 @@ const nav = NAV_TOOLS.map(toolById);
           <div>
             <p class="eyebrow">{g.label}</p>
             <ul class="mt-3 grid gap-1">
-              {g.items.map((t) => (
+              {g.items.map((tool) => (
                 <li>
                   <a
-                    href={t.href}
-                    aria-current={current(t.href)}
+                    href={tool.href}
+                    aria-current={current(tool.href)}
                     class="-mx-2 flex items-center gap-3 rounded-sm px-2 py-2.5 text-ink transition-colors hover:bg-hairline-soft aria-[current=page]:bg-hairline-soft"
                   >
                     <span class="flex size-9 shrink-0 items-center justify-center rounded-sm border border-hairline bg-surface">
-                      <ToolIcon id={t.id} size={18} />
+                      <ToolIcon id={tool.id} size={18} />
                     </span>
-                    <span class="text-label">{t.name}</span>
+                    <span class="text-label">{tool.name}</span>
                   </a>
                 </li>
               ))}
@@ -91,14 +144,14 @@ const nav = NAV_TOOLS.map(toolById);
         ))
       }
       <div>
-        <p class="eyebrow">SpeedReflex</p>
+        <p class="eyebrow">{t.site.name}</p>
         <ul class="mt-3 grid gap-1">
           {
             [
-              { href: '/about/', name: 'About Us' },
-              { href: '/contact/', name: 'Contact Us' },
-              { href: '/privacy/', name: 'Privacy Policy' },
-              { href: '/terms/', name: 'Terms & Conditions' },
+              { href: getLocalizedPath('/about/', locale), name: t.nav.aboutUs },
+              { href: getLocalizedPath('/contact/', locale), name: t.nav.contactUs },
+              { href: getLocalizedPath('/privacy/', locale), name: t.nav.privacyPolicy },
+              { href: getLocalizedPath('/terms/', locale), name: t.nav.termsConditions },
             ].map((l) => (
               <li>
                 <a
@@ -114,6 +167,9 @@ const nav = NAV_TOOLS.map(toolById);
         </ul>
       </div>
     </div>
+    <div class="shell pb-6">
+      <LanguagePicker currentLocale={locale} currentPath={Astro.url.pathname} isMobile={true} />
+    </div>
   </nav>
 </header>
 
@@ -124,7 +180,6 @@ const nav = NAV_TOOLS.map(toolById);
     const set = (open: boolean) => {
       panel.hidden = !open;
       toggle.setAttribute('aria-expanded', String(open));
-      toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
       toggle.querySelector('[data-icon-open]')?.toggleAttribute('hidden', open);
       toggle.querySelector('[data-icon-close]')?.toggleAttribute('hidden', !open);
     };

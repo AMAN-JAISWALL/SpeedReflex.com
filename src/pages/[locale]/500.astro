@@ -1,0 +1,22 @@
+---
+import ServerErrorView from '../../views/ServerErrorView.astro';
+import { NON_DEFAULT_LOCALES, type Locale } from '../../lib/i18n';
+
+export function getStaticPaths() {
+  return NON_DEFAULT_LOCALES.map((locale) => ({
+    params: { locale },
+  }));
+}
+
+interface Props {
+  error?: unknown;
+}
+
+const { locale } = Astro.params as { locale: Locale };
+const { error } = Astro.props;
+
+Astro.response.status = 500;
+Astro.response.statusText = 'Internal Server Error';
+---
+
+<ServerErrorView locale={locale} error={error} />

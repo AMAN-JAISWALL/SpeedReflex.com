@@ -2,21 +2,51 @@
 import { Monitor, Sun, Moon } from '@lucide/astro';
 import Logo from './Logo.astro';
 import { GUIDES, REFLEX_TOOLS, SITE, SPEED_TOOLS, TOOLS } from '../lib/site';
+import { getLocaleFromPath, getLocalizedPath, type Locale } from '../lib/i18n';
+import { getTranslations } from '../i18n';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = getLocaleFromPath(Astro.url.pathname) } = Astro.props;
+const t = getTranslations(locale);
 
 const columns = [
-  { label: 'Reflex tests', links: REFLEX_TOOLS.map((t) => ({ href: t.href, text: t.name })) },
-  { label: 'GPS speed tests', links: SPEED_TOOLS.map((t) => ({ href: t.href, text: t.name })) },
   {
-    label: 'Driving & guides',
-    links: [...TOOLS.filter((t) => t.category === 'driving'), ...GUIDES].map((t) => ({ href: t.href, text: t.name })),
+    label: t.nav.reflexTests,
+    links: REFLEX_TOOLS.map((tool) => ({
+      href: getLocalizedPath(tool.href, locale),
+      text: t.tools[tool.id]?.name ?? tool.name,
+    })),
   },
   {
-    label: 'SpeedReflex',
+    label: t.nav.gpsSpeedTests,
+    links: SPEED_TOOLS.map((tool) => ({
+      href: getLocalizedPath(tool.href, locale),
+      text: t.tools[tool.id]?.name ?? tool.name,
+    })),
+  },
+  {
+    label: t.nav.drivingAndGuides,
     links: [
-      { href: '/about/', text: 'About Us' },
-      { href: '/contact/', text: 'Contact Us' },
-      { href: '/privacy/', text: 'Privacy Policy' },
-      { href: '/terms/', text: 'Terms & Conditions' },
+      ...TOOLS.filter((tool) => tool.category === 'driving').map((tool) => ({
+        href: getLocalizedPath(tool.href, locale),
+        text: t.tools[tool.id]?.name ?? tool.name,
+      })),
+      ...GUIDES.map((g) => ({
+        href: getLocalizedPath(g.href, locale),
+        text: t.guides.averageReactionTime.name,
+      })),
+    ],
+  },
+  {
+    label: t.site.name,
+    links: [
+      { href: getLocalizedPath('/about/', locale), text: t.nav.aboutUs },
+      { href: getLocalizedPath('/contact/', locale), text: t.nav.contactUs },
+      { href: getLocalizedPath('/privacy/', locale), text: t.nav.privacyPolicy },
+      { href: getLocalizedPath('/terms/', locale), text: t.nav.termsConditions },
     ],
   },
 ];
@@ -26,8 +56,10 @@ const year = new Date().getFullYear();
 <footer class="border-t border-hairline bg-canvas">
   <div class="shell grid grid-cols-2 gap-x-6 gap-y-10 py-16 md:grid-cols-4 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1fr]">
     <div class="col-span-2 max-w-xs md:col-span-4 lg:col-span-1">
-      <a href="/" class="-m-1 inline-flex rounded-sm p-1" aria-label="SpeedReflex home"><Logo /></a>
-      <p class="mt-4 text-sm text-body">{SITE.tagline}. Accurate, private, and free — everything runs in your browser.</p>
+      <a href={getLocalizedPath('/', locale)} class="-m-1 inline-flex rounded-sm p-1" aria-label={`${t.site.name} ${t.nav.home}`}>
+        <Logo />
+      </a>
+      <p class="mt-4 text-sm text-body">{t.site.tagline}.</p>
     </div>
     {
       columns.map((c) => (
@@ -48,15 +80,15 @@ const year = new Date().getFullYear();
   </div>
   <div class="border-t border-hairline">
     <div class="shell flex flex-col-reverse items-start gap-4 py-6 sm:flex-row sm:items-center sm:justify-between">
-      <p class="text-sm text-mute">© {year} <span translate="no">{SITE.domain}</span></p>
-      <div class="segmented" role="group" aria-label="Color theme" data-theme-switch>
-        <button type="button" data-theme-option="system" aria-pressed="true" aria-label="Use system theme" title="System">
+      <p class="text-sm text-mute">© {year} <span translate="no">{t.nav.allRightsReserved}</span></p>
+      <div class="segmented" role="group" aria-label={t.nav.colorTheme} data-theme-switch>
+        <button type="button" data-theme-option="system" aria-pressed="true" aria-label={t.nav.system} title={t.nav.system}>
           <Monitor size={14} class="mx-auto" />
         </button>
-        <button type="button" data-theme-option="light" aria-pressed="false" aria-label="Use light theme" title="Light">
+        <button type="button" data-theme-option="light" aria-pressed="false" aria-label={t.nav.light} title={t.nav.light}>
           <Sun size={14} class="mx-auto" />
         </button>
-        <button type="button" data-theme-option="dark" aria-pressed="false" aria-label="Use dark theme" title="Dark">
+        <button type="button" data-theme-option="dark" aria-pressed="false" aria-label={t.nav.dark} title={t.nav.dark}>
           <Moon size={14} class="mx-auto" />
         </button>
       </div>

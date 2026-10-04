@@ -17,6 +17,7 @@ class StoppingDistance extends HTMLElement {
   private speed = 30;
   private reaction = 0.67;
   private road: Road = 'dry';
+  private ui: any = {};
 
   private q<T extends Element = HTMLElement>(sel: string): T {
     const el = this.querySelector<T>(sel);
@@ -25,6 +26,11 @@ class StoppingDistance extends HTMLElement {
   }
 
   connectedCallback(): void {
+    try {
+      this.ui = this.dataset.i18n ? JSON.parse(this.dataset.i18n) : {};
+    } catch {
+      this.ui = {};
+    }
     const speedInput = this.q<HTMLInputElement>('[data-speed]');
     const speedRange = this.q<HTMLInputElement>('[data-speed-range]');
     const reactionInput = this.q<HTMLInputElement>('[data-reaction]');
@@ -101,17 +107,29 @@ class StoppingDistance extends HTMLElement {
     const m = (v: number) => `${v < 10 ? v.toFixed(1) : Math.round(v)} m`;
 
     this.q('[data-total]').textContent = m(r.total);
-    this.q('[data-total-alt]').textContent = `${Math.round(r.total * M_TO_FT)} ft · about ${Math.max(1, Math.round(r.total / CAR_LENGTH_M))} car lengths`;
+    const carLengths = Math.max(1, Math.round(r.total / CAR_LENGTH_M));
+    const carLabel = this.ui?.carLengthsLabel ? `${carLengths} ${this.ui.carLengthsLabel}` : `about ${carLengths} car lengths`;
+    this.q('[data-total-alt]').textContent = `${Math.round(r.total * M_TO_FT)} ft · ${carLabel}`;
     this.q('[data-thinking]').textContent = m(r.thinking);
     this.q('[data-braking]').textContent = m(r.braking);
     this.q('[data-bar-thinking]').style.width = `${(r.thinking / r.total) * 100}%`;
-    this.q('[data-sensitivity]').textContent = `At this speed, every extra 0.1 s of reaction time adds ${(speedMs * 0.1).toFixed(1)} m before you even touch the brake.`;
+    const extraDist = (speedMs * 0.1).toFixed(1);
+    this.q('[data-sensitivity]').textContent = this.ui?.sensitivityText
+      ? this.ui.sensitivityText.replace('{dist}', extraDist)
+      : `At this speed, every extra 0.1 s of reaction time adds ${extraDist} m before you even touch the brake.`;
 
     const preset = REACTION_PRESETS.find((p) => Math.abs(p.s - this.reaction) < 0.001);
     this.querySelectorAll<HTMLButtonElement>('[data-preset]').forEach((b) =>
       b.setAttribute('aria-pressed', String(Number(b.dataset.preset) === preset?.s)),
     );
-    this.q('[data-preset-note]').textContent = preset?.note ?? 'Your own reaction time.';
+    let note = preset?.note ?? 'Your own reaction time.';
+    if (preset && this.ui?.reactionPresets) {
+      const pKey = preset.s === 0.67 ? 'alert' : preset.s === 1.0 ? 'median' : preset.s === 1.5 ? 'tired' : preset.s === 2.0 ? 'distracted' : '';
+      if (pKey && this.ui.reactionPresets[pKey]) {
+        note = this.ui.reactionPresets[pKey];
+      }
+    }
+    this.q('[data-preset-note]').textContent = note;
     this.querySelectorAll<HTMLButtonElement>('[data-road]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.road === this.road)));
   }
 
@@ -120,8 +138,9 @@ class StoppingDistance extends HTMLElement {
     const history = store.get<Session[]>('sr:reaction:history', []);
     const last = history[history.length - 1];
     if (!last || !Number.isFinite(last.avg)) return;
-    this.q('[data-personal-text]').textContent =
-      `Your last reaction test averaged ${last.avg} ms. That’s a simple reaction you were waiting for — on the road you also have to spot the hazard, decide to stop and move your foot to the brake, which is why real braking reactions take about 0.7 s even when you expect them.`;
+    this.q('[data-personal-text]').textContent = this.ui?.personalNote
+      ? this.ui.personalNote.replace('{avg}', String(last.avg))
+      : `Your last reaction test averaged ${last.avg} ms. That’s a simple reaction you were waiting for — on the road you also have to spot the hazard, decide to stop and move your foot to the brake, which is why real braking reactions take about 0.7 s even when you expect them.`;
     this.q('[data-personal]').hidden = false;
     this.q('[data-personal-empty]').hidden = true;
   }

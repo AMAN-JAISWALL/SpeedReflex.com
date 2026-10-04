@@ -2,17 +2,29 @@
 import Section from './Section.astro';
 import ToolCard from './ToolCard.astro';
 import { toolById, type ToolId } from '../lib/site';
+import { getLocaleFromPath, getLocalizedPath, type Locale } from '../lib/i18n';
+import { getTranslations } from '../i18n';
 
 interface Props {
   current: ToolId;
+  locale?: Locale;
 }
 
-const { current } = Astro.props;
-const tools = toolById(current).related.map(toolById);
+const { current, locale = getLocaleFromPath(Astro.url.pathname) } = Astro.props;
+const t = getTranslations(locale);
+const tools = toolById(current).related.map((id) => {
+  const orig = toolById(id);
+  return {
+    id: orig.id,
+    href: getLocalizedPath(orig.href, locale),
+    name: t.tools[orig.id]?.name ?? orig.name,
+    summary: t.tools[orig.id]?.summary ?? orig.summary,
+  };
+});
 ---
 
-<Section id="more-tests" eyebrow="Keep going" title="More Tests on SpeedReflex">
+<Section id="more-tests" eyebrow={t.nav.relatedToolsTitle} title={t.nav.relatedToolsIntro}>
   <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-    {tools.map((t) => <ToolCard tool={t} />)}
+    {tools.map((tool) => <ToolCard tool={tool} />)}
   </div>
 </Section>

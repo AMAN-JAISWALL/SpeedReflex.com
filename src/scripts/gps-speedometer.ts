@@ -66,6 +66,7 @@ class GpsSpeedometer extends HTMLElement {
   private over = false;
   private hudOpen = false;
   private hudMirror = true;
+  private ui: any = {};
 
   private q<T extends Element = HTMLElement>(sel: string): T {
     const el = this.querySelector<T>(sel);
@@ -78,6 +79,11 @@ class GpsSpeedometer extends HTMLElement {
   }
 
   connectedCallback(): void {
+    try {
+      this.ui = this.dataset.i18n ? JSON.parse(this.dataset.i18n) : {};
+    } catch {
+      this.ui = {};
+    }
     const id = this.dataset.preset as keyof typeof PRESETS;
     this.preset = PRESETS[id] ?? PRESETS.car;
     this.unit = this.pickUnit();
@@ -126,18 +132,18 @@ class GpsSpeedometer extends HTMLElement {
     const toggle = this.q<HTMLButtonElement>('[data-toggle]');
     if (!window.isSecureContext) {
       toggle.disabled = true;
-      this.message('The speedometer needs a secure (https://) connection to read GPS.');
+      this.message(this.ui?.needHttps || 'The speedometer needs a secure (https://) connection to read GPS.');
       return;
     }
     if (!('geolocation' in navigator)) {
       toggle.disabled = true;
-      this.message('This browser can’t read your location. Try Chrome, Safari, Edge or Firefox on a phone.');
+      this.message(this.ui?.noGeolocation || 'This browser can’t read your location. Try Chrome, Safari, Edge or Firefox on a phone.');
       return;
     }
     try {
       const status = await navigator.permissions?.query({ name: 'geolocation' });
       if (status?.state === 'denied') {
-        this.message('Location access is blocked for this site. Allow it in your browser’s site settings, then press Start.');
+        this.message(this.ui?.locationDenied || 'Location access is blocked for this site. Allow it in your browser’s site settings, then press Start.');
         return;
       }
     } catch {
@@ -145,9 +151,9 @@ class GpsSpeedometer extends HTMLElement {
     }
     const desktop = matchMedia('(pointer: fine)').matches && !matchMedia('(any-pointer: coarse)').matches;
     if (desktop) {
-      this.message('Tip: most laptops and desktops have no GPS chip, so readings may stay at 0. Open this page on your phone for real speed.');
+      this.message(this.ui?.desktopTip || 'Tip: most laptops and desktops have no GPS chip, so readings may stay at 0. Open this page on your phone for real speed.');
     } else {
-      this.message(`Press Start and allow location access. Your position never leaves this device.`);
+      this.message(this.ui?.mobileStartTip || `Press Start and allow location access. Your position never leaves this device.`);
     }
   }
 
@@ -226,7 +232,7 @@ class GpsSpeedometer extends HTMLElement {
       else void tool.requestFullscreen().catch(() => {});
     });
     document.addEventListener('fullscreenchange', () => {
-      btn.setAttribute('aria-label', document.fullscreenElement === tool ? 'Exit full screen' : 'Full screen');
+      btn.setAttribute('aria-label', document.fullscreenElement === tool ? (this.ui?.exitFullScreen || 'Exit full screen') : (this.ui?.fullScreen || 'Full screen'));
     });
   }
 
@@ -237,7 +243,7 @@ class GpsSpeedometer extends HTMLElement {
     this.running = true;
     this.runStartedAt = performance.now();
     this.lastFixAt = 0;
-    this.setGps('fair', 'Locating…');
+    this.setGps('fair', this.ui?.gpsAcquiring || 'Locating…');
     this.message('Waiting for a GPS fix. Outdoors with a clear sky view this takes a few seconds.');
     this.watchId = navigator.geolocation.watchPosition(
       (pos) => this.onPosition(pos),
@@ -258,7 +264,7 @@ class GpsSpeedometer extends HTMLElement {
     clearInterval(this.tickTimer);
     this.last = null;
     this.speedMs = 0;
-    this.setGps('off', 'Paused');
+    this.setGps('off', this.ui?.paused || 'Paused');
     this.message('Paused. Press Resume to continue this trip.');
     if (!this.hudOpen) void this.releaseWakeLock();
     this.updateToggle();
@@ -281,7 +287,7 @@ class GpsSpeedometer extends HTMLElement {
     this.over = false;
     this.range = this.fitRange();
     this.renderTicks();
-    this.setGps('off', 'GPS off');
+    this.setGps('off', this.ui?.gpsOff || 'GPS off');
     this.message('Trip cleared.');
     this.updateToggle();
     this.render();
@@ -529,7 +535,7 @@ class GpsSpeedometer extends HTMLElement {
   }
 
   private updateToggle(): void {
-    const label = this.running ? 'Pause' : this.elapsedMs > 0 ? 'Resume' : 'Start';
+    const label = this.running ? (this.ui?.pause || 'Pause') : this.elapsedMs > 0 ? (this.ui?.resume || this.ui?.start || 'Resume') : (this.ui?.start || 'Start');
     this.q('[data-toggle-label]').textContent = label;
     this.q('[data-icon-play]').classList.toggle('hidden', this.running);
     this.q('[data-icon-pause]').classList.toggle('hidden', !this.running);

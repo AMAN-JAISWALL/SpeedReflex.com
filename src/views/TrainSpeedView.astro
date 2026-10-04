@@ -1,0 +1,111 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ToolHero from '../components/ToolHero.astro';
+import Speedometer from '../components/Speedometer.astro';
+import Section from '../components/Section.astro';
+import StepList from '../components/StepList.astro';
+import DataTable from '../components/DataTable.astro';
+import Callout from '../components/Callout.astro';
+import Faq from '../components/Faq.astro';
+import RelatedTools from '../components/RelatedTools.astro';
+import { toolById } from '../lib/site';
+import { toolCrumbs, toolPage } from '../lib/schema';
+import { getLocalizedPath, type Locale } from '../lib/i18n';
+import { getTranslations } from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = getTranslations(locale);
+const p = t.pages.train;
+const tool = toolById('train');
+
+const localizedHref = getLocalizedPath(tool.href, locale);
+const crumbs = toolCrumbs(tool, locale, {
+  home: t.nav.home,
+  tool: t.tools.train.name,
+});
+---
+
+<BaseLayout
+  title={p.title}
+  description={p.description}
+  jsonLd={toolPage(tool, p.title, p.description, p.faqs, locale, localizedHref, crumbs)}
+  locale={locale}
+>
+  <ToolHero
+    crumbs={crumbs}
+    eyebrow={p.eyebrow}
+    title={p.heroTitle}
+    lede={p.lede}
+    features={p.features}
+  >
+    <Speedometer preset="train" locale={locale} />
+    <div class="mt-4 max-w-3xl">
+      <Callout title={p.railGpsTitle}>
+        {p.railGpsIntro}
+      </Callout>
+    </div>
+  </ToolHero>
+
+  <Section id="how-to" eyebrow={p.howItWorksEyebrow} title={p.howItWorksTitle}>
+    <StepList
+      steps={p.steps.map((s) => ({
+        title: s.t,
+        text: s.d,
+      }))}
+    />
+  </Section>
+
+  <Section
+    id="no-signal"
+    eyebrow={p.railGpsEyebrow}
+    title={p.railGpsTitle}
+    intro={p.railGpsIntro}
+  >
+    <div class="grid gap-px overflow-hidden rounded-md border border-hairline bg-hairline sm:grid-cols-2 lg:grid-cols-4">
+      {
+        p.railGpsCards.map((c) => (
+          <div class="bg-surface p-6">
+            <h3 class="text-label text-ink">{c.title}</h3>
+            <p class="mt-2 text-sm leading-6 text-body">{c.text}</p>
+          </div>
+        ))
+      }
+    </div>
+  </Section>
+
+  <Section
+    id="train-speeds"
+    eyebrow={p.benchmarksEyebrow}
+    title={p.benchmarksTitle}
+    intro={p.benchmarksIntro}
+  >
+    <DataTable
+      caption={p.benchmarksTitle}
+      head={[p.tableTrain, p.tableCountry, p.tableSpeed]}
+      rows={p.trainRows.map((r) => [r.train, r.country, r.speed])}
+    />
+  </Section>
+
+  <Section id="compare" eyebrow="Compare" title="Train, Bus or Flight?">
+    <div class="prose-sr max-w-3xl">
+      <p>
+        <a href={getLocalizedPath('/bus-speed-test/', locale)} class="mr-3">
+          {t.tools.bus.name}
+        </a>
+        <a href={getLocalizedPath('/flight-speed-test/', locale)} class="mr-3">
+          {t.tools.flight.name}
+        </a>
+        <a href={getLocalizedPath('/speedometer/', locale)}>
+          {t.tools.speedometer.name}
+        </a>
+      </p>
+    </div>
+  </Section>
+
+  <Faq items={p.faqs} title={p.faqTitle} />
+  <RelatedTools current={tool.id} locale={locale} />
+</BaseLayout>

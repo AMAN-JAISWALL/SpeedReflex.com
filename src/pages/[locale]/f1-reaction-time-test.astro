@@ -1,0 +1,14 @@
+---
+import F1ReactionTestView from '../../views/F1ReactionTestView.astro';
+import { NON_DEFAULT_LOCALES, type Locale } from '../../lib/i18n';
+
+export function getStaticPaths() {
+  return NON_DEFAULT_LOCALES.map((locale) => ({
+    params: { locale },
+  }));
+}
+
+const { locale } = Astro.params as { locale: Locale };
+---
+
+<F1ReactionTestView locale={locale} />

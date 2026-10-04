@@ -1,0 +1,190 @@
+---
+import { Timer, MousePointerClick, ShieldCheck, Shuffle } from '@lucide/astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ToolHero from '../components/ToolHero.astro';
+import ReactionTest from '../components/ReactionTest.astro';
+import Section from '../components/Section.astro';
+import Faq from '../components/Faq.astro';
+import RelatedTools from '../components/RelatedTools.astro';
+import { toolById } from '../lib/site';
+import { toolCrumbs, toolPage } from '../lib/schema';
+import { ANTICIPATION_MS, POPULATION, REACTION_TIERS, percentFasterThan } from '../lib/reaction';
+import { getLocalizedPath, type Locale } from '../lib/i18n';
+import { getTranslations } from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = getTranslations(locale);
+const p = t.pages.reaction;
+const tool = toolById('reaction');
+
+const localizedHref = getLocalizedPath(tool.href, locale);
+const crumbs = toolCrumbs(tool, locale, {
+  home: t.nav.home,
+  tool: t.tools.reaction.name,
+});
+
+const pct = (ms: number) => Math.round(percentFasterThan(ms));
+let lower = 0;
+const tierRows = REACTION_TIERS.map((tier) => {
+  const range = tier.max === Infinity ? `${lower} ms+` : lower === 0 ? `< ${tier.max} ms` : `${lower}–${tier.max - 1} ms`;
+  const faster = tier.max === Infinity ? `< ${pct(lower)}%` : lower === 0 ? `> ${pct(tier.max)}%` : `${pct(tier.max)}–${pct(lower)}%`;
+  const labelKey = tier.key as keyof typeof t.toolUi.reactionTest.ratings;
+  const ratingLabel = t.toolUi.reactionTest.ratings[labelKey] ?? tier.label;
+  lower = tier.max;
+  return { range, label: ratingLabel, faster };
+});
+
+const accuracyIcons = [Timer, MousePointerClick, ShieldCheck, Shuffle];
+const accuracyCards = p.accuracyCards.map((card, i) => ({
+  icon: accuracyIcons[i % accuracyIcons.length],
+  title: card.title,
+  text: card.text,
+}));
+---
+
+<BaseLayout
+  title={p.title}
+  description={p.description}
+  jsonLd={toolPage(tool, p.title, p.description, p.faqs, locale, localizedHref, crumbs)}
+  locale={locale}
+>
+  <ToolHero
+    crumbs={crumbs}
+    eyebrow={p.eyebrow}
+    title={p.heroTitle}
+    lede={p.lede}
+    features={p.features}
+  >
+    <ReactionTest locale={locale} />
+  </ToolHero>
+
+  <Section id="how-it-works" eyebrow={p.howItWorksEyebrow} title={p.howItWorksTitle}>
+    <ol class="grid gap-4 md:grid-cols-3">
+      {
+        p.steps.map((s) => (
+          <li class="card p-6">
+            <span class="font-mono text-xs text-mute">{s.n}</span>
+            <h3 class="mt-4 text-heading-md">{s.t}</h3>
+            <p class="mt-2 text-sm leading-6 text-body">{s.d}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </Section>
+
+  <Section
+    id="scores"
+    eyebrow={p.benchmarksEyebrow}
+    title={p.benchmarksTitle}
+    intro={p.benchmarksIntro}
+  >
+    <div class="max-w-3xl overflow-x-auto rounded-md border border-hairline bg-surface">
+      <table class="data-table">
+        <caption class="sr-only">{p.benchmarksTitle}</caption>
+        <thead>
+          <tr>
+            <th scope="col">{p.tableAvg}</th>
+            <th scope="col">{p.tableRating}</th>
+            <th scope="col">{p.tableFaster}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            tierRows.map((r) => (
+              <tr>
+                <td>{r.range}</td>
+                <td>{r.label}</td>
+                <td>{r.faster}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+    <div class="prose-sr mt-8 max-w-3xl">
+      <p>{p.prose1}</p>
+      <p>{p.prose2}</p>
+      <p>
+        {p.prose3}{' '}
+        <a href={getLocalizedPath('/average-reaction-time/', locale)}>
+          {t.guides.averageReactionTime.name}
+        </a>.
+      </p>
+    </div>
+  </Section>
+
+  <Section
+    id="accuracy"
+    eyebrow={p.accuracyEyebrow}
+    title={p.accuracyTitle}
+    intro={p.accuracyIntro}
+  >
+    <div class="grid gap-4 sm:grid-cols-2">
+      {
+        accuracyCards.map((a) => (
+          <div class="card p-6">
+            <a.icon size={20} stroke-width={1.75} class="text-ink" />
+            <h3 class="mt-4 text-heading-md">{a.title}</h3>
+            <p class="mt-2 text-sm leading-6 text-body">{a.text}</p>
+          </div>
+        ))
+      }
+    </div>
+  </Section>
+
+  <Section
+    id="spacebar"
+    eyebrow={p.controlsEyebrow}
+    title={p.controlsTitle}
+    intro={p.controlsIntro}
+  >
+    <div class="prose-sr max-w-3xl">
+      <p>{p.controlsProse1}</p>
+      <p>{p.controlsProse2}</p>
+      <p>
+        {p.controlsProse3}{' '}
+        <a href={getLocalizedPath('/average-reaction-time/#device-lag', locale)}>
+          {t.pages.averageReaction.deviceLagTitle}
+        </a>.
+      </p>
+    </div>
+  </Section>
+
+  <Section id="factors" eyebrow={p.factorsEyebrow} title={p.factorsTitle}>
+    <div class="grid gap-px overflow-hidden rounded-md border border-hairline bg-hairline sm:grid-cols-2 lg:grid-cols-3">
+      {
+        p.factors.map((f) => (
+          <div class="bg-surface p-6">
+            <h3 class="text-label text-ink">{f.title}</h3>
+            <p class="mt-2 text-sm leading-6 text-body">{f.text}</p>
+          </div>
+        ))
+      }
+    </div>
+    <div class="prose-sr mt-8 max-w-3xl">
+      <p>
+        {p.factorsProse}{' '}
+        <a href={getLocalizedPath('/stopping-distance-calculator/', locale)}>
+          {t.tools.stopping.name}
+        </a>.
+      </p>
+    </div>
+  </Section>
+
+  <Section id="improve" eyebrow={p.improveEyebrow} title={p.improveTitle}>
+    <div class="prose-sr max-w-3xl">
+      <ol>
+        {p.improveTips.map((tip) => (
+          <li>{tip}</li>
+        ))}
+      </ol>
+    </div>
+  </Section>
+
+  <Faq items={p.faqs} title={p.faqTitle} />
+  <RelatedTools current={tool.id} locale={locale} />
+</BaseLayout>

@@ -27,9 +27,6 @@ const HISTORY_KEY = 'sr:reaction:history';
 const AUDIO_HISTORY_KEY = 'sr:audio:history';
 const MAX_SESSIONS = 100;
 
-const consistencyLabel = (sd: number): string =>
-  sd < 20 ? 'Very consistent' : sd < 40 ? 'Consistent' : sd < 70 ? 'Variable' : 'Erratic';
-
 class ReactionTest extends HTMLElement {
   private state: State = 'idle';
   private attempts: number[] = [];
@@ -45,6 +42,26 @@ class ReactionTest extends HTMLElement {
   /** Sound instead of colour as the signal (the audio reaction test). */
   private audio = false;
   private historyKey = HISTORY_KEY;
+  private ui: any = {};
+
+  private consistencyLabel(sd: number): string {
+    const cl = this.ui?.consistencyLabels;
+    if (sd < 20) return cl?.veryConsistent ?? 'Very consistent';
+    if (sd < 40) return cl?.consistent ?? 'Consistent';
+    if (sd < 70) return cl?.variable ?? 'Variable';
+    return cl?.erratic ?? 'Erratic';
+  }
+
+  private getTierLabel(ms: number): string {
+    const r = this.ui?.ratings;
+    if (!r) return tierFor(ms, REACTION_TIERS).label;
+    if (ms < 170) return r.elite;
+    if (ms < 210) return r.excellent;
+    if (ms < 250) return r.good;
+    if (ms < 290) return r.average;
+    if (ms < 350) return r.belowAverage;
+    return r.sluggish;
+  }
 
   private q<T extends Element = HTMLElement>(sel: string): T {
     const el = this.querySelector<T>(sel);
@@ -53,6 +70,11 @@ class ReactionTest extends HTMLElement {
   }
 
   connectedCallback(): void {
+    try {
+      this.ui = this.dataset.i18n ? JSON.parse(this.dataset.i18n) : {};
+    } catch {
+      this.ui = {};
+    }
     this.total = Number(this.dataset.attempts) || 5;
     this.verb = matchMedia('(pointer: coarse)').matches ? 'Tap' : 'Click';
     this.audio = this.dataset.stimulus === 'audio';
@@ -108,14 +130,14 @@ class ReactionTest extends HTMLElement {
     this.q('[data-copy-challenge]').addEventListener('click', async () => {
       const avg = Math.round(mean(this.attempts));
       const outcome = await copyText(this.challengeUrl(avg));
-      this.toast(outcome === 'copied' ? 'Challenge link copied' : 'Copy failed — select the address bar and copy manually');
+      this.toast(outcome === 'copied' ? (this.ui?.challengeCopied || 'Challenge link copied') : (this.ui?.copyFailed || 'Copy failed — select the address bar and copy manually'));
     });
     this.q('[data-clear-history]').addEventListener('click', () => {
-      if (!confirm('Clear all saved reaction test sessions on this device? This cannot be undone.')) return;
+      if (!confirm(this.ui?.clearHistoryConfirm || 'Clear all saved reaction test sessions on this device? This cannot be undone.')) return;
       this.history = [];
       store.remove(this.historyKey);
       this.renderHistory();
-      this.toast('History cleared');
+      this.toast(this.ui?.historyCleared || 'History cleared');
     });
 
     if (!this.audio) this.bindDistributionHover();
@@ -209,54 +231,68 @@ class ReactionTest extends HTMLElement {
     const stage = this.q('[data-stage]');
     stage.dataset.state = state;
     const n = Math.min(this.attempts.length + 1, this.total);
-    const attemptLabel = `Attempt ${n} of ${this.total}`;
+    const attemptLabel = `${this.ui?.attempt || 'Attempt'} ${n} / ${this.total}`;
     let kicker = '';
     let title = '';
     let sub = '';
 
-    const signal = this.audio ? 'you hear the beep' : 'the panel turns blue';
+    const isTap = this.verb === 'Tap';
     switch (state) {
       case 'idle':
-        kicker = opts.paused ? 'Paused' : this.attempts.length ? attemptLabel : this.audio ? 'Audio reaction test' : 'Reaction time test';
-        title = opts.paused ? `${this.verb} to resume` : `${this.verb} to start`;
+        kicker = opts.paused
+          ? (this.ui?.paused || 'Paused')
+          : this.attempts.length
+            ? attemptLabel
+            : this.audio
+              ? (this.ui?.audioKicker || 'Audio reaction test')
+              : (this.ui?.visualKicker || 'Reaction time test');
+        title = opts.paused
+          ? (isTap ? this.ui?.tapToResume : this.ui?.clickToResume) || `${this.verb} to resume`
+          : (isTap ? this.ui?.tapToStart : this.ui?.clickToStart) || `${this.verb} to start`;
         sub = opts.paused
-          ? 'The attempt was cancelled because you switched tabs.'
-          : `When ${signal}, tap, click, or press Space as fast as you can.`;
+          ? (this.ui?.tabSwitchedCancel || 'The attempt was cancelled because you switched tabs.')
+          : (this.audio ? this.ui?.subAudioStart : this.ui?.subVisualStart) ||
+            `When ${this.audio ? 'you hear the beep' : 'the panel turns blue'}, tap, click, or press Space as fast as you can.`;
         break;
       case 'waiting':
         kicker = attemptLabel;
-        title = this.audio ? 'Listen…' : 'Wait for blue…';
-        sub = this.audio ? 'React the moment you hear the beep.' : 'React the moment the colour changes.';
+        title = this.audio ? (this.ui?.listenWait || 'Listen…') : (this.ui?.blueWait || 'Wait for blue…');
+        sub = this.audio
+          ? (this.ui?.listenSub || 'React the moment you hear the beep.')
+          : (this.ui?.blueSub || 'React the moment the colour changes.');
         break;
       // In the audio test the screen must not change when the beep plays, so "go" looks like "waiting".
       case 'go':
         kicker = attemptLabel;
-        title = this.audio ? 'Listen…' : this.verb === 'Tap' ? 'Tap!' : 'Click!';
-        sub = this.audio ? 'React the moment you hear the beep.' : '';
+        title = this.audio ? (this.ui?.listenWait || 'Listen…') : isTap ? (this.ui?.tapNow || 'Tap!') : (this.ui?.clickNow || 'Click!');
+        sub = this.audio ? (this.ui?.listenSub || 'React the moment you hear the beep.') : '';
         break;
       case 'result': {
-        kicker = `Attempt ${this.attempts.length} of ${this.total}`;
+        kicker = `${this.ui?.attempt || 'Attempt'} ${this.attempts.length} / ${this.total}`;
         title = `${opts.value} ms`;
+        const nextSub = isTap ? (this.ui?.tapNext || 'Tap for the next attempt.') : (this.ui?.clickNext || 'Click for the next attempt.');
         sub = this.audio
-          ? `${this.verb} for the next attempt.`
-          : `${tierFor(opts.value ?? 0, REACTION_TIERS).label}. ${this.verb} for the next attempt.`;
+          ? nextSub
+          : `${this.getTierLabel(opts.value ?? 0)}. ${nextSub}`;
         break;
       }
       case 'early':
-        kicker = 'False start';
-        title = 'Too soon';
-        sub = `You went before ${this.audio ? 'the beep' : 'the panel turned blue'}. ${this.verb} to retry this attempt — it wasn’t counted.`;
+        kicker = this.ui?.falseStartKicker || 'False start';
+        title = this.ui?.tooSoonTitle || 'Too soon';
+        sub = this.audio
+          ? (this.ui?.tooSoonSubAudio || `You went before the beep. ${this.verb} to retry this attempt — it wasn’t counted.`)
+          : (this.ui?.tooSoonSubVisual || `You went before the panel turned blue. ${this.verb} to retry this attempt — it wasn’t counted.`);
         break;
       case 'anticipated':
-        kicker = 'Not counted';
-        title = `${Math.max(0, opts.value ?? 0)} ms is too fast`;
-        sub = `Under ${ANTICIPATION_MS} ms is anticipation, not reaction. ${this.verb} to retry this attempt.`;
+        kicker = this.ui?.notCountedKicker || 'Not counted';
+        title = `${Math.max(0, opts.value ?? 0)} ms ${this.ui?.tooFastTitle || 'is too fast'}`;
+        sub = this.ui?.tooFastSub || `Under ${ANTICIPATION_MS} ms is anticipation, not reaction. ${this.verb} to retry this attempt.`;
         break;
       case 'done': {
         const avg = Math.round(mean(this.attempts));
-        kicker = 'Session complete';
+        kicker = this.ui?.sessionCompleteKicker || 'Session complete';
         title = `${avg} ms`;
-        sub = `Your average over ${this.total} attempts. ${this.verb} to start a new session.`;
+        sub = (isTap ? this.ui?.sessionCompleteSubTap : this.ui?.sessionCompleteSubClick) || `Your average over ${this.total} attempts. ${this.verb} to start a new session.`;
         break;
       }
     }
@@ -271,7 +307,7 @@ class ReactionTest extends HTMLElement {
   private renderProgress(): void {
     const dots = this.q('[data-dots]').children;
     for (let i = 0; i < dots.length; i++) (dots[i] as HTMLElement).toggleAttribute('data-done', i < this.attempts.length);
-    this.q('[data-attempt-label]').textContent = `${this.attempts.length} of ${this.total}`;
+    this.q('[data-attempt-label]').textContent = `${this.attempts.length} / ${this.total}`;
     this.q('[data-live-avg]').textContent = this.attempts.length ? `${Math.round(mean(this.attempts))} ms` : '—';
     this.q('[data-live-best]').textContent = this.attempts.length ? `${Math.min(...this.attempts)} ms` : '—';
   }
@@ -292,7 +328,7 @@ class ReactionTest extends HTMLElement {
     this.q('[data-sum-worst]').textContent = `Slowest ${worst} ms`;
     this.q('[data-sum-median]').textContent = `${Math.round(median(a))} ms`;
     this.q('[data-sum-sd]').textContent = `±${sd} ms`;
-    this.q('[data-sum-sd-label]').textContent = consistencyLabel(sd);
+    this.q('[data-sum-sd-label]').textContent = this.consistencyLabel(sd);
 
     // The population model describes visual reactions, so the sound test compares you with yourself instead.
     let standing: string;
@@ -300,8 +336,9 @@ class ReactionTest extends HTMLElement {
       standing = this.renderSenseComparison(avg);
     } else {
       const pct = Math.round(percentFasterThan(avg));
+      const tierLabel = this.getTierLabel(avg);
       const tier = tierFor(avg, REACTION_TIERS);
-      this.q('[data-sum-tier]').textContent = tier.label;
+      this.q('[data-sum-tier]').textContent = tierLabel;
       this.q('[data-sum-percentile]').textContent = `Faster than about ${pct}% of people · ${tier.note}`;
       standing = `faster than about ${pct} percent of people`;
 

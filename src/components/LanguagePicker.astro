@@ -1,0 +1,155 @@
+---
+import { Languages, Check, ChevronDown } from '@lucide/astro';
+import { LOCALES, LOCALE_INFO, getLocaleFromPath, getLocalizedPath, type Locale } from '../lib/i18n';
+
+interface Props {
+  currentLocale?: Locale;
+  currentPath?: string;
+  isMobile?: boolean;
+}
+
+const {
+  currentPath = Astro.url.pathname,
+  currentLocale = getLocaleFromPath(currentPath),
+  isMobile = false,
+} = Astro.props;
+
+const currentInfo = LOCALE_INFO[currentLocale] || LOCALE_INFO.en;
+---
+
+{
+  isMobile ? (
+    <div class="mt-4 border-t border-hairline pt-4">
+      <div class="flex items-center justify-between mb-2">
+        <p class="eyebrow">Language / Idioma</p>
+        <span class="text-xs text-mute font-mono">{currentInfo.nativeName}</span>
+      </div>
+      <div class="grid grid-cols-2 gap-1.5">
+        {LOCALES.map((loc) => {
+          const info = LOCALE_INFO[loc];
+          const targetUrl = getLocalizedPath(currentPath, loc);
+          const isActive = loc === currentLocale;
+          return (
+            <a
+              href={targetUrl}
+              class:list={[
+                'flex items-center justify-between rounded-sm border px-3 py-2 text-xs transition-colors',
+                isActive
+                  ? 'border-link bg-link/10 font-semibold text-link'
+                  : 'border-hairline bg-surface text-body hover:border-hairline-strong hover:text-ink',
+              ]}
+              aria-current={isActive ? 'page' : undefined}
+            >
+              <span class="truncate">{info.nativeName}</span>
+              <span class="text-[10px] text-mute font-mono uppercase">{info.badge}</span>
+            </a>
+          );
+        })}
+      </div>
+    </div>
+  ) : (
+    <div class="relative" data-lang-picker>
+      <button
+        type="button"
+        class="inline-flex h-9 items-center gap-1.5 rounded-full border border-hairline bg-surface/80 px-2.5 text-xs font-medium text-ink transition-colors hover:border-hairline-strong hover:bg-hairline-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-link"
+        data-lang-trigger
+        aria-expanded="false"
+        aria-haspopup="true"
+        aria-label={`Select language. Current: ${currentInfo.nativeName}`}
+        title={`Language: ${currentInfo.nativeName}`}
+      >
+        <Languages size={15} class="text-body" />
+        <span class="font-medium tracking-wide">{currentInfo.badge}</span>
+        <ChevronDown size={13} class="text-mute transition-transform duration-200" data-lang-chevron />
+      </button>
+
+      <div
+        data-lang-menu
+        hidden
+        class="absolute right-0 top-full mt-2 w-48 origin-top-right rounded-md border border-hairline bg-surface p-1 shadow-float backdrop-blur-lg z-50"
+        role="menu"
+        aria-orientation="vertical"
+      >
+        <div class="px-2.5 py-1.5 text-[10px] font-semibold tracking-wider uppercase text-mute">
+          Select language
+        </div>
+        <div class="grid gap-0.5">
+          {LOCALES.map((loc) => {
+            const info = LOCALE_INFO[loc];
+            const targetUrl = getLocalizedPath(currentPath, loc);
+            const isActive = loc === currentLocale;
+            return (
+              <a
+                href={targetUrl}
+                role="menuitem"
+                class:list={[
+                  'flex items-center justify-between rounded-sm px-2.5 py-2 text-xs transition-colors',
+                  isActive
+                    ? 'bg-hairline-soft font-semibold text-ink'
+                    : 'text-body hover:bg-hairline-soft/70 hover:text-ink',
+                ]}
+                aria-current={isActive ? 'true' : undefined}
+              >
+                <span class="flex items-center gap-2">
+                  <span class="w-5 text-[10px] font-mono font-medium text-mute">{info.badge}</span>
+                  <span>{info.nativeName}</span>
+                </span>
+                {isActive && <Check size={14} class="text-link" />}
+              </a>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+<script>
+  function setupLangPickers() {
+    const pickers = document.querySelectorAll<HTMLElement>('[data-lang-picker]');
+    pickers.forEach((picker) => {
+      const trigger = picker.querySelector<HTMLButtonElement>('[data-lang-trigger]');
+      const menu = picker.querySelector<HTMLElement>('[data-lang-menu]');
+      const chevron = picker.querySelector<HTMLElement>('[data-lang-chevron]');
+      if (!trigger || !menu) return;
+
+      const open = () => {
+        menu.hidden = false;
+        trigger.setAttribute('aria-expanded', 'true');
+        if (chevron) chevron.style.transform = 'rotate(180deg)';
+      };
+
+      const close = () => {
+        menu.hidden = true;
+        trigger.setAttribute('aria-expanded', 'false');
+        if (chevron) chevron.style.transform = 'rotate(0deg)';
+      };
+
+      trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isExpanded = trigger.getAttribute('aria-expanded') === 'true';
+        if (isExpanded) {
+          close();
+        } else {
+          open();
+        }
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!picker.contains(e.target as Node)) {
+          close();
+        }
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !menu.hidden) {
+          close();
+          trigger.focus();
+        }
+      });
+    });
+  }
+
+  setupLangPickers();
+  document.addEventListener('astro:page-load', setupLangPickers);
+</script>

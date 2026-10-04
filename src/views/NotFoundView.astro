@@ -1,0 +1,122 @@
+---
+import { House, ArrowLeft } from '@lucide/astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ToolCard from '../components/ToolCard.astro';
+import { GUIDES, TOOLS } from '../lib/site';
+import { getLocalizedPath, type Locale } from '../lib/i18n';
+import { getTranslations } from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = getTranslations(locale);
+const p = t.pages.notFound;
+
+const tools = TOOLS.map((tool) => ({
+  id: tool.id,
+  href: getLocalizedPath(tool.href, locale),
+  name: t.tools[tool.id]?.name ?? tool.name,
+  summary: t.tools[tool.id]?.summary ?? tool.summary,
+}));
+
+const guides = GUIDES.map((g) => ({
+  id: 'guide' as const,
+  href: getLocalizedPath(g.href, locale),
+  name: t.guides.averageReactionTime.name,
+  summary: t.guides.averageReactionTime.summary,
+}));
+---
+
+<BaseLayout
+  title={p.title}
+  description={p.description}
+  noindex
+  locale={locale}
+>
+  <div class="relative isolate overflow-hidden">
+    <!-- Brand mesh gradient background in hero -->
+    <div
+      class="mesh pointer-events-none absolute -top-48 left-1/2 -z-10 h-[32rem] w-[56rem] -translate-x-1/2 opacity-40 dark:opacity-20"
+      aria-hidden="true"
+    ></div>
+
+    <section class="shell py-16 sm:py-24">
+      <div class="max-w-3xl">
+        <!-- Eyebrow badge -->
+        <div class="inline-flex items-center gap-2 rounded-full border border-hairline bg-surface px-3 py-1 text-xs font-mono font-medium text-mute shadow-whisper">
+          <span class="size-1.5 rounded-full bg-warning" aria-hidden="true"></span>
+          <span>{p.eyebrow}</span>
+        </div>
+
+        <h1 class="mt-4 text-display-sm sm:text-display text-ink tracking-tight font-semibold">
+          {p.heading}
+        </h1>
+        <p class="mt-4 max-w-xl text-lg leading-7 text-body">
+          {p.text}
+        </p>
+
+        <!-- Navigation actions: Home + Return to Previous Page -->
+        <div class="mt-8 flex flex-wrap items-center gap-3">
+          <a href={getLocalizedPath('/', locale)} class="btn btn-md btn-primary">
+            <House class="size-4" aria-hidden="true" />
+            <span>{p.homeButton}</span>
+          </a>
+          <a
+            href={getLocalizedPath('/', locale)}
+            class="btn btn-md btn-secondary cursor-pointer"
+            id="not-found-back-btn"
+          >
+            <ArrowLeft class="size-4" aria-hidden="true" />
+            <span>{p.backButton}</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Quick Helpful Troubleshooting Card -->
+      <div class="card mt-10 max-w-2xl p-5 sm:p-6 border border-hairline bg-surface shadow-whisper">
+        <p class="text-xs font-mono font-medium uppercase tracking-wider text-mute">
+          Troubleshooting & Help
+        </p>
+        <div class="mt-3 grid gap-3 sm:grid-cols-3 text-xs text-mute">
+          <div>
+            <span class="font-medium text-ink block mb-0.5">Typo Check</span>
+            <span>Confirm the address has correct spelling and formatting.</span>
+          </div>
+          <div>
+            <span class="font-medium text-ink block mb-0.5">Relocated Page</span>
+            <span>Certain guides and tests may have been consolidated or moved.</span>
+          </div>
+          <div>
+            <span class="font-medium text-ink block mb-0.5">Quick Tests</span>
+            <span>Pick any reaction test or speed tool below to get started.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Popular Tools & Guides -->
+      <div class="mt-14 border-t border-hairline pt-10">
+        <h2 class="text-heading-md font-semibold text-ink">{p.popularHeading}</h2>
+        <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {tools.map((item) => <ToolCard tool={item} />)}
+          {guides.map((item) => <ToolCard tool={item} />)}
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script is:inline>
+    (function() {
+      var backBtn = document.getElementById('not-found-back-btn');
+      if (backBtn) {
+        backBtn.addEventListener('click', function(e) {
+          if (window.history.length > 1) {
+            e.preventDefault();
+            window.history.back();
+          }
+        });
+      }
+    })();
+  </script>
+</BaseLayout>

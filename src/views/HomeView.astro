@@ -1,0 +1,304 @@
+---
+import { Timer, Eye, Lock, Smartphone, Bell, ChartLine, Info, MessageSquare, Shield, FileText } from '@lucide/astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Section from '../components/Section.astro';
+import ToolCard from '../components/ToolCard.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { GUIDES, REFLEX_TOOLS, SPEED_TOOLS, toolById } from '../lib/site';
+import { webPage } from '../lib/schema';
+import { DIST, distX, distributionPaths, percentFasterThan } from '../lib/reaction';
+import { GAUGE, arcPath } from '../lib/speed';
+import { getLocalizedPath, type Locale } from '../lib/i18n';
+import { getTranslations } from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = getTranslations(locale);
+const p = t.pages.home;
+
+const { line, area } = distributionPaths();
+const demoMs = 212;
+const gaugeTrack = arcPath(GAUGE.start, GAUGE.start + GAUGE.sweep);
+
+const featureIcons = [Timer, Eye, Lock, Smartphone, Bell, ChartLine];
+const features = p.features.map((f, i) => ({
+  icon: featureIcons[i % featureIcons.length],
+  title: f.title,
+  text: f.text,
+}));
+
+const reflexTools = REFLEX_TOOLS.map((tool) => ({
+  id: tool.id,
+  href: getLocalizedPath(tool.href, locale),
+  name: t.tools[tool.id]?.name ?? tool.name,
+  summary: t.tools[tool.id]?.summary ?? tool.summary,
+}));
+
+const guidesList = GUIDES.map((g) => ({
+  id: 'guide' as const,
+  href: getLocalizedPath(g.href, locale),
+  name: t.guides.averageReactionTime.name,
+  summary: t.guides.averageReactionTime.summary,
+}));
+
+const speedTools = SPEED_TOOLS.map((tool) => ({
+  id: tool.id,
+  href: getLocalizedPath(tool.href, locale),
+  name: t.tools[tool.id]?.name ?? tool.name,
+  summary: t.tools[tool.id]?.summary ?? tool.summary,
+}));
+
+const stoppingTool = {
+  id: 'stopping' as const,
+  href: getLocalizedPath('/stopping-distance-calculator/', locale),
+  name: t.tools.stopping?.name ?? toolById('stopping').name,
+  summary: t.tools.stopping?.summary ?? toolById('stopping').summary,
+};
+---
+
+<BaseLayout
+  title={p.title}
+  description={p.description}
+  locale={locale}
+  jsonLd={webPage({
+    href: getLocalizedPath('/', locale),
+    name: p.title,
+    description: p.description,
+    faq: p.faqs,
+    locale,
+  })}
+>
+  <section class="relative isolate overflow-hidden border-b border-hairline">
+    <div class="mesh pointer-events-none absolute left-1/2 top-[-6rem] -z-10 h-[34rem] w-[64rem] -translate-x-1/2 opacity-70 dark:opacity-40" aria-hidden="true"></div>
+    <div class="shell pb-20 pt-16 text-center sm:pb-24 sm:pt-28">
+      <p class="eyebrow">{p.eyebrow}</p>
+      <h1 class="mx-auto mt-4 max-w-3xl text-[2.5rem] font-semibold leading-[1.05] tracking-[-0.05em] sm:text-[3.75rem]">
+        {p.h1}
+      </h1>
+      <p class="mx-auto mt-6 max-w-2xl text-lg leading-7 text-body">
+        {p.lede}
+      </p>
+      <div class="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
+        <a href={getLocalizedPath('/reaction-time-test/', locale)} class="btn btn-lg btn-primary">{p.btnReaction}</a>
+        <a href={getLocalizedPath('/speedometer/', locale)} class="btn btn-lg btn-secondary">{p.btnSpeedometer}</a>
+      </div>
+
+      <div class="mx-auto mt-16 grid max-w-5xl gap-4 text-left sm:grid-cols-2 lg:grid-cols-3">
+        <a href={getLocalizedPath('/reaction-time-test/', locale)} class="group card block p-5 shadow-float transition-[border-color] hover:border-hairline-strong">
+          <span class="sr-only">{p.btnReaction}</span>
+          <div aria-hidden="true">
+            <p class="eyebrow">{p.previewReactionTitle}</p>
+            <p class="mt-3 text-heading-lg tabular-nums">{demoMs} ms</p>
+            <p class="mt-1 text-sm text-body">{p.previewReactionSub}</p>
+            <svg viewBox={`0 0 ${DIST.width} ${DIST.base + 6}`} class="mt-4 h-auto w-full text-ink">
+              <path d={area} fill="currentColor" fill-opacity="0.08" />
+              <path d={line} fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" />
+              <line x1={distX(demoMs)} x2={distX(demoMs)} y1={DIST.top} y2={DIST.base} class="stroke-link" stroke-width="4" />
+              <circle cx={distX(demoMs)} cy={DIST.base} r="8" class="fill-link stroke-surface" stroke-width="3" />
+            </svg>
+          </div>
+        </a>
+
+        <a href={getLocalizedPath('/f1-reaction-time-test/', locale)} class="group card block p-5 shadow-float transition-[border-color] hover:border-hairline-strong">
+          <span class="sr-only">{p.previewF1Title}</span>
+          <div aria-hidden="true">
+            <p class="eyebrow">{p.previewF1Title}</p>
+            <p class="mt-3 text-heading-lg tabular-nums">0.198 s</p>
+            <p class="mt-1 text-sm text-body">{p.previewF1Sub}</p>
+            <div class="mt-4 flex justify-between gap-1.5 rounded-sm bg-gantry p-2.5">
+              {
+                Array.from({ length: 5 }, (_, i) => (
+                  <span class="flex flex-1 flex-col items-center gap-1.5 rounded-[4px] bg-gantry-panel py-2">
+                    <span class:list={['size-4 rounded-full', i < 4 ? 'bg-lamp-on shadow-lamp' : 'bg-lamp-off']} />
+                    <span class:list={['size-4 rounded-full', i < 4 ? 'bg-lamp-on shadow-lamp' : 'bg-lamp-off']} />
+                  </span>
+                ))
+              }
+            </div>
+          </div>
+        </a>
+
+        <a href={getLocalizedPath('/speedometer/', locale)} class="group card block p-5 shadow-float transition-[border-color] hover:border-hairline-strong sm:col-span-2 lg:col-span-1">
+          <span class="sr-only">{p.btnSpeedometer}</span>
+          <div aria-hidden="true" class="flex items-center gap-4">
+            <div class="min-w-0 flex-1">
+              <p class="eyebrow">{p.previewGpsTitle}</p>
+              <p class="mt-3 text-heading-lg tabular-nums">87 km/h</p>
+              <p class="mt-1 flex items-center gap-1.5 text-sm text-body">
+                <span class="size-2 rounded-full bg-link"></span> {p.previewGpsSub}
+              </p>
+            </div>
+            <svg viewBox="0 0 320 320" class="size-24 shrink-0 text-ink sm:size-28">
+              <path d={gaugeTrack} fill="none" stroke-width="18" stroke-linecap="round" class="stroke-hairline" />
+              <path d={gaugeTrack} fill="none" stroke-width="18" stroke-linecap="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="52" class="stroke-ink" />
+            </svg>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-b border-hairline" aria-label="Highlights">
+    <ul class="shell flex flex-wrap justify-center gap-x-10 gap-y-3 py-8 font-mono text-xs uppercase text-mute">
+      {p.highlights.map((h) => <li>{h}</li>)}
+    </ul>
+  </section>
+
+  <Section
+    id="reflex-tests"
+    eyebrow={p.reflexEyebrow}
+    title={p.reflexTitle}
+    intro={p.reflexIntro}
+  >
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {reflexTools.map((tool) => <ToolCard tool={tool} />)}
+      {guidesList.map((g) => <ToolCard tool={g} />)}
+    </div>
+  </Section>
+
+  <Section
+    id="speed-tests"
+    eyebrow={p.speedEyebrow}
+    title={p.speedTitle}
+    intro={p.speedIntro}
+  >
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {speedTools.map((tool) => <ToolCard tool={tool} />)}
+    </div>
+  </Section>
+
+  <Section
+    id="speed-and-reflexes"
+    eyebrow={p.comboEyebrow}
+    title={p.comboTitle}
+    intro={p.comboIntro}
+  >
+    <div class="grid items-stretch gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+      <ToolCard tool={stoppingTool} cta={p.comboCta} />
+      <div class="card grid content-center gap-4 p-6 sm:grid-cols-3">
+        {
+          p.comboStats.map((s) => (
+            <div>
+              <p class="text-heading-lg tabular-nums">{s.v}</p>
+              <p class="mt-1 text-sm leading-6 text-body">{s.l}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </Section>
+
+  <Section id="why" eyebrow={p.whyEyebrow} title={p.whyTitle}>
+    <div class="grid gap-px overflow-hidden rounded-md border border-hairline bg-hairline sm:grid-cols-2 lg:grid-cols-3">
+      {
+        features.map((f) => (
+          <div class="bg-surface p-6 sm:p-8">
+            <f.icon size={20} stroke-width={1.75} class="text-ink" />
+            <h3 class="mt-4 text-heading-md">{f.title}</h3>
+            <p class="mt-2 text-sm leading-6 text-body">{f.text}</p>
+          </div>
+        ))
+      }
+    </div>
+    <div class="prose-sr mt-8 max-w-3xl">
+      <p>
+        {p.whyProse}
+      </p>
+    </div>
+  </Section>
+
+  <Section id="numbers" eyebrow={p.benchmarksEyebrow} title={p.benchmarksTitle}>
+    <dl class="grid gap-px overflow-hidden rounded-md border border-hairline bg-hairline sm:grid-cols-2 lg:grid-cols-4">
+      {
+        p.stats.map((s) => (
+          <div class="flex flex-col-reverse gap-2 bg-surface p-6">
+            <dt class="text-sm leading-6 text-body">{s.label}</dt>
+            <dd class="text-heading-lg">{s.value}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </Section>
+
+  <Section
+    id="trust-and-company"
+    eyebrow={p.trustEyebrow}
+    title={p.trustTitle}
+    intro={p.trustIntro}
+  >
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <a href={getLocalizedPath('/about/', locale)} class="group card flex flex-col justify-between p-6 shadow-whisper transition-[border-color,box-shadow] hover:border-hairline-strong hover:shadow-float">
+        <div>
+          <span class="flex size-10 items-center justify-center rounded-sm border border-hairline bg-surface text-ink transition-colors group-hover:border-hairline-strong">
+            <Info size={20} />
+          </span>
+          <h3 class="mt-4 text-heading-md text-ink group-hover:text-link">{p.cardAboutTitle}</h3>
+          <p class="mt-2 text-sm leading-6 text-body">
+            {p.cardAboutText}
+          </p>
+        </div>
+        <p class="mt-6 flex items-center gap-1 text-sm font-medium text-link group-hover:text-link-deep">
+          {p.cardAboutLink} <span aria-hidden="true">&rarr;</span>
+        </p>
+      </a>
+
+      <a href={getLocalizedPath('/contact/', locale)} class="group card flex flex-col justify-between p-6 shadow-whisper transition-[border-color,box-shadow] hover:border-hairline-strong hover:shadow-float">
+        <div>
+          <span class="flex size-10 items-center justify-center rounded-sm border border-hairline bg-surface text-ink transition-colors group-hover:border-hairline-strong">
+            <MessageSquare size={20} />
+          </span>
+          <h3 class="mt-4 text-heading-md text-ink group-hover:text-link">{p.cardContactTitle}</h3>
+          <p class="mt-2 text-sm leading-6 text-body">
+            {p.cardContactText}
+          </p>
+        </div>
+        <p class="mt-6 flex items-center gap-1 text-sm font-medium text-link group-hover:text-link-deep">
+          {p.cardContactLink} <span aria-hidden="true">&rarr;</span>
+        </p>
+      </a>
+
+      <a href={getLocalizedPath('/privacy/', locale)} class="group card flex flex-col justify-between p-6 shadow-whisper transition-[border-color,box-shadow] hover:border-hairline-strong hover:shadow-float">
+        <div>
+          <span class="flex size-10 items-center justify-center rounded-sm border border-hairline bg-surface text-ink transition-colors group-hover:border-hairline-strong">
+            <Shield size={20} />
+          </span>
+          <h3 class="mt-4 text-heading-md text-ink group-hover:text-link">{p.cardPrivacyTitle}</h3>
+          <p class="mt-2 text-sm leading-6 text-body">
+            {p.cardPrivacyText}
+          </p>
+        </div>
+        <p class="mt-6 flex items-center gap-1 text-sm font-medium text-link group-hover:text-link-deep">
+          {p.cardPrivacyLink} <span aria-hidden="true">&rarr;</span>
+        </p>
+      </a>
+
+      <a href={getLocalizedPath('/terms/', locale)} class="group card flex flex-col justify-between p-6 shadow-whisper transition-[border-color,box-shadow] hover:border-hairline-strong hover:shadow-float">
+        <div>
+          <span class="flex size-10 items-center justify-center rounded-sm border border-hairline bg-surface text-ink transition-colors group-hover:border-hairline-strong">
+            <FileText size={20} />
+          </span>
+          <h3 class="mt-4 text-heading-md text-ink group-hover:text-link">{p.cardTermsTitle}</h3>
+          <p class="mt-2 text-sm leading-6 text-body">
+            {p.cardTermsText}
+          </p>
+        </div>
+        <p class="mt-6 flex items-center gap-1 text-sm font-medium text-link group-hover:text-link-deep">
+          {p.cardTermsLink} <span aria-hidden="true">&rarr;</span>
+        </p>
+      </a>
+    </div>
+  </Section>
+
+  <Faq items={p.faqs} />
+
+  <CtaBand
+    title={p.ctaTitle}
+    text={p.ctaText}
+    primary={{ href: getLocalizedPath('/reaction-time-test/', locale), label: p.ctaPrimary }}
+    secondary={{ href: getLocalizedPath('/f1-reaction-time-test/', locale), label: p.ctaSecondary }}
+  />
+</BaseLayout>

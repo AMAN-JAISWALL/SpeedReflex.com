@@ -1,12 +1,17 @@
 ---
 import { Play, Pause, RotateCcw, TrianglesCenterlineDashedHorizontal, Maximize, Download, X, Sun } from '@lucide/astro';
 import { GAUGE, PRESETS, UNITS, arcPath, gaugeTicks, initialRange, type SpeedPresetId } from '../lib/speed';
+import { getLocaleFromPath, type Locale } from '../lib/i18n';
+import { getTranslations } from '../i18n';
 
 interface Props {
   preset: SpeedPresetId;
+  locale?: Locale;
 }
 
-const { preset } = Astro.props;
+const { preset, locale = getLocaleFromPath(Astro.url.pathname) } = Astro.props;
+const t = getTranslations(locale);
+const ui = t.toolUi.speedometer;
 const p = PRESETS[preset];
 const unit = 'kmh';
 const range = initialRange(p, unit);
@@ -15,29 +20,29 @@ const track = arcPath(GAUGE.start, GAUGE.start + GAUGE.sweep);
 const id = `speedo-${preset}`;
 
 const tiles = [
-  { key: 'max', label: 'Max speed' },
-  { key: 'avg', label: 'Avg (moving)' },
-  { key: 'distance', label: 'Distance' },
-  { key: 'elapsed', label: 'Trip time' },
-  { key: 'moving', label: 'Moving time' },
-  { key: 'heading', label: 'Heading' },
-  ...(p.showAltitude ? [{ key: 'altitude', label: 'Altitude' }] : []),
+  { key: 'max', label: ui.tileMax },
+  { key: 'avg', label: ui.tileAvg },
+  { key: 'distance', label: ui.tileDistance },
+  { key: 'elapsed', label: ui.tileTripTime },
+  { key: 'moving', label: ui.tileMovingTime },
+  { key: 'heading', label: ui.tileHeading },
+  ...(p.showAltitude ? [{ key: 'altitude', label: ui.tileAltitude }] : []),
 ];
 ---
 
-<gps-speedometer class="block" data-preset={preset}>
+<gps-speedometer class="block" data-preset={preset} data-i18n={JSON.stringify(ui)}>
   <div class="card overflow-hidden shadow-whisper fullscreen:overflow-y-auto fullscreen:rounded-none" data-tool>
     <div class="flex flex-wrap items-center justify-between gap-3 border-b border-hairline px-4 py-3 sm:px-5">
       <div class="flex min-w-0 items-center gap-3">
         <span class="inline-flex items-center gap-2 text-sm text-body">
           <span data-gps-dot data-level="off" class="size-2 shrink-0 rounded-full bg-faint data-[level=fair]:bg-warning data-[level=good]:bg-link data-[level=poor]:bg-error"></span>
-          <span data-gps-text class="truncate">GPS off</span>
+          <span data-gps-text class="truncate">{ui.gpsOff}</span>
         </span>
         <span data-wake hidden class="hidden items-center gap-1 text-xs text-mute sm:inline-flex">
-          <Sun size={12} /> Screen stays on
+          <Sun size={12} /> {ui.screenOn}
         </span>
       </div>
-      <div class="segmented" role="group" aria-label="Speed unit" data-units>
+      <div class="segmented" role="group" aria-label={ui.speedUnit} data-units>
         {
           p.units.map((u) => (
             <button type="button" data-unit={u} aria-pressed={u === unit ? 'true' : 'false'}>
@@ -82,10 +87,10 @@ const tiles = [
             </g>
           </svg>
           <div class="absolute inset-0 flex flex-col items-center justify-center pt-6">
-            <span class="sr-only">Current speed</span>
+            <span class="sr-only">{ui.currentSpeed}</span>
             <span data-speed class="text-[26cqw] font-semibold leading-none tracking-[-0.05em] tabular-nums data-long:text-[18cqw]">0</span>
             <span data-unit-label class="eyebrow mt-3">{UNITS[unit].short}</span>
-            <span data-over-badge hidden class="mt-3 rounded-pill bg-error px-2.5 py-0.5 text-xs font-medium text-white">Over your alert</span>
+            <span data-over-badge hidden class="mt-3 rounded-pill bg-error px-2.5 py-0.5 text-xs font-medium text-white">{ui.overAlert}</span>
           </div>
         </div>
 
@@ -93,21 +98,21 @@ const tiles = [
           <button type="button" class="btn btn-md btn-primary min-w-32 max-sm:basis-full" data-toggle>
             <Play size={16} data-icon-play />
             <Pause size={16} data-icon-pause class="hidden" />
-            <span data-toggle-label>Start</span>
+            <span data-toggle-label>{ui.start}</span>
           </button>
           <button type="button" class="btn btn-md btn-secondary" data-reset>
             <RotateCcw size={16} />
-            Reset
+            {ui.reset}
           </button>
           {
             p.hud && (
               <button type="button" class="btn btn-md btn-secondary" data-hud-open>
                 <TrianglesCenterlineDashedHorizontal size={16} />
-                HUD
+                {ui.hudMode}
               </button>
             )
           }
-          <button type="button" class="btn btn-md btn-secondary w-10 px-0" data-fullscreen aria-label="Full screen" hidden>
+          <button type="button" class="btn btn-md btn-secondary w-10 px-0" data-fullscreen aria-label={ui.fullScreen} hidden>
             <Maximize size={16} />
           </button>
         </div>
@@ -117,14 +122,14 @@ const tiles = [
       <div class="border-t border-hairline lg:border-l lg:border-t-0">
         <dl class="grid grid-cols-2 gap-px bg-hairline [&>div:last-child:nth-child(odd)]:col-span-2">
           {
-            tiles.map((t) => (
+            tiles.map((tile) => (
               <div class="bg-surface px-4 py-3.5">
-                <dt class="text-xs text-mute">{t.label}</dt>
+                <dt class="text-xs text-mute">{tile.label}</dt>
                 <dd class="mt-1 flex items-baseline gap-1">
-                  <span class="text-heading-md tabular-nums" data-stat={t.key}>
+                  <span class="text-heading-md tabular-nums" data-stat={tile.key}>
                     —
                   </span>
-                  <span class="text-xs text-mute" data-stat-unit={t.key} />
+                  <span class="text-xs text-mute" data-stat-unit={tile.key} />
                 </dd>
               </div>
             ))
@@ -136,7 +141,7 @@ const tiles = [
             <div class="border-t border-hairline px-4 py-4">
               <div class="flex items-center justify-between gap-3">
                 <span class="text-label text-ink" id={`${id}-alert-label`}>
-                  Speed alert
+                  {ui.setAlert}
                 </span>
                 <button
                   type="button"
@@ -151,7 +156,7 @@ const tiles = [
               </div>
               <div class="mt-3 flex items-center gap-2">
                 <label for={`${id}-alert-value`} class="text-sm text-body">
-                  Alert above
+                  {ui.alertLimit}
                 </label>
                 <input
                   id={`${id}-alert-value`}
@@ -167,7 +172,7 @@ const tiles = [
                 />
                 <span class="text-sm text-mute" data-alert-unit>km/h</span>
               </div>
-              <p class="mt-2 text-xs text-mute">Beeps and vibrates once each time you cross it.</p>
+              <p class="mt-2 text-xs text-mute">{ui.alertDesc}</p>
             </div>
           )
         }
@@ -179,7 +184,7 @@ const tiles = [
           </div>
           <button type="button" class="btn btn-sm btn-secondary" data-export disabled>
             <Download size={14} />
-            Export GPX
+            {ui.exportGpx}
           </button>
         </div>
       </div>
@@ -196,9 +201,9 @@ const tiles = [
         <div class="flex items-center justify-between px-4 pb-2 pt-[max(1rem,env(safe-area-inset-top))]">
           <button type="button" data-hud-mirror aria-pressed="true" class="btn btn-sm border-white/20 bg-white/10 text-white hover:bg-white/20 aria-pressed:bg-white aria-pressed:text-black">
             <TrianglesCenterlineDashedHorizontal size={14} />
-            Mirror
+            {ui.mirrorDisplay}
           </button>
-          <button type="button" data-hud-close aria-label="Close HUD" class="btn btn-icon border-white/20 bg-white/10 text-white hover:bg-white/20">
+          <button type="button" data-hud-close aria-label={ui.closeHud} class="btn btn-icon border-white/20 bg-white/10 text-white hover:bg-white/20">
             <X size={18} />
           </button>
         </div>
@@ -211,7 +216,7 @@ const tiles = [
           </span>
         </div>
         <p class="px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-2 text-center text-xs text-white/50">
-          Lay the phone flat below the windshield at night. Turn Mirror off to read it directly.
+          {ui.hudTip}
         </p>
       </dialog>
     )

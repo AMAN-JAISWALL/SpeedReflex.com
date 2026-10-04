@@ -31,6 +31,7 @@ class F1Start extends HTMLElement {
   private verb = 'Tap';
   private toastTimer = 0;
   private panels: HTMLElement[] = [];
+  private ui: any = {};
 
   private q<T extends Element = HTMLElement>(sel: string): T {
     const el = this.querySelector<T>(sel);
@@ -39,6 +40,11 @@ class F1Start extends HTMLElement {
   }
 
   connectedCallback(): void {
+    try {
+      this.ui = this.dataset.i18n ? JSON.parse(this.dataset.i18n) : {};
+    } catch {
+      this.ui = {};
+    }
     this.verb = matchMedia('(pointer: coarse)').matches ? 'Tap' : 'Click';
     this.history = store.get<Start[]>(HISTORY_KEY, []);
     this.sound = store.get<boolean>(SOUND_KEY, false);
@@ -97,14 +103,14 @@ class F1Start extends HTMLElement {
       const best = this.sessionBest();
       if (best === null) return;
       const outcome = await copyText(this.challengeUrl(best));
-      this.toast(outcome === 'copied' ? 'Challenge link copied' : 'Copy failed — copy the address bar instead');
+      this.toast(outcome === 'copied' ? (this.ui?.challengeCopied || 'Challenge link copied') : (this.ui?.copyFailed || 'Copy failed — copy the address bar instead'));
     });
     this.q('[data-clear-history]').addEventListener('click', () => {
-      if (!confirm('Clear all saved F1 starts on this device? This cannot be undone.')) return;
+      if (!confirm(this.ui?.clearHistoryConfirm || 'Clear all saved F1 starts on this device? This cannot be undone.')) return;
       this.history = [];
       store.remove(HISTORY_KEY);
       this.renderHistory();
-      this.toast('History cleared');
+      this.toast(this.ui?.historyCleared || 'History cleared');
     });
 
     this.readChallenge();
@@ -187,26 +193,35 @@ class F1Start extends HTMLElement {
       const diff = Math.round((this.challenge - seconds) * 1000);
       verdict = diff > 0 ? ` You beat the challenge by ${diff} ms.` : diff === 0 ? ' Dead heat with the challenge.' : ` ${-diff} ms behind the challenge.`;
     }
-    this.setState('result', `${tier.label}. On a simulated 20-car grid you’d launch P${p}.${verdict} ${this.verb} to line up again.`, fmt(seconds));
+    const isTap = this.verb === 'Tap';
+    const sub = (isTap ? this.ui?.resultSubTap : this.ui?.resultSubClick) || `${tier.label}. On a simulated 20-car grid you’d launch P${p}.${verdict} ${this.verb} to line up again.`;
+    this.setState('result', sub, fmt(seconds));
     this.announce(`${seconds.toFixed(3)} seconds. ${tier.label}. Grid position ${p}.${verdict}`);
     this.renderSession();
     this.renderHistory();
   }
 
   private jumpStart(reason: string): void {
-    this.setState('jump', `${reason} In Formula 1 that earns a penalty. ${this.verb} to line up again.`);
-    this.announce('Jump start.');
+    const isTap = this.verb === 'Tap';
+    const sub = (isTap ? this.ui?.jumpStartSubTap : this.ui?.jumpStartSubClick) || `${reason} In Formula 1 that earns a penalty. ${this.verb} to line up again.`;
+    this.setState('jump', sub);
+    this.announce(this.ui?.jumpStartTitle || 'Jump start.');
   }
 
   private setState(state: State, sub?: string, title?: string): void {
     this.state = state;
     this.q('[data-stage]').dataset.state = state;
+    const isTap = this.verb === 'Tap';
     const copy: Record<State, [string, string, string]> = {
-      idle: ['F1 start simulator', `${this.verb} to start`, 'Five red lights come on one by one. When they all go out — go.'],
-      sequence: ['Lights', 'Wait for lights out', ''],
-      out: ['Lights', 'Wait for lights out', ''],
-      result: ['Reaction', '', ''],
-      jump: ['Jump start', 'Jump start!', ''],
+      idle: [
+        this.ui?.kicker || 'F1 start simulator',
+        (isTap ? this.ui?.tapToStart : this.ui?.clickToStart) || `${this.verb} to start`,
+        this.ui?.subStart || 'Five red lights come on one by one. When they all go out — go.',
+      ],
+      sequence: [this.ui?.readyKicker || 'Lights', this.ui?.readyTitle || 'Wait for lights out', ''],
+      out: [this.ui?.readyKicker || 'Lights', this.ui?.readyTitle || 'Wait for lights out', ''],
+      result: [this.ui?.kicker || 'Reaction', '', ''],
+      jump: [this.ui?.jumpStartKicker || 'Jump start', this.ui?.jumpStartTitle || 'Jump start!', ''],
     };
     const [kicker, defaultTitle, defaultSub] = copy[state];
     this.q('[data-stage-kicker]').textContent = kicker;

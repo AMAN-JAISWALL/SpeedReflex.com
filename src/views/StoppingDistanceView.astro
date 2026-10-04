@@ -1,0 +1,146 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ToolHero from '../components/ToolHero.astro';
+import StoppingCalculator from '../components/StoppingCalculator.astro';
+import Section from '../components/Section.astro';
+import Faq from '../components/Faq.astro';
+import RelatedTools from '../components/RelatedTools.astro';
+import { toolById } from '../lib/site';
+import { toolCrumbs, toolPage } from '../lib/schema';
+import { getLocalizedPath, type Locale } from '../lib/i18n';
+import { getTranslations } from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = getTranslations(locale);
+const p = t.pages.stopping;
+const tool = toolById('stopping');
+
+const localizedHref = getLocalizedPath(tool.href, locale);
+const crumbs = toolCrumbs(tool, locale, {
+  home: t.nav.home,
+  tool: t.tools.stopping.name,
+});
+---
+
+<BaseLayout
+  title={p.title}
+  description={p.description}
+  jsonLd={toolPage(tool, p.title, p.description, p.faqs, locale, localizedHref, crumbs)}
+  locale={locale}
+>
+  <ToolHero
+    crumbs={crumbs}
+    eyebrow={p.eyebrow}
+    title={p.heroTitle}
+    lede={p.lede}
+    features={p.features}
+  >
+    <StoppingCalculator locale={locale} />
+  </ToolHero>
+
+  <Section
+    id="formula"
+    eyebrow={p.howItWorksEyebrow}
+    title={p.howItWorksTitle}
+    intro={p.lede}
+  >
+    <div class="grid gap-4 md:grid-cols-3">
+      {
+        p.steps.map((s) => (
+          <li class="card p-6 list-none">
+            <span class="font-mono text-xs text-mute">{s.n}</span>
+            <h3 class="mt-4 text-heading-md">{s.t}</h3>
+            <p class="mt-2 text-sm leading-6 text-body">{s.d}</p>
+          </li>
+        ))
+      }
+    </div>
+  </Section>
+
+  <Section
+    id="highway-code"
+    eyebrow={p.benchmarksEyebrow}
+    title={p.benchmarksTitle}
+    intro={p.benchmarksIntro}
+  >
+    <div class="max-w-4xl overflow-x-auto rounded-md border border-hairline bg-surface">
+      <table class="data-table">
+        <caption class="sr-only">{p.benchmarksTitle}</caption>
+        <thead>
+          <tr>
+            <th scope="col">{p.tableSpeed}</th>
+            <th scope="col">{p.tableThinking}</th>
+            <th scope="col">{p.tableBraking}</th>
+            <th scope="col">{p.tableTotal}</th>
+            <th scope="col">{p.tableLengths}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            p.stoppingRows.map((r) => (
+              <tr>
+                <td>{r.speed}</td>
+                <td>{r.thinking}</td>
+                <td>{r.braking}</td>
+                <td><strong class="font-medium text-ink">{r.total}</strong></td>
+                <td>{r.lengths}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </Section>
+
+  <Section
+    id="physics"
+    eyebrow={p.physicsEyebrow}
+    title={p.physicsTitle}
+    intro={p.physicsIntro}
+  >
+    <div class="grid gap-4 sm:grid-cols-2">
+      {
+        p.physicsCards.map((c) => (
+          <div class="card p-6">
+            <h3 class="text-heading-md">{c.title}</h3>
+            <p class="mt-2 text-sm leading-6 text-body">{c.text}</p>
+          </div>
+        ))
+      }
+    </div>
+  </Section>
+
+  <Section
+    id="factors"
+    eyebrow={p.factorsEyebrow}
+    title={p.factorsTitle}
+  >
+    <div class="grid gap-px overflow-hidden rounded-md border border-hairline bg-hairline sm:grid-cols-2 lg:grid-cols-4">
+      {
+        p.factors.map((f) => (
+          <div class="bg-surface p-6">
+            <h3 class="text-label text-ink">{f.title}</h3>
+            <p class="mt-2 text-sm leading-6 text-body">{f.text}</p>
+          </div>
+        ))
+      }
+    </div>
+    <div class="prose-sr mt-8 max-w-3xl">
+      <p>
+        <a href={getLocalizedPath('/reaction-time-test/', locale)} class="mr-3">
+          {t.tools.reaction.name}
+        </a>
+        <a href={getLocalizedPath('/car-speed-test/', locale)}>
+          {t.tools.car.name}
+        </a>
+      </p>
+    </div>
+  </Section>
+
+  <Faq items={p.faqs} title={p.faqTitle} />
+  <RelatedTools current={tool.id} locale={locale} />
+</BaseLayout>

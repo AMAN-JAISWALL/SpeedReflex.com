@@ -1,0 +1,140 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ToolHero from '../components/ToolHero.astro';
+import ReactionTest from '../components/ReactionTest.astro';
+import Section from '../components/Section.astro';
+import DataTable from '../components/DataTable.astro';
+import Callout from '../components/Callout.astro';
+import Faq from '../components/Faq.astro';
+import RelatedTools from '../components/RelatedTools.astro';
+import { toolById } from '../lib/site';
+import { toolCrumbs, toolPage } from '../lib/schema';
+import { getLocalizedPath, type Locale } from '../lib/i18n';
+import { getTranslations } from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = getTranslations(locale);
+const p = t.pages.audio;
+const tool = toolById('audio');
+
+const localizedHref = getLocalizedPath(tool.href, locale);
+const crumbs = toolCrumbs(tool, locale, {
+  home: t.nav.home,
+  tool: t.tools.audio.name,
+});
+---
+
+<BaseLayout
+  title={p.title}
+  description={p.description}
+  jsonLd={toolPage(tool, p.title, p.description, p.faqs, locale, localizedHref, crumbs)}
+  locale={locale}
+>
+  <ToolHero
+    crumbs={crumbs}
+    eyebrow={p.eyebrow}
+    title={p.heroTitle}
+    lede={p.lede}
+    features={p.features}
+  >
+    <ReactionTest stimulus="audio" locale={locale} />
+    <div class="mt-4 max-w-3xl">
+      <Callout tone="warning" title={p.tipsTitle}>
+        {p.tips.join(' ')}
+      </Callout>
+    </div>
+  </ToolHero>
+
+  <Section id="how-it-works" eyebrow={p.howItWorksEyebrow} title={p.howItWorksTitle}>
+    <ol class="grid gap-4 md:grid-cols-3">
+      {
+        p.steps.map((s) => (
+          <li class="card p-6">
+            <span class="font-mono text-xs text-mute">{s.n}</span>
+            <h3 class="mt-4 text-heading-md">{s.t}</h3>
+            <p class="mt-2 text-sm leading-6 text-body">{s.d}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </Section>
+
+  <Section
+    id="sound-vs-sight"
+    eyebrow={p.scienceEyebrow}
+    title={p.scienceTitle}
+    intro={p.scienceIntro}
+  >
+    <div class="grid gap-10 lg:grid-cols-2">
+      <div class="prose-sr">
+        <p>{p.pathwayProse}</p>
+        <p>
+          <a href={getLocalizedPath('/average-reaction-time/', locale)}>
+            {t.guides.averageReactionTime.name}
+          </a>
+        </p>
+      </div>
+      <div class="grid content-start gap-4 sm:grid-cols-2">
+        {
+          p.scienceCards.map((c) => (
+            <div class="card p-6">
+              <p class="eyebrow">{c.title}</p>
+              <p class="mt-2 text-sm leading-6 text-body">{c.text}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </Section>
+
+  <Section
+    id="audio-latency"
+    eyebrow={p.pathwayEyebrow}
+    title={p.pathwayTitle}
+    intro={p.pathwayIntro}
+  >
+    <DataTable
+      caption={p.pathwayTitle}
+      head={[p.tableStimulus, p.tablePathway, p.tableAvg]}
+      rows={p.pathwayRows.map((r) => [r.type, r.pathway, r.time])}
+      note={p.audioLagIntro}
+    />
+    <div class="prose-sr mt-8 max-w-3xl">
+      <p>{p.audioLagProse}</p>
+    </div>
+  </Section>
+
+  <Section id="compare" eyebrow={p.tipsEyebrow} title={p.tipsTitle}>
+    <div class="grid gap-4 md:grid-cols-3">
+      <div class="card p-6">
+        <p class="eyebrow">{t.tools.audio.name}</p>
+        <p class="mt-3 text-sm leading-6 text-body">{t.tools.audio.summary}</p>
+      </div>
+      <div class="card p-6">
+        <p class="eyebrow">{t.tools.reaction.name}</p>
+        <p class="mt-3 text-sm leading-6 text-body">
+          {t.tools.reaction.summary}{' '}
+          <a href={getLocalizedPath('/reaction-time-test/', locale)} class="font-medium text-link hover:text-link-deep">
+            {t.tools.reaction.name} →
+          </a>
+        </p>
+      </div>
+      <div class="card p-6">
+        <p class="eyebrow">{t.tools.f1.name}</p>
+        <p class="mt-3 text-sm leading-6 text-body">
+          {t.tools.f1.summary}{' '}
+          <a href={getLocalizedPath('/f1-reaction-time-test/', locale)} class="font-medium text-link hover:text-link-deep">
+            {t.tools.f1.name} →
+          </a>
+        </p>
+      </div>
+    </div>
+  </Section>
+
+  <Faq items={p.faqs} title={p.faqTitle} />
+  <RelatedTools current={tool.id} locale={locale} />
+</BaseLayout>

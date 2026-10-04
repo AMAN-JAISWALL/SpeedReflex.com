@@ -1,0 +1,14 @@
+---
+import ServerErrorView from '../views/ServerErrorView.astro';
+
+interface Props {
+  error?: unknown;
+}
+
+const { error } = Astro.props;
+
+Astro.response.status = 500;
+Astro.response.statusText = 'Internal Server Error';
+---
+
+<ServerErrorView locale="en" error={error} />

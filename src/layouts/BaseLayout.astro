@@ -5,6 +5,8 @@ import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import { SITE } from '../lib/site';
 import { organization, website } from '../lib/schema';
+import { LOCALE_INFO, getAlternateUrls, getLocaleFromPath, type Locale } from '../lib/i18n';
+import { getTranslations } from '../i18n';
 
 interface Props {
   title: string;
@@ -13,24 +15,45 @@ interface Props {
   jsonLd?: Record<string, unknown>[];
   noindex?: boolean;
   ogType?: 'website' | 'article';
+  locale?: Locale;
 }
 
-const { title, description, jsonLd = [], noindex = false, ogType = 'website' } = Astro.props;
+const {
+  title,
+  description,
+  jsonLd = [],
+  noindex = false,
+  ogType = 'website',
+  locale = getLocaleFromPath(Astro.url.pathname),
+} = Astro.props;
+
+const t = getTranslations(locale);
+const locInfo = LOCALE_INFO[locale] || LOCALE_INFO.en;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? SITE.url).href;
+const alternates = getAlternateUrls(Astro.url.pathname, Astro.site?.toString() ?? SITE.url);
 const ogImage = new URL('/og.png', Astro.site ?? SITE.url).href;
-const ogImageAlt = 'SpeedReflex — reaction time tests and GPS speedometers';
-const graph = JSON.stringify({ '@context': 'https://schema.org', '@graph': [organization(), website(), ...jsonLd] }).replace(/</g, '\\u003c');
+const ogImageAlt = `${t.site.name} — ${t.site.tagline}`;
+const graph = JSON.stringify({ '@context': 'https://schema.org', '@graph': [organization(), website(locale), ...jsonLd] }).replace(/</g, '\\u003c');
 ---
 
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang={locInfo.htmlLang} data-theme="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
-    <meta name="robots" content={noindex ? 'noindex' : 'index, follow, max-image-preview:large, max-snippet:-1'} />
+    {
+      !noindex && (
+        <>
+          <link rel="canonical" href={canonical} />
+          {alternates.map((alt) => (
+            <link rel="alternate" hreflang={alt.hreflang} href={alt.href} />
+          ))}
+        </>
+      )
+    }
+    <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large, max-snippet:-1'} />
     <meta name="theme-color" content="#fafafa" />
     <script is:inline>
       (function () {
@@ -71,12 +94,13 @@ const graph = JSON.stringify({ '@context': 'https://schema.org', '@graph': [orga
     <meta name="apple-mobile-web-app-title" content="SpeedReflex" />
     <link rel="manifest" href="/site.webmanifest?v=1.1" />
     <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="sitemap" href="/sitemap.xml" />
     <Font cssVariable="--font-geist" preload />
     <Font cssVariable="--font-geist-mono" />
 
     <meta property="og:type" content={ogType} />
-    <meta property="og:site_name" content={SITE.name} />
-    <meta property="og:locale" content="en_US" />
+    <meta property="og:site_name" content={t.site.name} />
+    <meta property="og:locale" content={locInfo.ogLocale} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
@@ -98,12 +122,12 @@ const graph = JSON.stringify({ '@context': 'https://schema.org', '@graph': [orga
       href="#main"
       class="btn btn-sm btn-primary sr-only focus-visible:not-sr-only focus-visible:fixed focus-visible:left-4 focus-visible:top-3 focus-visible:z-50"
     >
-      Skip to Content
+      {t.nav.skipToContent}
     </a>
-    <SiteHeader />
+    <SiteHeader locale={locale} />
     <main id="main" class="flex-1">
       <slot />
     </main>
-    <SiteFooter />
+    <SiteFooter locale={locale} />
   </body>
 </html>

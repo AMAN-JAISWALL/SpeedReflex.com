@@ -1,0 +1,146 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ToolHero from '../components/ToolHero.astro';
+import Speedometer from '../components/Speedometer.astro';
+import Section from '../components/Section.astro';
+import ToolCard from '../components/ToolCard.astro';
+import DataTable from '../components/DataTable.astro';
+import Faq from '../components/Faq.astro';
+import RelatedTools from '../components/RelatedTools.astro';
+import { VEHICLE_TOOLS, toolById } from '../lib/site';
+import { toolCrumbs, toolPage } from '../lib/schema';
+import { UNITS } from '../lib/speed';
+import { getLocalizedPath, type Locale } from '../lib/i18n';
+import { getTranslations } from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = getTranslations(locale);
+const p = t.pages.speedometer;
+const tool = toolById('speedometer');
+
+const localizedHref = getLocalizedPath(tool.href, locale);
+const crumbs = toolCrumbs(tool, locale, {
+  home: t.nav.home,
+  tool: t.tools.speedometer.name,
+});
+
+const vehicleTools = VEHICLE_TOOLS.map((vt) => ({
+  id: vt.id,
+  href: getLocalizedPath(vt.href, locale),
+  name: t.tools[vt.id]?.name ?? vt.name,
+  summary: t.tools[vt.id]?.summary ?? vt.summary,
+}));
+
+const fmt = (v: number) => (v >= 100 ? Math.round(v).toLocaleString('en-US') : v.toFixed(v < 10 ? 1 : 0));
+const conversions = [10, 30, 50, 80, 100, 120, 300, 900].map((kmh) => {
+  const ms = kmh / 3.6;
+  return [`${kmh} km/h`, `${fmt(ms * UNITS.mph.perMs)} mph`, `${fmt(ms * UNITS.kn.perMs)} kn`, `${fmt(ms)} m/s`];
+});
+---
+
+<BaseLayout
+  title={p.title}
+  description={p.description}
+  jsonLd={toolPage(tool, p.title, p.description, p.faqs, locale, localizedHref, crumbs)}
+  locale={locale}
+>
+  <ToolHero
+    crumbs={crumbs}
+    eyebrow={p.eyebrow}
+    title={p.heroTitle}
+    lede={p.lede}
+    features={p.features}
+  >
+    <Speedometer preset="general" locale={locale} />
+  </ToolHero>
+
+  <Section
+    id="by-vehicle"
+    eyebrow={p.modesEyebrow}
+    title={p.modesTitle}
+    intro={p.modesIntro}
+  >
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {vehicleTools.map((vt) => <ToolCard tool={vt} />)}
+    </div>
+  </Section>
+
+  <Section id="how-it-works" eyebrow={p.howItWorksEyebrow} title={p.howItWorksTitle}>
+    <ol class="grid gap-4 md:grid-cols-3">
+      {
+        p.steps.map((s) => (
+          <li class="card p-6">
+            <span class="font-mono text-xs text-mute">{s.n}</span>
+            <h3 class="mt-4 text-heading-md">{s.t}</h3>
+            <p class="mt-2 text-sm leading-6 text-body">{s.d}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </Section>
+
+  <Section
+    id="accuracy"
+    eyebrow={p.accuracyEyebrow}
+    title={p.accuracyTitle}
+    intro={p.accuracyIntro}
+  >
+    <div class="grid gap-4 sm:grid-cols-2">
+      {
+        p.accuracyCards.map((a) => (
+          <div class="card p-6">
+            <h3 class="text-heading-md">{a.title}</h3>
+            <p class="mt-2 text-sm leading-6 text-body">{a.text}</p>
+          </div>
+        ))
+      }
+    </div>
+    <div class="prose-sr mt-8 max-w-3xl">
+      <p>
+        <a href={getLocalizedPath('/car-speed-test/', locale)}>
+          {t.tools.car.name}
+        </a>.
+      </p>
+    </div>
+  </Section>
+
+  <Section id="hud" eyebrow={p.hudEyebrow} title={p.hudTitle} intro={p.hudIntro}>
+    <div class="prose-sr max-w-3xl">
+      <p>{p.hudProse}</p>
+    </div>
+  </Section>
+
+  <Section id="phone-tips" eyebrow={p.phoneTipsEyebrow} title={p.phoneTipsTitle}>
+    <div class="grid gap-4 md:grid-cols-2">
+      {
+        p.phoneTips.map((tip, i) => (
+          <div class="card p-6">
+            <span class="font-mono text-xs text-mute">0{i + 1}</span>
+            <p class="mt-2 text-sm leading-6 text-body">{tip}</p>
+          </div>
+        ))
+      }
+    </div>
+  </Section>
+
+  <Section
+    id="units"
+    eyebrow="Units"
+    title="km/h, mph, Knots & m/s"
+    intro="1 mph = 1.609 km/h · 1 knot = 1.852 km/h · 1 m/s = 3.6 km/h."
+  >
+    <DataTable
+      caption="Common speeds in km/h, mph, knots and metres per second"
+      head={['km/h', 'mph', 'Knots', 'm/s']}
+      rows={conversions}
+      note="1 mph = 1.609344 km/h · 1 knot = 1.852 km/h · 1 m/s = 3.6 km/h."
+    />
+  </Section>
+
+  <Faq items={p.faqs} title={p.faqTitle} />
+  <RelatedTools current={tool.id} locale={locale} />
+</BaseLayout>

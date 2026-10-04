@@ -1,0 +1,161 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ToolHero from '../components/ToolHero.astro';
+import F1Start from '../components/F1Start.astro';
+import Section from '../components/Section.astro';
+import Faq from '../components/Faq.astro';
+import RelatedTools from '../components/RelatedTools.astro';
+import { toolById } from '../lib/site';
+import { toolCrumbs, toolPage } from '../lib/schema';
+import { ANTICIPATION_MS } from '../lib/reaction';
+import { getLocalizedPath, type Locale } from '../lib/i18n';
+import { getTranslations } from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = getTranslations(locale);
+const p = t.pages.f1;
+const tool = toolById('f1');
+
+const localizedHref = getLocalizedPath(tool.href, locale);
+const crumbs = toolCrumbs(tool, locale, {
+  home: t.nav.home,
+  tool: t.tools.f1.name,
+});
+
+const FIA_REGS = 'https://www.fia.com/system/files/documents/fia_2026_f1_regulations_-_section_b_sporting_-_iss_05_-_2026-02-27.pdf';
+const F1_STARTS =
+  'https://www.formula1.com/en/latest/article/rapid-decisions-driver-skills-and-intricate-procedures-why-race-starts-are.3uziERC5iPE5EYOPRmerXU';
+---
+
+<BaseLayout
+  title={p.title}
+  description={p.description}
+  jsonLd={toolPage(tool, p.title, p.description, p.faqs, locale, localizedHref, crumbs)}
+  locale={locale}
+>
+  <ToolHero
+    crumbs={crumbs}
+    eyebrow={p.eyebrow}
+    title={p.heroTitle}
+    lede={p.lede}
+    features={p.features}
+  >
+    <F1Start locale={locale} />
+  </ToolHero>
+
+  <Section
+    id="start-lights"
+    eyebrow={p.howItWorksEyebrow}
+    title={p.howItWorksTitle}
+    intro={p.lede}
+  >
+    <ol class="grid gap-4 md:grid-cols-3">
+      {
+        p.steps.map((s) => (
+          <li class="card p-6">
+            <span class="font-mono text-xs text-mute">{s.n}</span>
+            <h3 class="mt-4 text-heading-md">{s.t}</h3>
+            <p class="mt-2 text-sm leading-6 text-body">{s.d}</p>
+          </li>
+        ))
+      }
+    </ol>
+    <p class="mt-6 text-xs text-mute">
+      Sources: <a href={FIA_REGS} rel="noopener" target="_blank" class="underline underline-offset-2 hover:text-ink">FIA 2026 Formula 1
+      Sporting Regulations</a>, Articles B5.7 (start procedure) and B5.11 (false start);
+      and <a href={F1_STARTS} rel="noopener" target="_blank" class="underline underline-offset-2 hover:text-ink">Formula1.com on race starts</a>.
+    </p>
+  </Section>
+
+  <Section
+    id="good-f1-reaction-time"
+    eyebrow={p.gridEyebrow}
+    title={p.gridTitle}
+    intro={p.gridIntro}
+  >
+    <div class="max-w-3xl overflow-x-auto rounded-md border border-hairline bg-surface">
+      <table class="data-table">
+        <caption class="sr-only">{p.gridTitle}</caption>
+        <thead>
+          <tr>
+            <th scope="col">{p.tableReaction}</th>
+            <th scope="col">{p.tableGrid}</th>
+            <th scope="col" class="max-sm:hidden">{p.tableVerdict}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            p.gridRows.map((r) => (
+              <tr>
+                <td class="whitespace-nowrap">{r.time}</td>
+                <td>
+                  <span class="sm:whitespace-nowrap">{r.pos}</span>
+                  <span class="mt-1 block text-mute sm:hidden">{r.desc}</span>
+                </td>
+                <td class="max-sm:hidden">{r.desc}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+    <div class="prose-sr mt-8 max-w-3xl">
+      <p>
+        {p.gridProse}{' '}
+        <a href={getLocalizedPath('/average-reaction-time/', locale)}>
+          {t.guides.averageReactionTime.name}
+        </a>.
+      </p>
+    </div>
+  </Section>
+
+  <Section
+    id="reaction-time-test-f1"
+    eyebrow={p.jumpEyebrow}
+    title={p.jumpTitle}
+    intro={p.jumpIntro}
+  >
+    <div class="grid gap-4 md:grid-cols-2">
+      {
+        p.jumpCards.map((c, i) => (
+          <div class="card p-6">
+            <p class="eyebrow">{c.title}</p>
+            <p class="mt-3 text-sm leading-6 text-body">{c.text}</p>
+            {i === 0 && (
+              <a href={getLocalizedPath('/reaction-time-test/', locale)} class="mt-5 inline-flex text-sm font-medium text-link hover:text-link-deep">
+                {t.tools.reaction.name} →
+              </a>
+            )}
+          </div>
+        ))
+      }
+    </div>
+  </Section>
+
+  <Section id="jump-starts" eyebrow={p.physicsEyebrow} title={p.physicsTitle}>
+    <div class="prose-sr max-w-3xl">
+      <p>{p.physicsIntro}</p>
+      <p>{p.physicsProse}</p>
+    </div>
+  </Section>
+
+  <Section id="train" eyebrow={p.launchEyebrow} title={p.launchTitle}>
+    <div class="grid gap-px overflow-hidden rounded-md border border-hairline bg-hairline sm:grid-cols-2 lg:grid-cols-3">
+      {
+        p.launchTips.map((tip, idx) => (
+          <div class="bg-surface p-6">
+            <span class="font-mono text-xs text-mute">0{idx + 1}</span>
+            <p class="mt-2 text-sm leading-6 text-body">{tip}</p>
+          </div>
+        ))
+      }
+    </div>
+  </Section>
+
+  <Faq items={p.faqs} title={p.faqTitle} />
+  <RelatedTools current={tool.id} locale={locale} />
+</BaseLayout>
