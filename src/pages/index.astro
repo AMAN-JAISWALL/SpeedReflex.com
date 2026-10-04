@@ -1,5 +1,5 @@
 ---
-import { Timer, Eye, Lock, Smartphone, Bell, ChartLine } from '@lucide/astro';
+import { Timer, Eye, Lock, Smartphone, Bell, ChartLine, Info, MessageSquare, Shield, FileText } from '@lucide/astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Section from '../components/Section.astro';
 import ToolCard from '../components/ToolCard.astro';
@@ -33,24 +33,36 @@ const stats = [
 
 const faqs: FaqItem[] = [
   {
-    q: 'Is SpeedReflex free?',
-    a: 'Yes. Every reaction test and speed test is free to use, with no account and no limits.',
+    q: 'Is SpeedReflex free to use?',
+    a: 'Yes. Every reaction time test, F1 starting simulator, and GPS speedometer on SpeedReflex is 100% free with unlimited trials and no account or subscription required.',
   },
   {
-    q: 'Do I need to install an app?',
-    a: 'No. Everything runs in your web browser on phones, tablets and computers. You can add SpeedReflex to your home screen for one-tap access.',
+    q: 'Do I need to install an app from an app store?',
+    a: 'No app download is needed. SpeedReflex operates directly within your mobile or desktop web browser (Safari, Chrome, Firefox, Edge). You can easily tap "Add to Home Screen" on iOS or Android for instantaneous, full-screen progressive web access.',
   },
   {
-    q: 'Which devices do the speed tests work on?',
-    a: 'Any phone or tablet with GPS and a modern browser — Safari, Chrome, Edge, Firefox or Samsung Internet. Most laptops and desktops have no GPS chip, so use your phone for speed tests.',
+    q: 'How accurate are browser-based reaction time tests?',
+    a: 'SpeedReflex is engineered for frame-accurate precision. Unlike standard web tests that start timers before frames are rendered, our tests synchronize clock start with the browser\'s display paint using <code>requestAnimationFrame</code> and read raw hardware event timestamps (<code>event.timeStamp</code>). This eliminates up to 17 ms of browser paint lag.',
   },
   {
-    q: 'Is my data private?',
-    a: 'Yes. Your location is processed only in your browser and is never uploaded. Reaction test history is stored locally on your device and you can clear it at any time.',
+    q: 'How accurate is an online GPS speedometer compared to a vehicle dashboard?',
+    a: 'Satellite GPS calculates your true velocity over the ground via radio Doppler frequency shift, accurate to within 1–2 km/h under open sky. By contrast, factory car speedometers are legally calibrated (UN ECE Reg 39) to read 3% to 8% higher than actual road speed to prevent accidental speeding.',
+  },
+  {
+    q: 'Which devices support the GPS speedometers?',
+    a: 'Any smartphone or cellular tablet equipped with an internal GPS receiver (including iPhone, iPad with cellular, and Android devices). Standard laptops and desktops do not have GPS chips and cannot provide continuous moving velocity.',
+  },
+  {
+    q: 'Is my location data or reaction score private?',
+    a: 'Completely private. All GPS geolocation coordinates and reaction time metrics are computed locally on your device hardware. Zero location data or personal metrics are ever sent to our servers.',
   },
   {
     q: 'Which test should I start with?',
-    a: 'Try the Reaction Time Test for a clean measure of your reflexes, then the F1 Reaction Time Test to see how you handle a race start. For speed, open the online speedometer or pick the page for how you’re travelling — car, bike, bus, train or plane.',
+    a: '<p>Depending on your goal:</p><ul><li><strong>Reflexes:</strong> Begin with the <a href="/reaction-time-test/">Reaction Time Test</a> for a pure baseline, then challenge yourself on the <a href="/f1-reaction-time-test/">F1 Reaction Time Test</a>.</li><li><strong>Speed:</strong> Open the <a href="/speedometer/">Online Speedometer</a> or select vehicle-specific modes for <a href="/car-speed-test/">Car</a>, <a href="/bike-speed-test/">Bike</a>, <a href="/train-speed-test/">Train</a>, or <a href="/flight-speed-test/">Flight</a>.</li><li><strong>Driving Safety:</strong> Calculate thinking and braking distances with the <a href="/stopping-distance-calculator/">Stopping Distance Calculator</a>.</li></ul>',
+  },
+  {
+    q: 'Can I export my speed track or reaction history?',
+    a: 'Yes. After running a speed test, tap <strong>Export GPX</strong> to download a standard GPS track file ready for Strava, Komoot, or Google Earth. Your reflex scores can also be copied and shared as a challenge link with friends.',
   },
 ];
 ---
@@ -216,6 +228,75 @@ const faqs: FaqItem[] = [
         ))
       }
     </dl>
+  </Section>
+
+  <Section
+    id="trust-and-company"
+    eyebrow="SpeedReflex"
+    title="Transparency, Trust & Support"
+    intro="SpeedReflex is built on frame-accurate science, zero tracking, and open web standards. Learn how our measurements work, review our driving and medical disclaimers, or get in touch with our team."
+  >
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <a href="/about/" class="group card flex flex-col justify-between p-6 shadow-whisper transition-[border-color,box-shadow] hover:border-hairline-strong hover:shadow-float">
+        <div>
+          <span class="flex size-10 items-center justify-center rounded-sm border border-hairline bg-surface text-ink transition-colors group-hover:border-hairline-strong">
+            <Info size={20} />
+          </span>
+          <h3 class="mt-4 text-heading-md text-ink group-hover:text-link">About Us</h3>
+          <p class="mt-2 text-sm leading-6 text-body">
+            How we measure speed and reaction times: frame-synced paint timing, Doppler GPS filtering, and honest population models.
+          </p>
+        </div>
+        <p class="mt-6 flex items-center gap-1 text-sm font-medium text-link group-hover:text-link-deep">
+          Read our methods <span aria-hidden="true">&rarr;</span>
+        </p>
+      </a>
+
+      <a href="/contact/" class="group card flex flex-col justify-between p-6 shadow-whisper transition-[border-color,box-shadow] hover:border-hairline-strong hover:shadow-float">
+        <div>
+          <span class="flex size-10 items-center justify-center rounded-sm border border-hairline bg-surface text-ink transition-colors group-hover:border-hairline-strong">
+            <MessageSquare size={20} />
+          </span>
+          <h3 class="mt-4 text-heading-md text-ink group-hover:text-link">Contact Us</h3>
+          <p class="mt-2 text-sm leading-6 text-body">
+            Have a question, device timing issue, or feature request? Send our technical team a message or email us directly.
+          </p>
+        </div>
+        <p class="mt-6 flex items-center gap-1 text-sm font-medium text-link group-hover:text-link-deep">
+          Get in touch <span aria-hidden="true">&rarr;</span>
+        </p>
+      </a>
+
+      <a href="/privacy/" class="group card flex flex-col justify-between p-6 shadow-whisper transition-[border-color,box-shadow] hover:border-hairline-strong hover:shadow-float">
+        <div>
+          <span class="flex size-10 items-center justify-center rounded-sm border border-hairline bg-surface text-ink transition-colors group-hover:border-hairline-strong">
+            <Shield size={20} />
+          </span>
+          <h3 class="mt-4 text-heading-md text-ink group-hover:text-link">Privacy Policy</h3>
+          <p class="mt-2 text-sm leading-6 text-body">
+            100% on-device processing. No accounts, no user telemetry, no tracking cookies, and zero coordinate transmission.
+          </p>
+        </div>
+        <p class="mt-6 flex items-center gap-1 text-sm font-medium text-link group-hover:text-link-deep">
+          Review privacy policy <span aria-hidden="true">&rarr;</span>
+        </p>
+      </a>
+
+      <a href="/terms/" class="group card flex flex-col justify-between p-6 shadow-whisper transition-[border-color,box-shadow] hover:border-hairline-strong hover:shadow-float">
+        <div>
+          <span class="flex size-10 items-center justify-center rounded-sm border border-hairline bg-surface text-ink transition-colors group-hover:border-hairline-strong">
+            <FileText size={20} />
+          </span>
+          <h3 class="mt-4 text-heading-md text-ink group-hover:text-link">Terms & Conditions</h3>
+          <p class="mt-2 text-sm leading-6 text-body">
+            Recreational usage guidelines, essential driving and passenger safety disclaimers, and health notices.
+          </p>
+        </div>
+        <p class="mt-6 flex items-center gap-1 text-sm font-medium text-link group-hover:text-link-deep">
+          Read terms of use <span aria-hidden="true">&rarr;</span>
+        </p>
+      </a>
+    </div>
   </Section>
 
   <Faq items={faqs} />

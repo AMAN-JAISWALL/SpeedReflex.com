@@ -25,32 +25,49 @@ const conversions = [10, 30, 50, 80, 100, 120, 300, 900].map((kmh) => {
 
 const faqs: FaqItem[] = [
   {
-    q: 'How do I check how fast I’m going right now?',
-    a: 'Open this page on your phone, press Start and allow location access. Your current speed appears within a few seconds once the GPS has a fix — the signal dot turns blue when the reading is reliable.',
+    q: 'What is my speed?',
+    a: 'To see your exact speed right now, tap <strong>Start</strong> at the top of this page and grant browser location access. Your live ground speed will display immediately in large digital numerals and on the circular dial in km/h, mph, knots, or m/s.',
   },
   {
-    q: 'Does the online speedometer work on iPhone and Android?',
-    a: 'Yes. It runs in Safari, Chrome, Edge, Firefox and Samsung Internet on any phone with GPS. On iPhone, Safari needs Location Services turned on for Safari Websites. The screen stays awake during a trip in current Chrome and in Safari on iOS 16.4 or later.',
+    q: 'How can I check my current speed?',
+    a: 'You can check your current speed using any smartphone or GPS-enabled tablet directly in your browser. SpeedReflex continuously samples your GPS coordinates and Doppler satellite velocity, updating your current speed every second with real-time accuracy indicators.',
+  },
+  {
+    q: 'How to know travelling speed?',
+    a: `<p>You can determine your travelling speed through several approaches:</p>
+<ul>
+  <li><strong>Using SpeedReflex Online:</strong> Open this page on a mobile device to immediately view your live travelling velocity on any car, train, bus, boat, or bike.</li>
+  <li><strong>Milepost / Kilometre Post Timing:</strong> Note the time in seconds to travel between two highway markers. Divide 3,600 by the seconds elapsed to get speed in km/h or mph.</li>
+  <li><strong>Vehicle Instrument Cluster:</strong> Check the vehicle\'s onboard speedometer (noting that vehicle speedometers typically over-report speed by 3%–8%).</li>
+</ul>`,
+  },
+  {
+    q: 'How to measure vehicle speed?',
+    a: 'Vehicle speed is measured over the ground using satellite radio Doppler shift (via GPS on your phone), onboard transmission sensors (counting axle or driveshaft RPM), or roadside radar and laser guns that measure radio frequency shifts or infrared time-of-flight pulses.',
+  },
+  {
+    q: 'How does an online speedometer work without downloading an app?',
+    a: 'SpeedReflex uses the standard HTML5 Geolocation API (<code>navigator.geolocation.watchPosition</code>) built into all modern mobile browsers (Safari, Chrome, Firefox, Edge). It interfaces directly with your smartphone\'s internal GNSS satellite receiver hardware to calculate real-time ground velocity client-side.',
+  },
+  {
+    q: 'Does weather, cloud cover, or rain affect GPS speed accuracy?',
+    a: 'Standard rain, fog, and clouds have virtually zero impact on GPS satellite microwave signals (L1/L5 bands). However, dense tree canopies, metal roofs, tunnels, and skyscrapers can reflect or attenuate signals, causing temporary multipath errors or delays in acquiring a fix.',
+  },
+  {
+    q: 'Can I use this online speedometer for walking or running?',
+    a: 'Yes. While speeds below ~2 km/h (1.2 mph) are filtered out as stationary GPS drift, normal brisk walking (4–6 km/h) and running (8–15 km/h) register accurately on the digital readout.',
   },
   {
     q: 'Why does it show 0 on my laptop?',
-    a: 'Most laptops and desktops have no GPS chip. They can estimate where you are from Wi-Fi networks, but that doesn’t report speed. Use a phone or a tablet with GPS.',
+    a: 'Most desktop PCs and laptops do not have a built-in GPS receiver chip. They estimate position using nearby Wi-Fi router BSSIDs and IP addresses, which cannot provide continuous velocity updates. Use a smartphone or cellular tablet for live speed measurements.',
   },
   {
     q: 'Does it use mobile data?',
-    a: 'Only to load the page. GPS itself uses no data, and your location is never uploaded. Without a data connection the first fix can take longer, because your phone has to download satellite positions from the satellites themselves.',
-  },
-  {
-    q: 'Why does my speed read 0 when I’m walking slowly?',
-    a: 'GPS positions wobble by a few metres even when you stand still. To stop that jitter showing up as fake movement, speeds under about 2 km/h are shown as 0 and don’t count towards distance or moving time.',
-  },
-  {
-    q: 'Is GPS more accurate than my car’s speedometer?',
-    a: 'Usually, yes. Car speedometers are designed to read a little high, while GPS measures your true speed over the ground. With a clear view of the sky, GPS is typically within a couple of km/h.',
+    a: 'Only a few kilobytes to load the webpage initially. The GPS satellite receiver operates entirely via passive radio reception and consumes no mobile data. Location coordinates never leave your device.',
   },
   {
     q: 'Can it keep measuring in the background?',
-    a: 'No. Browsers stop sending location to pages that aren’t on screen, to protect your privacy and battery. Keep the page open — it keeps your screen awake while a trip is running.',
+    a: 'No. Web browsers automatically pause location polling when a tab is minimized or the screen is turned off to protect battery and privacy. Keep this tab open; SpeedReflex automatically prevents your phone screen from sleeping while a trip is active.',
   },
 ];
 ---

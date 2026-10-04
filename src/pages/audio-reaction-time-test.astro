@@ -18,28 +18,40 @@ const description =
 
 const faqs: FaqItem[] = [
   {
+    q: 'What is a sound reaction time test?',
+    a: 'A sound reaction time test (auditory reflex test) measures how quickly your brain perceives an acoustic stimulus — like a tone or beep — and triggers a physical muscle response. Unlike visual reaction tests where you wait for a color flash, this test keeps the screen completely stationary so your response is purely driven by auditory reception.',
+  },
+  {
     q: 'What is a good audio reaction time?',
-    a: 'In lab studies, young adults react to a sound in about 160 ms on average — roughly 30 ms faster than to a light. Online, your speaker or headphones add delay, so the fairest benchmark is your own visual result on the same device.',
+    a: 'In clinical laboratory studies, healthy adults average roughly <strong>140 to 160 milliseconds</strong> when reacting to sound — approximately 30 to 50 milliseconds quicker than visual stimuli. In an online browser test, speaker buffering and operating system audio latency may add 20–40 ms, making scores under 190 ms very good.',
+  },
+  {
+    q: 'Why do humans react faster to sound than to light?',
+    a: 'Humans react faster to sound because the auditory pathway from the inner ear to the brain involves mechanical transduction (hair cells vibrating in the cochlea) that reaches the brainstem in just <strong>8 to 10 milliseconds</strong>. By comparison, photoreceptors in the retina require a chemical reaction (phototransduction) that takes <strong>20 to 40 milliseconds</strong> before electrical impulses even enter the optic nerve.',
   },
   {
     q: 'Why is my audio reaction time slower than my visual one?',
-    a: 'Usually the equipment. Bluetooth headphones and some speakers delay the sound, and not every browser reports that delay. Try the phone’s own speaker or wired headphones, turn the volume up and test somewhere quiet.',
+    a: 'Almost always hardware latency. Bluetooth wireless headphones and earbuds (such as AirPods or Galaxy Buds) introduce between 50 and 200 ms of wireless audio transmission delay. To measure true auditory reflexes, test using your device’s built-in speaker or wired 3.5mm/USB-C headphones.',
+  },
+  {
+    q: 'Do headphones affect audio reaction time?',
+    a: 'Yes, significantly. Standard Bluetooth audio codecs (SBC, AAC) introduce considerable latency (100–250 ms). Low-latency Bluetooth codecs (aptX LL) reduce this to ~40 ms, while wired headphones transmit audio with negligible delay (<1 ms).',
+  },
+  {
+    q: 'Is this like an Olympic sprint start?',
+    a: `Yes. Olympic and World Athletics sprinters react to the starter's acoustic gun tone emitted from speakers mounted directly behind each starting block. Under World Athletics Technical Rule 16.6, any start reaction recorded by block pressure sensors under 0.100 seconds (100 ms) is disqualified as a false start. This test uses the same ${ANTICIPATION_MS} ms threshold.`,
   },
   {
     q: 'I can’t hear the beep. What should I do?',
-    a: 'Check the volume and that the browser tab isn’t muted. On iPhone, switch off silent mode if you still hear nothing. Close other apps that are playing audio, then reload the page and start again.',
+    a: 'Verify your device volume is turned up and the browser tab is unmuted. On iPhones and iPads, ensure the physical Ring/Silent switch is set to ring (or silent mode is disabled in Control Center). Close any background apps playing media, then tap the test panel to re-initialize the Web Audio engine.',
   },
   {
     q: 'Does the screen give the beep away?',
-    a: 'No. The panel stays dark and the text doesn’t change when the beep plays, so the only signal is the sound itself.',
-  },
-  {
-    q: 'Is this like a sprint start?',
-    a: `Very close. Sprinters react to the sound of the gun, and World Athletics treats any reaction under 0.100 s as a false start. This test uses the same rule: presses under ${ANTICIPATION_MS} ms after the beep are counted as guesses.`,
+    a: 'No. The test interface remains static with zero brightness or textual changes when the tone sounds, ensuring that visual cues cannot contaminate your auditory score.',
   },
   {
     q: 'Are my results saved?',
-    a: 'Yes, in your browser on this device only, separately from your visual reaction test history. Nothing is uploaded, and Clear History wipes it.',
+    a: 'Yes, your audio reaction averages and records are saved locally in your browser storage. Your acoustic scores are tracked separately from your visual reaction history.',
   },
 ];
 ---

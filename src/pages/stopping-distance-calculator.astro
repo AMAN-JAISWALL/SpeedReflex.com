@@ -17,28 +17,41 @@ const description =
 
 const faqs: FaqItem[] = [
   {
+    q: 'What is the formula for calculating stopping distance?',
+    a: `<p>Stopping distance is the sum of thinking distance and braking distance:</p>
+<p><strong>Total Stopping Distance = Thinking Distance + Braking Distance</strong></p>
+<ul>
+  <li><strong>Thinking Distance ($d_t$):</strong> $d_t = v \\times t_r$ (where $v$ is velocity in m/s and $t_r$ is reaction time in seconds).</li>
+  <li><strong>Braking Distance ($d_b$):</strong> $d_b = \\frac{v^2}{2a}$ (where $v$ is velocity in m/s and $a$ is vehicle deceleration rate, typically ~6.5 m/s² on dry asphalt).</li>
+</ul>`,
+  },
+  {
     q: 'What is the stopping distance at 30 mph?',
-    a: 'The UK Highway Code gives 23 metres (75 feet) for a car on a dry road: 9 m of thinking distance and 14 m of braking distance. On a wet road it’s at least double.',
+    a: 'According to the UK Highway Code (Rule 126), the typical stopping distance at 30 mph on dry asphalt is <strong>23 meters (75 feet)</strong>, consisting of 9 meters (30 ft) thinking distance and 14 meters (45 ft) braking distance — roughly 6 car lengths.',
   },
   {
     q: 'What is the stopping distance at 70 mph?',
-    a: '96 metres (315 feet) in good conditions, according to the Highway Code — 21 m thinking and 75 m braking. That’s about 24 car lengths.',
+    a: 'At 70 mph on a dry road, total stopping distance is <strong>96 meters (315 feet or ~24 car lengths)</strong>: 21 meters thinking distance and 75 meters braking distance. In wet weather, this extends to at least 171 meters (560 feet).',
   },
   {
     q: 'What is the difference between thinking distance and braking distance?',
-    a: 'Thinking distance is how far you travel between seeing a hazard and pressing the brake. Braking distance is how far the car then travels until it stops. Stopping distance is the two added together.',
+    a: '<strong>Thinking distance</strong> is the ground covered while your brain registers a hazard and your foot moves to the brake pedal. <strong>Braking distance</strong> is the physical distance the car travels under deceleration until coming to a complete stop.',
   },
   {
-    q: 'Why does braking distance grow so fast with speed?',
-    a: 'Braking distance depends on the square of your speed. Double your speed and the braking distance roughly quadruples, while thinking distance only doubles.',
+    q: 'Why does braking distance increase quadratically with speed?',
+    a: 'Braking distance is proportional to the square of velocity ($v^2$) because braking must dissipate kinetic energy ($E_k = \\frac{1}{2}mv^2$). Doubling your speed quadruples the kinetic energy the brakes must convert into heat, multiplying braking distance by four.',
+  },
+  {
+    q: 'How do wet or icy roads affect stopping distance?',
+    a: 'Wet road surfaces reduce tire friction by at least 50%, doubling braking distance ($2\\times$). Packed snow and black ice can multiply braking distance by up to <strong>10 times ($10\\times$)</strong>, requiring over 700 meters to stop from highway speeds.',
   },
   {
     q: 'What reaction time does the Highway Code assume?',
-    a: 'Its thinking distances work out at about 0.67 seconds, which describes an alert driver. Studies of real drivers find about 0.7 s when they expect to brake and around 1.5 s for a genuine surprise.',
+    a: 'The UK Highway Code assumes a perception-reaction time of roughly <strong>0.67 seconds</strong>. In real-world driving conditions, driver studies (Green, 2000) show that common unexpected events (like brake lights ahead) trigger an average 1.25-second reaction time, while sudden surprises take 1.5 seconds or more.',
   },
   {
-    q: 'Is this calculator accurate for my car?',
-    a: 'It gives typical figures for a car with good brakes and tyres on a level road. Worn tyres, a heavy load, a downhill slope or a poor surface all add distance, so treat the result as a minimum rather than a guarantee.',
+    q: 'What is the 2-second rule for following distance?',
+    a: 'The 2-second rule is a safety benchmark for dry roads: select a stationary marker (like a signpost or bridge). When the vehicle ahead passes it, count "one thousand and one, one thousand and two." If you reach the marker before finishing, you are tailgating too closely. In wet weather, double this to 4 seconds; on icy roads, leave up to 10–20 seconds of gap.',
   },
 ];
 ---

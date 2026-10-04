@@ -5,8 +5,10 @@ export const SITE = {
   tagline: 'Reaction time tests & GPS speedometers',
   description:
     'Free reaction time tests and a GPS speedometer in your browser — frame-accurate timing, F1 start lights and live speed for cars, bikes, trains and planes.',
-  /** The only published mailbox; used for privacy and general questions. */
+  /** Main privacy mailbox. */
   email: 'privacy@speedreflex.com',
+  /** General inquiries and support mailbox. */
+  contactEmail: 'contact@speedreflex.com',
 };
 
 export type ToolId = 'reaction' | 'f1' | 'audio' | 'speedometer' | 'car' | 'bike' | 'bus' | 'train' | 'flight' | 'stopping';

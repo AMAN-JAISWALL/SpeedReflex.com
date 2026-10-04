@@ -27,32 +27,74 @@ const tierRows = F1_TIERS.map((t) => {
 
 const faqs: FaqItem[] = [
   {
-    q: 'What is a good F1 reaction time?',
-    a: 'In this test, anything under 0.220 s is F1 pace and under 0.180 s is exceptional. Most people who aren’t trained for starts land between 0.250 and 0.350 s.',
+    q: 'How to take an F1 reaction time test?',
+    a: `<p>To take an F1 reaction time test on SpeedReflex:</p>
+<ol>
+  <li><strong>Start the test:</strong> Tap or click the start gantry or press the spacebar to initiate the start sequence.</li>
+  <li><strong>Watch the lights:</strong> Five red lights will illuminate one by one at one-second intervals.</li>
+  <li><strong>Wait for the random delay:</strong> Once all five lights are on, a random hold between 0.2 and 3.0 seconds occurs before lights out.</li>
+  <li><strong>React instantly:</strong> Tap, click, or hit the spacebar the millisecond the lights extinguish.</li>
+  <li><strong>Avoid a false start:</strong> Pressing while lights are still red or reacting in under 100 ms counts as a jump start.</li>
+</ol>`,
   },
   {
-    q: 'How fast do F1 drivers react to the start lights?',
-    a: 'According to Formula 1, drivers launch their cars about 0.2 seconds after the lights go out on average — and that includes getting the car moving, not just the reaction. Drivers train for it, because a few hundredths of a second can mean a place gained or lost before the first corner.',
+    q: 'How can I check my reaction time in F1?',
+    a: 'You can check your F1 reaction time right here on SpeedReflex using your phone, tablet, or PC without downloading an app. The test measures your response time from the exact frame the lights turn off to your input. After five attempts, your average and best times are calculated, and your score is matched against a simulated 20-car Formula 1 starting grid.',
+  },
+  {
+    q: 'How fast is F1 driver reaction time?',
+    a: 'Formula 1 drivers average reaction times between <strong>180 and 220 milliseconds (0.18 to 0.22 seconds)</strong> at race starts. Notably, official F1 telemetry measures total launch time — which includes biological reaction time, releasing the hand clutch paddle, and mechanical drivetrain bite.',
+  },
+  {
+    q: 'What is a good F1 reaction time score?',
+    a: `<p>Scores on this F1 start simulator can be evaluated against these performance benchmarks:</p>
+<ul>
+  <li><strong>Under 150 ms:</strong> Elite reflex tier, rivaling professional esports drivers or near-anticipation.</li>
+  <li><strong>150–200 ms:</strong> Formula 1 driver pace — competitive with the top tier of motorsport.</li>
+  <li><strong>200–250 ms:</strong> Above average — quick reflexes typical of trained club racers and gamers.</li>
+  <li><strong>250–350 ms:</strong> Average human reaction range for everyday drivers.</li>
+  <li><strong>Over 350 ms:</strong> Slower reaction — on a Grand Prix grid, you would be swamped into Turn 1.</li>
+</ul>`,
+  },
+  {
+    q: 'What is the 90% rule in F1?',
+    a: 'In Formula 1 strategy and driver coaching, the informal "90% rule" emphasizes that approximately 90% of race start positions and opening-lap overtakes on modern high-downforce circuits are determined by the initial reaction time and acceleration in the first 100 meters before Turn 1. (In official FIA sporting regulations, the sport historically enforced the <strong>107% rule</strong> in qualifying, requiring every car to lap within 107% of the pole position time to be permitted to start).',
+  },
+  {
+    q: 'Is 0.1 reaction time possible?',
+    a: 'A 0.100-second (100 ms) reaction time to a visual stimulus is at the physiological limit of the human nervous system. Visual signals take about 20–40 ms just to travel from the retina through the optic nerve to the visual cortex, plus 60–80 ms to process and transmit motor commands down the spinal cord to your finger muscles. Both the FIA and World Athletics classify any response under 100 ms as anticipatory anticipation (a false start or jump start).',
+  },
+  {
+    q: 'Which F1 driver has the quickest reaction time?',
+    a: 'Telemetry highlights <strong>Valtteri Bottas</strong>, <strong>Max Verstappen</strong>, <strong>Fernando Alonso</strong>, and <strong>Lewis Hamilton</strong> as having among the quickest launches in modern F1. Bottas notably executed a 0.201-second start at the 2017 Austrian Grand Prix and a borderline 0.04-second anticipatory start in 2020 that cleared FIA transponder sensors without penalty.',
+  },
+  {
+    q: 'What is the fastest human reaction time?',
+    a: 'In clinical neuroscience studies, the fastest recorded human reaction times are approximately <strong>120–140 ms for acoustic (sound) stimuli</strong> and <strong>150–180 ms for visual stimuli</strong> under laboratory conditions with zero input latency. Anything consistently below 100 ms represents anticipatory guessing rather than an organic reflex.',
   },
   {
     q: 'Why do F1 lights go out instead of turning green?',
-    a: 'That is how a Formula 1 start works: five red lights come on one by one and the race starts when they all go out. Because the hold before lights out varies, drivers can’t predict the moment — they have to react.',
+    a: 'Formula 1 starts utilize lights-out rather than green lights because extinguishing a stimulus eliminates color interpretation latency. The random hold time (between 0.2 and 3 seconds) prevents drivers from anticipating the start through rhythm, forcing pure reactive starts.',
   },
   {
     q: 'What counts as a jump start in this test?',
-    a: `Pressing while any lights are still on, or pressing less than ${ANTICIPATION_MS} ms after lights out. Nobody can genuinely react that fast, so it means you guessed. Jump starts aren’t saved to your stats.`,
+    a: `Pressing while any red lights are still illuminated, or pressing in less than ${ANTICIPATION_MS} ms after lights out. Because human neurophysiology cannot process and react faster than 100 ms, scores below this threshold indicate guessing and are discarded from your verified stats.`,
   },
   {
-    q: 'Is the F1 reaction test harder than a normal reaction test?',
-    a: 'Usually yes. The build-up of five lights creates anticipation, and the random hold punishes guessing. Most people score slightly slower here than on a single-flash reaction time test — and jump start more often.',
+    q: 'How do F1 drivers train their reaction time?',
+    a: 'F1 drivers train with specialized equipment like Batak Pro reaction boards, Blazepod light reaction sensors, trainer-dropped tennis ball catching drills, and advanced driving simulators under elevated heart rates and heavy G-force conditioning.',
   },
   {
-    q: 'Is the grid position real?',
-    a: 'It’s a simulation for fun. After each clean start we generate 19 rival reaction times around 0.215 s with a realistic spread and count how many you beat. It isn’t real driver data.',
+    q: 'What is the penalty for a false start in Formula 1?',
+    a: 'Under FIA Formula 1 regulations, an illegal start detected by in-track inductive loops and onboard transponders results in a <strong>5-second or 10-second time penalty</strong> added to the driver\'s pit stop, or a drive-through penalty for severe jump starts.',
+  },
+  {
+    q: 'Is the 20-car grid position real?',
+    a: 'The grid position is a realistic simulation. After each verified launch, the tool models 19 simulated competitor reaction times centered around a 0.215 s average with normal variance to show where you would slot into the pack before Turn 1.',
   },
   {
     q: 'Are my F1 start times saved?',
-    a: 'Yes, in your browser’s local storage on this device only. Your personal best, average and last 30 starts are shown below the test. Nothing is uploaded.',
+    a: 'Yes. Your best reaction time, session average, and recent starts are saved locally in your browser storage. No personal data or scores are ever sent to an external server.',
   },
 ];
 ---

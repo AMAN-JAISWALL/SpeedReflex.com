@@ -26,6 +26,30 @@ const tierRows = REACTION_TIERS.map((t) => {
 
 const faqs: FaqItem[] = [
   {
+    q: 'How do we test reaction time?',
+    a: 'Reaction time is tested by measuring the elapsed time between presenting an unexpected stimulus (such as a visual color flash, audio tone, or haptic cue) and the participant\'s motor response. SpeedReflex measures this with sub-millisecond precision: timing begins on the exact display refresh frame the stimulus is painted, and stops using the operating system\'s hardware timestamp on key-down or pointer-down.',
+  },
+  {
+    q: 'What is the best test for reaction time?',
+    a: `<p>The best test depends on what reflex dimension you want to evaluate:</p>
+<ul>
+  <li><strong>Simple Visual Reaction Test:</strong> The benchmark test for measuring pure visual sensory-motor transmission speed (this test).</li>
+  <li><strong>Formula 1 Start Test:</strong> Ideal for measuring start launches, false start discipline, and sports reaction under suspense (<a href="/f1-reaction-time-test/">F1 Reaction Test</a>).</li>
+  <li><strong>Sound Reaction Test:</strong> Measures auditory reflexes, which are physiologically 30–50 ms faster than visual reflexes (<a href="/audio-reaction-time-test/">Audio Reaction Test</a>).</li>
+  <li><strong>Choice Reaction Test:</strong> Evaluates decision-making latency where different stimuli require different responses.</li>
+</ul>`,
+  },
+  {
+    q: 'Can you train your reaction time?',
+    a: `<p>Yes. While raw nerve conduction speed has a genetic baseline, training can improve reaction speed by <strong>15 to 40 milliseconds</strong> through neuroplastic adaptation and motor priming:</p>
+<ol>
+  <li><strong>Specific Drill Practice:</strong> Regular training on reaction simulators and fast-twitch sports (boxing, table tennis, squash, martial arts) primes motor pathways.</li>
+  <li><strong>Video Games:</strong> Fast action esports (first-person shooters, fighting games) train rapid visual scanning and preemptive muscle activation.</li>
+  <li><strong>Optimal Sleep & Hydration:</strong> Acute fatigue and dehydration slow reaction times by 10%–20%.</li>
+  <li><strong>Hardware Optimization:</strong> Using a wired mouse and a high-refresh monitor (144Hz–240Hz) eliminates 15–30 ms of external hardware latency.</li>
+</ol>`,
+  },
+  {
     q: 'What is the average human reaction time?',
     a: `For a simple visual reaction in a browser test, most adults average roughly 250–275 ms. SpeedReflex models the population with a median of ${POPULATION.medianMs} ms. Classic lab studies report faster times for young adults — about 190 ms for a light and about 160 ms for a sound — mostly because dedicated equipment removes screen and input lag.`,
   },
@@ -34,8 +58,16 @@ const faqs: FaqItem[] = [
     a: `Yes. A 200 ms average is faster than about ${pct(200)}% of people in our model, which puts you in the Excellent band. Averages under 170 ms are rare and usually come from practised gamers or athletes on low-latency hardware.`,
   },
   {
+    q: 'What is the difference between simple and choice reaction time?',
+    a: 'In simple reaction time tests, there is a single anticipated stimulus and a single response (e.g. clicking when the screen turns blue). In choice reaction time tests, multiple stimuli correspond to different actions (e.g. arrow keys matching random directional prompts). Choice reactions take roughly 100–250 ms longer because the brain must consciously identify the signal and select the correct motor path.',
+  },
+  {
+    q: 'Does monitor refresh rate (60Hz vs 144Hz vs 240Hz) affect reaction time scores?',
+    a: 'Yes. At 60Hz, a new frame appears only every 16.67 ms. At 144Hz, frames appear every 6.94 ms, and at 240Hz, every 4.17 ms. A higher refresh rate means the stimulus appears on your retinas up to 12 ms sooner, and high-performance gaming monitors also have significantly faster pixel response times and lower input lag.',
+  },
+  {
     q: 'Why is my reaction time slower on my phone?',
-    a: 'Touchscreens scan for touches at a fixed rate and phone displays and browsers add processing time, so mobile results are often a few tens of milliseconds slower than a wired mouse on a fast monitor. Compare scores on the same device to track real progress.',
+    a: 'Touchscreens scan for touches at a fixed polling rate (often 60Hz or 120Hz) and mobile display pipelines add buffering. As a result, mobile scores are often 20–40 milliseconds slower than tests taken on a desktop with a wired optical mouse. For reliable comparison, always compare results taken on the same device.',
   },
   {
     q: 'Why was my attempt not counted?',

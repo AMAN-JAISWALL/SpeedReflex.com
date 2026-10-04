@@ -62,13 +62,13 @@ interface PageInput {
   crumbs?: Crumb[];
   /** Only for pages that show these questions and answers on screen. */
   faq?: FaqItem[];
-  type?: 'WebPage' | 'AboutPage' | 'CollectionPage';
+  type?: 'WebPage' | 'AboutPage' | 'CollectionPage' | 'ContactPage';
 }
 
 /** The WebPage node (plus its breadcrumb) that every indexable page gets. */
 export const webPage = ({ href, name, description, crumbs, faq, type = 'WebPage' }: PageInput): Node[] => {
   const page: Node = {
-    '@type': faq?.length ? [type, 'FAQPage'] : type,
+    '@type': type,
     '@id': pageId(href),
     url: abs(href),
     name,
@@ -76,17 +76,24 @@ export const webPage = ({ href, name, description, crumbs, faq, type = 'WebPage'
     inLanguage: 'en',
     isPartOf: { '@id': SITE_ID },
     ...(crumbs ? { breadcrumb: { '@id': `${abs(href)}#breadcrumb` } } : {}),
-    ...(faq?.length
-      ? {
-          mainEntity: faq.map((f) => ({
-            '@type': 'Question',
-            name: f.q,
-            acceptedAnswer: { '@type': 'Answer', text: f.a },
-          })),
-        }
-      : {}),
   };
-  return crumbs ? [page, breadcrumbList(crumbs)] : [page];
+  const nodes: Node[] = [page];
+  if (crumbs) nodes.push(breadcrumbList(crumbs));
+  if (faq?.length) {
+    nodes.push({
+      '@type': 'FAQPage',
+      '@id': `${abs(href)}#faq`,
+      url: abs(href),
+      name: `${name} — Frequently Asked Questions`,
+      isPartOf: { '@id': pageId(href) },
+      mainEntity: faq.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    });
+  }
+  return nodes;
 };
 
 /** A tool page: its WebPage, breadcrumb and the browser app itself. */

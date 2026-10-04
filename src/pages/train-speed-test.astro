@@ -19,27 +19,35 @@ const description =
 const faqs: FaqItem[] = [
   {
     q: 'Can I check the speed of the train I’m on?',
-    a: 'Yes. Your phone travels with the train, so the GPS speed on screen is the train’s speed. Sit by a window, open this page, press Start and allow location. Once the signal dot turns blue, the reading is reliable.',
+    a: 'Yes. Because your smartphone travels inside the passenger car, its GPS Doppler velocity directly reflects the train’s speed. Hold your phone close to a side window, tap <strong>Start GPS</strong>, and wait for satellite acquisition.',
+  },
+  {
+    q: 'What is the fastest commercial train in the world?',
+    a: 'The <strong>Shanghai Maglev</strong> holds the commercial operational record at <strong>431 km/h (268 mph)</strong> using magnetic levitation. Among conventional wheel-on-rail systems, China’s <strong>CR400 Fuxing</strong> trains run commercially at up to <strong>350 km/h (217 mph)</strong>, and France’s <strong>TGV</strong> and Japan’s <strong>Shinkansen</strong> operate at <strong>320 km/h (199 mph)</strong>.',
+  },
+  {
+    q: 'How do trains measure their own speed?',
+    a: 'Modern trains use multiple redundant sensors: axle-mounted rotary pulse encoders (measuring wheel rotation), underbody Doppler radar units, and trackside electronic balises (ERTMS/ETCS) that transmit precise positional benchmarks to the cab computer.',
+  },
+  {
+    q: 'Does it work on high-speed trains like the Shinkansen, ICE, or TGV?',
+    a: 'Yes. SpeedReflex auto-extends its gauge range beyond 200 km/h and accommodates speeds up to 430 km/h without glitching. Note that some modern high-speed trains have heat-reflective metalized window coatings that weaken GPS signals; resting your phone directly against the glass helps acquire a fix.',
   },
   {
     q: 'Does it work on the metro, subway or underground?',
-    a: 'Only on sections above ground. GPS needs a view of the sky, so in tunnels and underground stations the speed freezes until the train comes back out.',
+    a: 'Only on surface and elevated sections. GPS signals cannot penetrate underground tunnels or deep subterranean stations. When entering a tunnel, the reading holds the last valid fix and resumes as soon as the train emerges back into open daylight.',
   },
   {
     q: 'Why does the speed freeze or jump after a tunnel?',
-    a: 'In a tunnel your phone loses the satellites, so the last speed stays on screen. When the signal returns, the first position can be far from the last one. SpeedReflex ignores those impossible jumps so they don’t show up as a record top speed.',
+    a: 'When exiting a tunnel, the smartphone acquires satellites and may experience a momentary position jump. SpeedReflex filters out physically impossible acceleration spikes so momentary GPS glitches do not corrupt your trip record.',
   },
   {
-    q: 'Does it work on high-speed trains like the Shinkansen or TGV?',
-    a: 'Yes. The gauge starts at 200 km/h and extends automatically, and readings up to about 430 km/h are accepted. The hard part on high-speed trains is the signal — many have coated windows that weaken GPS, so try a different window if it struggles.',
-  },
-  {
-    q: 'Why is my reading different from the speed on the train’s screen?',
-    a: 'Trains measure their own speed with sensors on the wheels and track, while your phone measures speed over the ground by satellite. On a straight line they usually agree within a few km/h. Right after a tunnel or in weak signal, trust the train’s display.',
+    q: 'Why is my reading different from the passenger information screen?',
+    a: 'Train cabin screens read internal axle tachometers and track transponders. While GPS calculates ground speed via satellite Doppler shift, slight differences (1–3 km/h) are normal, especially on curves or grades.',
   },
   {
     q: 'Do I need mobile data?',
-    a: 'Only to open the page. GPS itself uses no data and your location never leaves your phone, so it keeps working between stations with no coverage — just don’t reload it.',
+    a: 'No mobile data is needed while tracking. Once the web page is opened in your browser, the GPS hardware functions offline using passive satellite radio signals.',
   },
 ];
 ---

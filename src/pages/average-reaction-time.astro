@@ -49,24 +49,52 @@ const sources = [
 
 const faqs: FaqItem[] = [
   {
+    q: 'How fast is a 12 year old reaction time?',
+    a: 'A typical 12-year-old averages approximately <strong>270 to 310 milliseconds</strong> on an online simple visual reaction test. At age 12, the prefrontal cortex and axonal myelination of motor pathways are still developing. Reflex speeds improve steadily throughout the teenage years, peaking in the early twenties.',
+  },
+  {
+    q: 'What\'s a good reaction time for a 14-year-old?',
+    a: 'A good reaction time for a 14-year-old is between <strong>220 and 260 milliseconds</strong>, which places them ahead of the median for their age cohort. Teenagers who actively practice fast-paced competitive video games or reaction-heavy sports like table tennis often achieve scores under 200 ms.',
+  },
+  {
+    q: 'What age has the fastest reflexes?',
+    a: 'Human simple reaction times peak between <strong>ages 18 and 24</strong>. Neurodevelopmental studies show that neural processing speed and motor conduction velocity reach optimal efficiency during this period. After the mid-twenties, simple reaction time declines gradually by approximately 2 to 6 milliseconds per decade.',
+  },
+  {
+    q: 'Do ADHD people react faster?',
+    a: 'Neuropsychological studies show that people with ADHD do not necessarily react faster on average, but they exhibit <strong>greater reaction time variability (RTV)</strong>. In stimulating, high-urgency conditions, individuals with ADHD often achieve extremely fast peak reaction times, but their scores show higher spread (standard deviation) due to periodic attention lapses and a higher tendency toward anticipatory clicks.',
+  },
+  {
+    q: 'How fast is F1 driver reaction time?',
+    a: 'Formula 1 drivers launch off the starting grid in approximately <strong>180 to 220 milliseconds (0.18 to 0.22 s)</strong>. This accounts for neural stimulus processing, hand clutch paddle release, and mechanical engagement. You can benchmark your reflexes against a full 20-car grid on our <a href="/f1-reaction-time-test/">F1 Reaction Time Test</a>.',
+  },
+  {
     q: 'Is 250 ms a good reaction time?',
-    a: `On an online test, yes — it’s a little quicker than the typical adult. On the SpeedReflex scale an average of 250 ms is faster than about ${pct(250)}% of people. In a lab with dedicated hardware the same person would usually score faster, because the screen and input lag disappear.`,
+    a: `On an online browser test, yes — it is slightly faster than the typical adult median (modeled at ${POPULATION.medianMs} ms on SpeedReflex). In clinical laboratory settings using zero-latency optical sensors, the same person would register closer to 190–210 ms because monitor display lag and operating system input delays are eliminated.`,
   },
   {
     q: 'Is a 150 ms reaction time possible?',
-    a: `As a single lucky click, yes. As an average over several attempts it’s rare and usually needs a fast monitor, a wired mouse and a lot of practice. Anything under ${ANTICIPATION_MS} ms is almost certainly a guess, which is why tests and sprint starts don’t count it.`,
+    a: `While a lucky single click might register at 150 ms, achieving a consistent 150 ms average across multiple visual trials is virtually impossible on typical consumer hardware. Pure visual conduction alone requires roughly 150–180 ms in human neurophysiology. Any response below ${ANTICIPATION_MS} ms is classified as anticipation (guessing).`,
   },
   {
     q: 'Are men or women faster?',
-    a: 'In the UK Health and Lifestyle Survey of 7,130 adults, men averaged slightly faster reaction times and women’s were a little more variable. The difference is small next to the differences between individuals.',
+    a: 'Large-scale demographic studies (such as the UK Health and Lifestyle Survey of 7,130 adults) consistently find that males average slightly faster raw motor reaction times (by roughly 10–20 ms), while females tend to demonstrate greater consistency. However, individual differences in age, sleep, and practice far outweigh demographic averages.',
   },
   {
     q: 'Do gamers have faster reactions?',
-    a: 'Regular players of fast action games often score better on reaction tests. Part of that is practice at the task, and part is hardware: high-refresh monitors and wired mice cut tens of milliseconds of lag.',
+    a: 'Yes. Regular players of fast-paced esports (FPS, MOBA, fighting games) routinely test 20–50 ms faster than non-gamers. This advantage is partly neuroplastic adaptation (faster visual cue identification and motor priming) and partly hardware-based (high-refresh 144Hz–360Hz monitors and wired gaming peripherals).',
   },
   {
     q: 'At what age does reaction time start to slow?',
-    a: 'For simple reactions, surprisingly late. A large UK study found little slowing until around 50. Choice reactions — where you must decide which of several responses to make — slow gradually from your twenties.',
+    a: 'Simple reaction times (reacting to a single predictable flash) remain relatively robust through middle age, slowing noticeably only around age 50. In contrast, complex choice reaction times — where one must discriminate between multiple stimuli and make split-second decisions — begin a slow, linear decline starting around age 24.',
+  },
+  {
+    q: 'Does caffeine improve reaction time?',
+    a: 'Yes. Clinical trials show that moderate caffeine intake (50–200 mg, or about 1–2 cups of coffee) blocks adenosine receptors in the central nervous system, enhancing alertness and typically reducing both visual and auditory reaction times by 10 to 30 milliseconds.',
+  },
+  {
+    q: 'How does sleep deprivation affect human reaction time?',
+    a: 'Sleep deprivation severely impairs reflexes. Going without sleep for 24 hours produces reaction time deficits and cognitive lapses equivalent to a blood alcohol concentration (BAC) of 0.10% — exceeding the legal driving limit in most jurisdictions and significantly multiplying accident risk.',
   },
 ];
 ---

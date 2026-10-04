@@ -17,28 +17,60 @@ const description =
 
 const faqs: FaqItem[] = [
   {
+    q: 'How to test bike speed?',
+    a: `<p>To test your bicycle speed with SpeedReflex:</p>
+<ol>
+  <li>Open this <strong>Bike Speed Test</strong> on your mobile browser.</li>
+  <li>Secure your phone in a handlebar phone mount.</li>
+  <li>Press <strong>Start GPS</strong> and approve location access.</li>
+  <li>Ride under open sky. Your live speed, moving average, trip distance, and elevation updates continuously.</li>
+</ol>`,
+  },
+  {
+    q: 'Is 20 km/h fast on a bike?',
+    a: '20 km/h (12.4 mph) is a respectable, steady cruising speed for daily commuters, utility cyclists, and casual fitness riders on flat pavement. It requires approximately 75–100 watts of effort on a standard hybrid or road bicycle.',
+  },
+  {
+    q: 'Is 40 km/h on a bike fast?',
+    a: 'Yes, 40 km/h (24.8 mph) is very fast on a bicycle. Sustaining 40 km/h on flat ground requires upwards of 350 to 400 watts of power output — a sustained threshold typically reached only by trained road racers, competitive time-trialists, or during paceline drafting and steep descents. It matches the average flat-stage speed of the professional Tour de France peloton.',
+  },
+  {
+    q: 'How do I calculate my bike speed?',
+    a: `<p>To calculate cycling speed manually:</p>
+<p><strong>Speed (km/h) = Distance (km) ÷ Time (hours)</strong></p>
+<p>You can also calculate theoretical speed based on gear ratio and pedaling cadence:</p>
+<p><strong>Speed (km/h) = Cadence (RPM) × (Front Chainring ÷ Rear Cog) × Wheel Circumference (m) × 0.06</strong></p>
+<p>SpeedReflex computes this in real time using satellite ground tracking without needing wheel magnets or cadence sensors.</p>`,
+  },
+  {
+    q: 'What speed bike is best?',
+    a: `<p>The best number of speeds (gears) depends on where and how you ride:</p>
+<ul>
+  <li><strong>Single-Speed / 1-Speed:</strong> Best for flat cities and short commutes; simplest mechanics and lowest maintenance.</li>
+  <li><strong>7 or 8-Speed:</strong> Ideal for budget commuters and recreational city riders tackling moderate grades.</li>
+  <li><strong>11 or 12-Speed (1x or 2x):</strong> The modern standard for road, gravel, and mountain bikes; offers close gear steps for consistent cadence on varied gradients.</li>
+  <li><strong>21 to 27-Speed (3x front):</strong> Traditional touring setups offering very low climbing ratios, though with overlapping gear choices.</li>
+</ul>`,
+  },
+  {
+    q: 'What is the average cycling speed for different riders?',
+    a: 'Beginner commuters average roughly 14–19 km/h (9–12 mph). Regular road cycling enthusiasts average 24–30 km/h (15–19 mph). Semi-pro and elite riders average 34–42+ km/h (21–26+ mph) on training rides and competitive road races.',
+  },
+  {
+    q: 'How fast do street-legal e-bikes go?',
+    a: 'Under EU, UK, and Australian regulations (EN 15194), e-bike motor assistance must legally cut out at <strong>25 km/h (15.5 mph)</strong>. In the US, Class 1 and Class 2 e-bikes assist up to <strong>20 mph (32 km/h)</strong>, while Class 3 speed pedelecs assist up to <strong>28 mph (45 km/h)</strong>.',
+  },
+  {
     q: 'Is a phone as accurate as a bike computer?',
-    a: 'Wheel-sensor bike computers count wheel turns; GPS measures your speed over the ground. Under open sky the two agree closely. Under trees, in tunnels or between tall buildings GPS can wander, especially at low speed, so short dips and spikes are normal there.',
+    a: 'Under open sky, smartphone GPS speed corresponds to dedicated GPS bike computers (Garmin, Wahoo) within 1 km/h. Traditional magnet wheel sensors measure tire revolutions; GPS measures actual ground displacement. GPS is remarkably accurate except under dense tree canopies or inside tunnels.',
   },
   {
     q: 'How do I upload my ride to Strava or Komoot?',
-    a: 'After your ride, tap Export GPX. Then upload the file on the Strava website (Upload activity → File) or import it into Komoot, Garmin Connect or any app that accepts GPX tracks.',
+    a: 'Tap <strong>Export GPX</strong> at the end of your trip to download your standard GPS track file. You can immediately upload this file to Strava (via web upload), Komoot, or Garmin Connect with full elevation and route data.',
   },
   {
     q: 'What is moving average speed?',
-    a: 'Moving average only counts time when you are actually moving (faster than about 3 km/h), so traffic lights and café stops don’t drag it down. It’s the same way cycling computers calculate average speed.',
-  },
-  {
-    q: 'Does it work for motorbikes and scooters?',
-    a: 'Yes. The gauge starts at a cycling-friendly scale and extends automatically as you go faster. Use a secure handlebar mount and follow local laws on phone use while riding.',
-  },
-  {
-    q: 'Will my screen stay on during the ride?',
-    a: 'Yes, in browsers that support the Screen Wake Lock API — current Chrome, Edge and Safari on iOS 16.4 or later. The “Screen stays on” label appears when it’s active.',
-  },
-  {
-    q: 'Does it measure cadence, heart rate or power?',
-    a: 'No. Those need Bluetooth sensors. SpeedReflex focuses on GPS speed, distance, time, altitude and heading — no pairing, no app.',
+    a: 'Moving average only counts time when your bicycle is in motion (faster than ~3 km/h). Stopping at traffic lights, pedestrian crossings, or coffee breaks is excluded from the average calculation, mirroring how Garmin and Wahoo cyclocomputers operate.',
   },
 ];
 ---

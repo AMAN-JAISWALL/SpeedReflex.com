@@ -1,62 +1,125 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Callout from '../components/Callout.astro';
+import CtaBand from '../components/CtaBand.astro';
 import { SITE } from '../lib/site';
-import { webPage } from '../lib/schema';
+import { webPage, type Crumb } from '../lib/schema';
 
 const title = 'Privacy Policy — SpeedReflex';
-const description = 'How SpeedReflex handles your data: location stays on your device, test history stays in your browser, and there are no accounts.';
-const updated = 'September 28, 2026';
+const description =
+  'SpeedReflex privacy policy: 100% on-device GPS and reflex processing, no tracking cookies, no accounts, and no data collection.';
+const updated = 'October 4, 2026';
+
+const crumbs: Crumb[] = [
+  { name: 'Home', href: '/' },
+  { name: 'Privacy Policy', href: '/privacy/' },
+];
 ---
 
-<BaseLayout title={title} description={description} jsonLd={webPage({ href: '/privacy/', name: title, description })}>
+<BaseLayout title={title} description={description} jsonLd={webPage({ href: '/privacy/', name: title, description, crumbs })}>
   <article class="shell max-w-3xl py-16 sm:py-24">
-    <p class="eyebrow">Legal</p>
+    <Breadcrumbs crumbs={crumbs} />
+    <p class="eyebrow mt-10">Legal</p>
     <h1 class="mt-3 text-display-sm sm:text-display">Privacy Policy</h1>
     <p class="mt-4 text-sm text-mute">Last updated {updated}</p>
 
     <div class="prose-sr mt-10">
       <p>
-        <span translate="no">{SITE.domain}</span> (“SpeedReflex”, “we”) is built so that we don’t need your personal data. This page explains
-        exactly what happens when you use the site.
+        <span translate="no">{SITE.domain}</span> (“SpeedReflex”, “we”, “our”, or “us”) is built on a simple foundation:
+        <strong>we do not want, collect, or monetize your personal data</strong>. All calculations — from millisecond reaction
+        timers to satellite GPS tracking — happen directly on your device inside your web browser.
       </p>
 
-      <h2 class="mt-10! text-heading-md text-ink">Location (GPS Speed Tests)</h2>
+      <div class="my-8">
+        <Callout tone="info" title="Zero Tracking Guarantee">
+          SpeedReflex does not use user tracking cookies, third-party analytics scripts, or behavioral advertising pixels.
+          Your geographic location coordinates and reflex scores never leave your browser hardware.
+        </Callout>
+      </div>
+
+      <h2 class="mt-10! text-heading-md text-ink">1. Geolocation & GPS Speed Data</h2>
       <p>
-        The online speedometer and the car, bike, bus, train and flight speed tests ask your browser for your location only after you press Start. Positions are processed
-        in your browser to calculate speed, distance, altitude and heading. <strong>They are never sent to our servers or to anyone
-        else.</strong> When you close the page the trip is gone, unless you choose to export it as a GPX file to your own device.
+        When you use our <a href="/speedometer/">Online Speedometer</a> or vehicle-specific speed tests (Car, Bike, Bus, Train,
+        Flight), your browser requests access to your device’s GPS location via the standard HTML5 Geolocation API.
+      </p>
+      <ul>
+        <li><strong>On-demand activation:</strong> Geolocation is requested only when you explicitly press the <em>Start</em> or <em>Test</em> button.</li>
+        <li><strong>On-device processing:</strong> Latitude, longitude, altitude, Doppler speed, and heading are calculated solely in client-side JavaScript in your device RAM.</li>
+        <li><strong>Never sent to servers:</strong> Coordinate points are never transmitted to SpeedReflex servers or third parties.</li>
+        <li><strong>Session lifespan:</strong> When you reset the test or close the browser tab, in-memory trip coordinates are discarded immediately, unless you intentionally click <strong>Export GPX</strong> to download your track file directly to your device storage.</li>
+      </ul>
+
+      <h2 class="mt-10! text-heading-md text-ink">2. Browser Local Storage & Data Retention</h2>
+      <p>
+        SpeedReflex does not maintain user databases or accounts. Instead, we use your browser’s standard <code>localStorage</code>
+        to preserve your personal experience between sessions:
+      </p>
+      <ul>
+        <li><strong>Reaction history:</strong> Your recent 5-attempt trial averages and personal bests (so you can view your consistency and progress).</li>
+        <li><strong>App preferences:</strong> Your preferred speed units (km/h, mph, knots, or m/s), color theme (light, dark, or system), and speed alert thresholds.</li>
+        <li><strong>User control:</strong> You can wipe all stored reaction scores at any time by clicking the <strong>Clear History</strong> button on any test page, or by clearing SpeedReflex website storage in your browser settings.</li>
+      </ul>
+
+      <h2 class="mt-10! text-heading-md text-ink">3. Cookies & Tracking Technologies</h2>
+      <p>
+        We do not set tracking cookies, marketing cookies, or fingerprinting scripts. Web fonts (Geist and Geist Mono) are bundled
+        and served directly from our application origin rather than making external calls to third-party ad networks.
       </p>
 
-      <h2 class="mt-10! text-heading-md text-ink">Test History and Settings</h2>
+      <h2 class="mt-10! text-heading-md text-ink">4. Hosting & Ephemeral Technical Logs</h2>
       <p>
-        Reaction test results, F1 start times, your preferred units (including on the stopping distance calculator), speed-alert settings and theme are saved in your browser’s local
-        storage so they’re there next time. This data stays on your device. You can remove test history with the Clear History button,
-        or remove everything by clearing this site’s data in your browser settings.
+        Like virtually all websites on the internet, our hosting infrastructure provider records routine technical connection logs
+        when your browser requests files. These logs may include your IP address, browser type, operating system, referring URL, and
+        the timestamp of the request.
+      </p>
+      <p>
+        These logs are maintained strictly for network routing, DDoS defense, security auditing, and server performance monitoring.
+        They are automatically purged on a standard rolling schedule and are never correlated with individual users or test attempts.
       </p>
 
-      <h2 class="mt-10! text-heading-md text-ink">Accounts, Cookies and Tracking</h2>
+      <h2 class="mt-10! text-heading-md text-ink">5. Sharing Challenge Links</h2>
       <p>
-        There are no accounts. We don’t set advertising or tracking cookies, and fonts are served from our own domain rather than from a
-        third party.
+        When you choose to challenge a friend or share a reaction score, the generated URL encodes only the numeric score in the query
+        parameters (for example, <code>?challenge=214</code>). It does not encode your name, identity, location, or IP address.
       </p>
 
-      <h2 class="mt-10! text-heading-md text-ink">Server Logs</h2>
+      <h2 class="mt-10! text-heading-md text-ink">6. Your Rights (GDPR & CCPA/CPRA)</h2>
       <p>
-        Like any website, our hosting provider may keep short-lived technical logs (such as IP address, browser type and the page
-        requested) to deliver the site and protect it from abuse. We don’t use them to identify you.
+        Under data protection frameworks including the European Union General Data Protection Regulation (GDPR), UK GDPR, and California
+        Consumer Privacy Act (CCPA/CPRA), individuals have rights regarding their personal information.
+      </p>
+      <p>
+        Because SpeedReflex does not collect, store, sell, or share personal identifiable information (PII) on remote servers, your
+        data is already completely within your custody. You can exercise your right to erasure by clearing your browser’s local storage.
       </p>
 
-      <h2 class="mt-10! text-heading-md text-ink">Sharing Results</h2>
+      <h2 class="mt-10! text-heading-md text-ink">7. Children’s Privacy</h2>
       <p>
-        When you share a result or challenge link, the link contains only your score (for example <code>?challenge=231</code>). You choose
-        where to send it.
+        SpeedReflex is designed for general audiences and educational/recreational use. We do not knowingly solicit, collect, or store
+        personal data from children under the age of 13 (or under 16 where applicable by law).
       </p>
 
-      <h2 class="mt-10! text-heading-md text-ink">Changes and Contact</h2>
+      <h2 class="mt-10! text-heading-md text-ink">8. Policy Revisions & Contact</h2>
       <p>
-        If this policy changes we’ll update the date above. Questions?
-        Email <a href="mailto:privacy@speedreflex.com">privacy@speedreflex.com</a>.
+        We may occasionally update this Privacy Policy to reflect technical improvements or legal requirements. Any updates will be
+        reflected with a revised “Last updated” date at the top of this page.
       </p>
+      <p>
+        If you have questions about this policy or our technical implementation, please contact us:
+      </p>
+      <ul>
+        <li>Privacy inquiries: <a href={`mailto:${SITE.email}`}>{SITE.email}</a></li>
+        <li>General questions: <a href="/contact/">SpeedReflex Contact Page</a></li>
+        <li>Terms of service: <a href="/terms/">Terms & Conditions</a></li>
+      </ul>
     </div>
   </article>
+
+  <CtaBand
+    title="Try a Reaction Test"
+    text="Test your reflexes in under 30 seconds. 100% private."
+    primary={{ href: '/reaction-time-test/', label: 'Start Reaction Test' }}
+    secondary={{ href: '/speedometer/', label: 'Open Speedometer' }}
+  />
 </BaseLayout>

@@ -110,12 +110,19 @@ const principles = [
 
   <section class="border-b border-hairline" aria-labelledby="contact-title">
     <div class="shell max-w-3xl py-16 sm:py-24">
-      <h2 id="contact-title" class="text-heading-lg">Contact and Corrections</h2>
+      <h2 id="contact-title" class="text-heading-lg">Contact, Privacy & Terms</h2>
       <div class="prose-sr mt-6">
         <p>
-          Spotted a figure that looks wrong, or a tool that misbehaves on your device?
-          Email <a href={`mailto:${SITE.email}`}>{SITE.email}</a> and we’ll look into it. How we handle data is set out in
-          the <a href="/privacy/">privacy policy</a>.
+          Spotted a figure that looks wrong, want to suggest a new vehicle speedometer or test mode, or need help with a misbehaving tool?
+          We are here to help:
+        </p>
+        <ul>
+          <li><strong>Contact Us:</strong> Fill out our message form or email our technical team on our <a href="/contact/">Contact page</a>.</li>
+          <li><strong>Privacy Policy:</strong> Learn how on-device computing ensures your location and reflex data never leave your browser in our <a href="/privacy/">Privacy Policy</a>.</li>
+          <li><strong>Terms & Conditions:</strong> Review our driving safety disclaimers, recreational testing guidance, and acceptable use in our <a href="/terms/">Terms & Conditions</a>.</li>
+        </ul>
+        <p class="mt-4">
+          Direct inquiries can also be emailed to <a href={`mailto:${SITE.contactEmail}`}>{SITE.contactEmail}</a> or <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.
         </p>
       </div>
     </div>
