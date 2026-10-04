@@ -1,5 +1,6 @@
 export type Locale = 'en' | 'es' | 'de' | 'fr' | 'pt' | 'ja' | 'zh-cn' | 'zh-tw' | 'it' | 'nl';
 
+
 export const DEFAULT_LOCALE: Locale = 'en';
 
 export const LOCALES: readonly Locale[] = [
