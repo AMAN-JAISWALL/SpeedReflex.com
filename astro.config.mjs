@@ -48,6 +48,13 @@ export default defineConfig({
     '/en/stopping-distance-calculator/': '/stopping-distance-calculator/',
     '/en/terms/': '/terms/',
     '/en/train-speed-test/': '/train-speed-test/',
+    // English-only pages (no localized versions).
+    '/en/blog/': '/blog/',
+    '/en/boat-speed-test/': '/boat-speed-test/',
+    '/en/motorcycle-speed-test/': '/motorcycle-speed-test/',
+    '/en/ruler-drop-test/': '/ruler-drop-test/',
+    '/en/speedometer-calculator/': '/speedometer-calculator/',
+    '/en/stopping-sight-distance-calculator/': '/stopping-sight-distance-calculator/',
   },
 
   vite: {

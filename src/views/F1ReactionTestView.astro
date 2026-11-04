@@ -4,6 +4,7 @@ import ToolHero from '../components/ToolHero.astro';
 import F1Start from '../components/F1Start.astro';
 import Section from '../components/Section.astro';
 import Faq from '../components/Faq.astro';
+import ExtraSections from '../components/ExtraSections.astro';
 import RelatedTools from '../components/RelatedTools.astro';
 import { toolById } from '../lib/site';
 import { toolCrumbs, toolPage } from '../lib/schema';
@@ -46,6 +47,8 @@ const F1_STARTS =
   >
     <F1Start locale={locale} />
   </ToolHero>
+
+  <ExtraSections sections={p.extra?.lead} />
 
   <Section
     id="start-lights"
@@ -155,6 +158,9 @@ const F1_STARTS =
       }
     </div>
   </Section>
+
+  <ExtraSections sections={p.extra?.sections} />
+
 
   <Faq items={p.faqs} title={p.faqTitle} />
   <RelatedTools current={tool.id} locale={locale} />

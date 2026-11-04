@@ -1,0 +1,73 @@
+---
+import { SSD_DEFAULTS, stoppingSightDistance } from '../lib/sight';
+
+// Server render: 55 mph, AASHTO defaults, level road. The script recalculates on input.
+const d = SSD_DEFAULTS;
+const r = stoppingSightDistance(d.us.speed, d.reactionS, d.us.decel, 0, 'us');
+const field = 'mt-2 h-11 w-full rounded-sm border border-hairline px-3 text-base tabular-nums focus-visible:border-link';
+const ft = (v: number) => `${Math.round(v)} ft`;
+---
+
+<sight-distance class="block">
+  <div class="card overflow-hidden shadow-whisper">
+    <div class="grid grid-cols-1 lg:grid-cols-2">
+      <form class="grid content-start gap-5 p-5 sm:p-6" data-form>
+        <div class="flex items-center justify-between gap-3">
+          <span class="text-label text-ink" id="ssd-units-label">Units</span>
+          <div class="segmented" role="group" aria-labelledby="ssd-units-label" data-units>
+            <button type="button" data-unit="us" aria-pressed="true">US (mph, ft)</button>
+            <button type="button" data-unit="metric" aria-pressed="false">Metric (km/h, m)</button>
+          </div>
+        </div>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label for="ssd-speed" class="text-label text-ink">Design speed <span class="font-normal text-mute" data-speed-unit>(mph)</span></label>
+            <input id="ssd-speed" type="number" inputmode="decimal" min="5" max="200" step="5" value={d.us.speed} autocomplete="off" data-speed class={field} />
+          </div>
+          <div>
+            <label for="ssd-reaction" class="text-label text-ink">Brake reaction time <span class="font-normal text-mute">(s)</span></label>
+            <input id="ssd-reaction" type="number" inputmode="decimal" min="0.1" max="10" step="0.1" value={d.reactionS} autocomplete="off" data-reaction class={field} />
+          </div>
+          <div>
+            <label for="ssd-decel" class="text-label text-ink">Deceleration <span class="font-normal text-mute" data-decel-unit>(ft/s²)</span></label>
+            <input id="ssd-decel" type="number" inputmode="decimal" min="0.5" max="40" step="0.1" value={d.us.decel} autocomplete="off" data-decel class={field} />
+          </div>
+          <div>
+            <label for="ssd-grade" class="text-label text-ink">Grade <span class="font-normal text-mute">(%, − downhill)</span></label>
+            <input id="ssd-grade" type="number" inputmode="decimal" min="-15" max="15" step="0.5" value="0" autocomplete="off" data-grade class={field} />
+          </div>
+        </div>
+        <p class="text-xs text-mute">AASHTO defaults: 2.5 s brake reaction time and 11.2 ft/s² (3.4 m/s²) deceleration.</p>
+      </form>
+
+      <div class="border-t border-hairline bg-canvas p-5 sm:p-6 lg:border-l lg:border-t-0" aria-live="polite">
+        <p class="eyebrow">Stopping sight distance</p>
+        <p class="mt-2 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <span class="text-[3rem] font-semibold leading-none tracking-[-0.05em] tabular-nums" data-design>{r.design} ft</span>
+          <span class="text-sm text-body">design value · calculated <span class="tabular-nums" data-total>{ft(r.total)}</span></span>
+        </p>
+        <div class="mt-6 flex h-3 overflow-hidden rounded-full bg-hairline-soft" aria-hidden="true">
+          <span class="block h-full bg-link" style={`width: ${(r.reaction / r.total) * 100}%`} data-bar></span>
+          <span class="block h-full flex-1 bg-ink"></span>
+        </div>
+        <dl class="mt-5 grid grid-cols-2 gap-4">
+          <div>
+            <dt class="flex items-center gap-1.5 text-sm text-body"><span class="size-2 rounded-full bg-link"></span> Brake reaction distance</dt>
+            <dd class="mt-1 text-heading-md tabular-nums" data-reaction-out>{ft(r.reaction)}</dd>
+          </div>
+          <div>
+            <dt class="flex items-center gap-1.5 text-sm text-body"><span class="size-2 rounded-full bg-ink"></span> Braking distance</dt>
+            <dd class="mt-1 text-heading-md tabular-nums" data-braking-out>{ft(r.braking)}</dd>
+          </div>
+        </dl>
+        <p class="mt-5 border-t border-hairline pt-4 text-sm leading-6 text-body" data-note>
+          Design values are rounded up to the next 5 ft (or 5 m), as in the AASHTO Green Book.
+        </p>
+      </div>
+    </div>
+  </div>
+</sight-distance>
+
+<script>
+  import '../scripts/sight-distance';
+</script>

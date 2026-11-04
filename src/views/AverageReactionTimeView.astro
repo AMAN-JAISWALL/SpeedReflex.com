@@ -5,6 +5,7 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
 import Section from '../components/Section.astro';
 import DataTable from '../components/DataTable.astro';
 import Faq from '../components/Faq.astro';
+import ExtraSections from '../components/ExtraSections.astro';
 import ToolCard from '../components/ToolCard.astro';
 import { toolById } from '../lib/site';
 import { articlePage, type Crumb } from '../lib/schema';
@@ -82,6 +83,8 @@ const sources = [
       </div>
     </header>
 
+    <ExtraSections sections={p.extra?.lead} />
+
     <Section id="device-lag" eyebrow={p.deviceLagEyebrow} title={p.deviceLagTitle} intro={p.deviceLagIntro}>
       <div class="grid gap-4 sm:grid-cols-2">
         {
@@ -139,6 +142,9 @@ const sources = [
         </p>
       </div>
     </Section>
+
+    <ExtraSections sections={p.extra?.sections} />
+
 
     <Faq items={p.faqs} title={p.faqTitle} />
 

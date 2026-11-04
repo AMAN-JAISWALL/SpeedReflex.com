@@ -1,0 +1,133 @@
+---
+import BlogArticle from '../../components/BlogArticle.astro';
+import DataTable from '../../components/DataTable.astro';
+import { postBySlug } from '../../lib/blog';
+import type { FaqItem } from '../../lib/schema';
+
+const post = postBySlug('how-to-read-a-speedometer');
+
+const KM_PER_MI = 1.609344;
+const kmhRows = [30, 50, 60, 80, 100, 110, 120, 130].map((k) => [`${k} km/h`, `${(k / KM_PER_MI).toFixed(0)} mph`]);
+const mphRows = [20, 25, 30, 45, 55, 65, 70, 75].map((m) => [`${m} mph`, `${(m * KM_PER_MI).toFixed(0)} km/h`]);
+
+const faqs: FaqItem[] = [
+  {
+    q: 'What does a speedometer measure?',
+    a: 'Your instantaneous speed — how fast the vehicle is moving at this moment — in miles per hour, kilometres per hour or both. A car speedometer works it out from how fast the wheels or transmission are turning.',
+  },
+  {
+    q: 'Is the odometer the same as the speedometer?',
+    a: 'No. The speedometer shows how fast you are going now; the odometer shows how far the vehicle has travelled in total. They usually share the same speed signal and sit in the same instrument cluster.',
+  },
+  {
+    q: 'How do I read km/h on my speedometer?',
+    a: 'On a US or UK car, km/h is usually the smaller inner ring of numbers; read it where the needle crosses that ring. On cars sold in metric countries, km/h is the main scale. To convert, multiply km/h by 0.62 for mph.',
+  },
+  {
+    q: 'Does a car speedometer measure velocity?',
+    a: 'No — it measures speed. Velocity includes direction, and a speedometer shows the same number whether you are heading north or south. Physics textbooks describe it as reading instantaneous speed.',
+  },
+  {
+    q: 'What is the difference between a speedometer and a tachometer?',
+    a: 'The speedometer shows road speed; the tachometer shows engine speed in revolutions per minute, usually in thousands. The red zone on the tachometer marks the maximum safe engine speed.',
+  },
+];
+---
+
+<BlogArticle post={post} faqs={faqs}>
+  <p>
+    <strong>A speedometer shows your current speed: read the number the needle points to, using the scale for the unit you want.</strong>
+    On cars sold in the US and UK the large outer numbers are miles per hour and the smaller inner numbers are kilometres per hour. Between
+    the numbers, each small tick mark is an equal step — that’s all there is to it, but the details trip up new drivers and travellers alike.
+  </p>
+
+  <h2 id="analog">How to read an analog speedometer</h2>
+  <ol>
+    <li><strong>Find the two labelled numbers</strong> the needle sits between — for example 40 and 60.</li>
+    <li><strong>Count the spaces between them.</strong> If there are four spaces between 40 and 60, each tick is 5 mph.</li>
+    <li><strong>Count ticks from the lower number.</strong> Two ticks past 40 is 50 mph.</li>
+    <li><strong>Read straight on.</strong> Looking at the needle from an angle — from the passenger seat, say — makes it appear to point at a slightly different number.</li>
+  </ol>
+  <p>
+    Most dials label every 10 or 20 mph with minor ticks every 2, 2.5 or 5. Many highlight common speed limits so you can find them at a
+    glance, and the needle usually sits near the top of the dial at typical highway speeds.
+  </p>
+
+  <h2 id="metric">Reading mph, km/h and metric speedometers</h2>
+  <p>
+    Dual-scale speedometers print both units. In the US and UK, mph is the main scale and km/h the secondary one; in Canada, Europe and most
+    of the world it is the other way round. A <strong>metric speedometer reading</strong> is simply in kilometres per hour, and if you are
+    driving abroad in a rental car the quickest mental conversion is <strong>km/h × 0.6 ≈ mph</strong> (more exactly × 0.62), or
+    <strong>mph × 1.6 ≈ km/h</strong>.
+  </p>
+  <div class="grid gap-6 sm:grid-cols-2">
+    <DataTable caption="Common km/h speeds in mph" head={['Metric reading', 'In mph']} rows={kmhRows} />
+    <DataTable caption="Common mph speeds in km/h" head={['Reading in mph', 'In km/h']} rows={mphRows} />
+  </div>
+
+  <h2 id="digital">Digital speedometers</h2>
+  <p>
+    A digital speedometer shows your speed as a number, sometimes alongside a graphic dial. Many let you switch between mph and km/h in the
+    settings menu, and some project the number onto the windshield as a head-up display. Your phone can do the same: the free
+    <a href="/speedometer/">online speedometer</a> is a digital GPS speedometer with a large readout, an analog-style gauge and a windshield
+    HUD mode.
+  </p>
+
+  <h2 id="what-it-measures">What does a speedometer measure — speed or velocity?</h2>
+  <p>
+    A speedometer measures <strong>speed</strong>, not velocity. Speed is how fast you are going; velocity is speed in a particular direction.
+    Your speedometer shows 50 mph whether you are driving north or south, so it can’t be measuring velocity. In physics terms, the
+    speedometer of an automobile reads <strong>instantaneous speed</strong> — your speed at this moment rather than your average over a trip.
+  </p>
+
+  <h2 id="how-it-works">How a speedometer works</h2>
+  <ul>
+    <li>
+      <strong>Mechanical (eddy-current) speedometers</strong>, used for most of the 20th century, are turned by a cable from the transmission.
+      A spinning magnet drags an aluminium cup against a hairspring, and the faster it spins the further the needle moves.
+    </li>
+    <li>
+      <strong>Electronic speedometers</strong> count pulses from a vehicle speed sensor or the ABS wheel sensors, and a computer drives the needle
+      with a small motor or shows the number on a screen.
+    </li>
+    <li>
+      <strong>GPS speedometers</strong> calculate speed from satellite signals, so they measure your movement over the ground directly and aren’t
+      affected by tire size.
+    </li>
+  </ul>
+  <p>
+    Because car speedometers count wheel turns, a change of tire size changes the reading — see the
+    <a href="/speedometer-calculator/">speedometer calculator</a> — and a fault anywhere in that chain can stop it altogether, as covered in
+    <a href="/blog/speedometer-not-working/">speedometer not working</a>.
+  </p>
+
+  <h2 id="odometer-vs-speedometer">Odometer vs speedometer</h2>
+  <p>
+    They are easy to confuse because they sit together, but they measure different things. The <strong>speedometer</strong> shows how fast you
+    are going now. The <strong>odometer</strong> shows the total distance the vehicle has ever travelled, and one or two resettable
+    <strong>trip meters</strong> show the distance since you last zeroed them. Both are driven by the same speed signal, which is why a
+    failed speed sensor usually stops both.
+  </p>
+
+  <h2 id="tachometer">Speedometer and tachometer</h2>
+  <p>
+    The other big dial on many dashboards is the <strong>tachometer</strong>. It shows engine speed in revolutions per minute, usually marked
+    in thousands (“3” means 3,000 rpm). The red section is the <strong>redline</strong>: the maximum engine speed the manufacturer allows.
+    Speedometers don’t have a redline — the red zone people mean is on the tachometer. Read together, the two tell you which gear suits the
+    road: at a steady 60 mph in top gear most cars are turning roughly 1,500–2,500 rpm.
+  </p>
+
+  <h2 id="symbols">Speedometer symbols and lights</h2>
+  <p>
+    On many cars a small speedometer-and-arrow icon in the cluster is the cruise control indicator, lit (often green) when a cruise speed is
+    set; a similar symbol with a different colour or a line may mean a speed limiter is active. Your owner’s manual lists every symbol for
+    your model. If the speedometer’s own backlight is dim, check the dashboard brightness control before suspecting a fault.
+  </p>
+
+  <h2 id="why-high">Why speedometers read high — and go so high</h2>
+  <p>
+    Speedometers are designed to read slightly above your true speed, never below it; the <a href="/car-speed-test/">car speed test</a> shows
+    by how much on your car. And if you have wondered why a family car’s dial runs to 140 or 160 mph, read
+    <a href="/blog/why-speedometers-go-so-high/">why speedometers go so high</a>.
+  </p>
+</BlogArticle>

@@ -1,7 +1,7 @@
 ---
 import { Monitor, Sun, Moon } from '@lucide/astro';
 import Logo from './Logo.astro';
-import { GUIDES, REFLEX_TOOLS, SITE, SPEED_TOOLS, TOOLS } from '../lib/site';
+import { BLOG_HREF, GUIDES, drivingToolsFor, reflexToolsFor, speedToolsFor } from '../lib/site';
 import { getLocaleFromPath, getLocalizedPath, type Locale } from '../lib/i18n';
 import { getTranslations } from '../i18n';
 
@@ -15,14 +15,14 @@ const t = getTranslations(locale);
 const columns = [
   {
     label: t.nav.reflexTests,
-    links: REFLEX_TOOLS.map((tool) => ({
+    links: reflexToolsFor(locale).map((tool) => ({
       href: getLocalizedPath(tool.href, locale),
       text: t.tools[tool.id]?.name ?? tool.name,
     })),
   },
   {
     label: t.nav.gpsSpeedTests,
-    links: SPEED_TOOLS.map((tool) => ({
+    links: speedToolsFor(locale).map((tool) => ({
       href: getLocalizedPath(tool.href, locale),
       text: t.tools[tool.id]?.name ?? tool.name,
     })),
@@ -30,7 +30,7 @@ const columns = [
   {
     label: t.nav.drivingAndGuides,
     links: [
-      ...TOOLS.filter((tool) => tool.category === 'driving').map((tool) => ({
+      ...drivingToolsFor(locale).map((tool) => ({
         href: getLocalizedPath(tool.href, locale),
         text: t.tools[tool.id]?.name ?? tool.name,
       })),
@@ -38,6 +38,8 @@ const columns = [
         href: getLocalizedPath(g.href, locale),
         text: t.guides.averageReactionTime.name,
       })),
+      // The blog is English-only.
+      ...(locale === 'en' ? [{ href: BLOG_HREF, text: 'Blog' }] : []),
     ],
   },
   {

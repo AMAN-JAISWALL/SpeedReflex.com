@@ -1,0 +1,177 @@
+---
+// English-only page: GPS boat speedometer (knots) and how boat speedometers work.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ToolHero from '../components/ToolHero.astro';
+import Speedometer from '../components/Speedometer.astro';
+import Section from '../components/Section.astro';
+import StepList from '../components/StepList.astro';
+import DataTable from '../components/DataTable.astro';
+import Callout from '../components/Callout.astro';
+import Faq from '../components/Faq.astro';
+import RelatedTools from '../components/RelatedTools.astro';
+import { toolById } from '../lib/site';
+import { toolCrumbs, toolPage, type FaqItem } from '../lib/schema';
+import { UNITS } from '../lib/speed';
+
+const tool = toolById('boat');
+const title = 'Boat Speed Test — Free GPS Boat Speedometer in Knots';
+const description =
+  'Turn your phone into a GPS boat speedometer: live speed over ground in knots, mph or km/h, plus top speed and distance. Learn how boat speedometers work.';
+const crumbs = toolCrumbs(tool, 'en');
+
+const knots = [3, 5, 10, 15, 20, 30, 40, 50].map((kn) => {
+  const ms = kn / UNITS.kn.perMs;
+  return [`${kn} kn`, `${(ms * UNITS.mph.perMs).toFixed(1)} mph`, `${(ms * UNITS.kmh.perMs).toFixed(1)} km/h`];
+});
+
+const hullSpeed = [15, 20, 25, 30, 40].map((lwl) => [`${lwl} ft (${(lwl * 0.3048).toFixed(1)} m)`, `${(1.34 * Math.sqrt(lwl)).toFixed(1)} kn`]);
+
+const steps = [
+  { title: 'Protect Your Phone', text: 'Use a waterproof case or pouch and a lanyard. Spray and a wet deck end more phones than rough water does.' },
+  { title: 'Open Before You Leave', text: 'Load this page while you still have signal, press Start and allow location access. It keeps running offshore without data.' },
+  { title: 'Read Speed Over Ground', text: 'Keep the phone where it can see the sky — fiberglass and canvas are fine, metal is not — and read your speed in knots.' },
+];
+
+const faqs: FaqItem[] = [
+  {
+    q: 'How accurate is a GPS boat speedometer?',
+    a: 'At a steady speed with a clear view of the sky, phone GPS is typically accurate to within about 1 knot — and unlike a pitot gauge it stays accurate at low speeds. It can lag for a second or two when you accelerate hard or turn sharply.',
+  },
+  {
+    q: 'Does GPS show speed over ground or speed through water?',
+    a: 'Speed over ground (SOG): how fast you are moving relative to the seabed. A paddle-wheel log or pitot tube measures speed through water. The difference between the two is the current.',
+  },
+  {
+    q: 'Do I need cell signal to use it on the water?',
+    a: 'No. GPS satellites are received directly by your phone. Load the page while you still have a connection; after that it works offshore with no data.',
+  },
+  {
+    q: 'Why does my boat speedometer read differently from GPS?',
+    a: 'Pitot gauges are rough by design and read poorly at low speed, a partly blocked pickup reads low, and paddle wheels foul with growth. Both also measure speed through water, so a current makes them disagree with GPS even when they are working perfectly.',
+  },
+  {
+    q: 'What is a knot?',
+    a: 'One nautical mile per hour: 1.852 km/h or about 1.15 mph. A nautical mile (1,852 m) is one minute of latitude, which is why knots are used at sea and in the air.',
+  },
+  {
+    q: 'Can I use it on a kayak, sailboat or jet ski?',
+    a: 'Yes — anything that moves on the water. Kayakers and sailors get accurate low-speed readings, and PWC riders can set a speed alert. Keep the phone sealed in a waterproof case.',
+  },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  jsonLd={toolPage(tool, title, description, faqs, 'en', tool.href, crumbs)}
+  locale="en"
+  localized={false}
+>
+  <ToolHero
+    crumbs={crumbs}
+    eyebrow="GPS speed test · Marine"
+    title="Boat Speed Test"
+    lede="How fast is your boat going? Press Start for live GPS speed over ground in knots, mph or km/h — with top speed, moving average, trip distance in nautical miles and a speed alert for no-wake zones. No app, no wiring and no pitot tube to clog."
+    features={['Knots by default', 'Speed over ground', 'Nautical-mile trip log', 'No-wake speed alert', 'Works offshore without data', 'GPX track export']}
+  >
+    <Speedometer preset="boat" locale="en" />
+    <div class="mt-4 max-w-3xl">
+      <Callout tone="warning" title="Keep your eyes on the water">
+        Set up the phone before you get under way and let a crew member read it. A phone is not a substitute for proper marine navigation equipment.
+      </Callout>
+    </div>
+  </ToolHero>
+
+  <Section id="how-to" eyebrow="How it works" title="Use Your Phone as a GPS Boat Speedometer">
+    <StepList steps={steps} />
+  </Section>
+
+  <Section id="how-boat-speedometers-work" eyebrow="Marine instruments" title="How Does a Boat Speedometer Work?" intro="Boats measure speed in one of three ways. Two of them measure your speed through the water; GPS measures your speed over the ground.">
+    <div class="grid gap-4 md:grid-cols-3">
+      <div class="card p-6">
+        <h3 class="text-heading-md">Pitot tube</h3>
+        <p class="mt-2 text-sm leading-6 text-body">
+          The classic boat speedometer. A small forward-facing pickup — often a hole in the leading edge of an outboard’s gearcase, or a
+          tube on the transom — rams water into a hose, and a pressure gauge on the dash converts that pressure into mph or knots. Simple and
+          cheap, but the pressure grows with the square of speed — there is almost none to measure when you go slowly — so pitot gauges
+          read poorly below about 10 mph, and the pickup clogs easily.
+        </p>
+      </div>
+      <div class="card p-6">
+        <h3 class="text-heading-md">Paddle wheel</h3>
+        <p class="mt-2 text-sm leading-6 text-body">
+          A small impeller under the hull spins as water flows past, and an electronic sensor counts its revolutions. Paddle-wheel logs are
+          accurate at low speeds and common on sailboats, but weed and marine growth slow the wheel and make them read low.
+        </p>
+      </div>
+      <div class="card p-6">
+        <h3 class="text-heading-md">GPS</h3>
+        <p class="mt-2 text-sm leading-6 text-body">
+          A GPS boat speedometer — a marine GPS gauge, a chartplotter or this page — measures speed over ground from satellite signals. Nothing
+          sits in the water, so nothing fouls, and it is just as accurate at 3 knots as at 50.
+        </p>
+      </div>
+    </div>
+  </Section>
+
+  <Section id="speed-over-ground" eyebrow="Navigation" title="Speed Over Ground vs Speed Through Water">
+    <div class="grid gap-10 lg:grid-cols-2">
+      <div class="prose-sr">
+        <p>
+          <strong>Speed over ground (SOG)</strong> is how fast you are moving relative to the seabed — what GPS shows. <strong>Speed through
+          water (STW)</strong> is how fast the hull is moving relative to the water around it — what pitot tubes and paddle wheels show.
+        </p>
+        <p>
+          On a lake they match. In a tidal river they don’t: a boat making 6 knots through the water against a 2-knot current covers ground
+          at only 4 knots, and at 8 knots with the current behind it. For arrival times and fuel planning, SOG is the number that matters;
+          for sail trim and hull performance, sailors watch STW.
+        </p>
+        <p>
+          Displacement hulls — most sailboats and trawlers — also have a natural limit called hull speed, roughly 1.34 × √(waterline length
+          in feet) knots. Pushing past it takes far more power for very little extra speed.
+        </p>
+      </div>
+      <DataTable caption="Approximate hull speed by waterline length" head={['Waterline length', 'Hull speed']} rows={hullSpeed} note="Hull speed ≈ 1.34 × √(LWL in feet). Planing hulls are not limited this way." />
+    </div>
+  </Section>
+
+  <Section id="typical-boat-speeds" eyebrow="Benchmarks" title="How Fast Do Boats Go?" intro="Typical speeds vary hugely with hull, engine and load, but these ranges are a useful guide.">
+    <DataTable
+      caption="Typical boat speeds"
+      head={['Boat', 'Typical speed']}
+      rows={[
+        ['Kayak or canoe (paddled)', '2–4 kn (2–5 mph)'],
+        ['Cruising sailboat', '5–8 kn (6–9 mph)'],
+        ['Trawler or displacement cruiser', '7–10 kn (8–12 mph)'],
+        ['Pontoon boat', '15–30 mph top speed'],
+        ['Bass boat', '50–75 mph top speed'],
+        ['Personal watercraft (jet ski)', 'up to about 65 mph'],
+        ['Cruise ship', 'about 18–22 kn'],
+      ]}
+      note="No-wake zones usually mean the slowest speed at which you can still steer — often around 5 mph or less. Check local rules."
+    />
+  </Section>
+
+  <Section id="knots" eyebrow="Units" title="Knots, mph and km/h" intro="1 knot = 1 nautical mile per hour = 1.852 km/h ≈ 1.151 mph.">
+    <DataTable caption="Knots converted to mph and km/h" head={['Knots', 'mph', 'km/h']} rows={knots} note="A nautical mile is 1,852 m — one minute of latitude — so charts and knots work together." />
+  </Section>
+
+  <Section id="boat-speedometer-not-working" eyebrow="Troubleshooting" title="Boat Speedometer Not Working? Common Causes">
+    <div class="prose-sr max-w-3xl">
+      <p>When a pitot-type boat speedometer reads zero, sticks or reads low, the cause is almost always in the water side of the system rather than the gauge:</p>
+      <ul>
+        <li><strong>Blocked pickup.</strong> Weed, sand, salt or marine growth plugs the tiny pitot hole. Clear it gently with a thin wire.</li>
+        <li><strong>Water or debris in the hose.</strong> Disconnect the hose at the gauge and blow it through towards the pickup — never blow air back through the gauge itself, which can damage it.</li>
+        <li><strong>Cracked, kinked or loose tubing.</strong> A leak anywhere bleeds off pressure and makes the gauge read low. Replace brittle hose and check the fittings.</li>
+        <li><strong>Fouled paddle wheel.</strong> On impeller sensors, remove and clean the wheel, check that it spins freely and inspect the wiring.</li>
+      </ul>
+      <p>
+        While you sort it out, this page works as a backup boat speedometer. And if you are comparing a repaired gauge, remember that GPS shows
+        speed over ground — test on still water, or run the same stretch in both directions and average the readings.
+      </p>
+    </div>
+  </Section>
+
+  <Faq items={faqs} title="Boat Speed Test FAQ" />
+  <RelatedTools current={tool.id} locale="en" />
+</BaseLayout>

@@ -1,9 +1,27 @@
 ---
-import { Zap, Flag, Ear, Gauge, Car, Bike, Bus, TrainFront, Plane, OctagonAlert, BookOpenText } from '@lucide/astro';
+import {
+  Zap,
+  Flag,
+  Ear,
+  Gauge,
+  Car,
+  Bike,
+  Bus,
+  TrainFront,
+  Plane,
+  OctagonAlert,
+  BookOpenText,
+  Ruler,
+  Sailboat,
+  Motorbike,
+  Calculator,
+  Signpost,
+  Newspaper,
+} from '@lucide/astro';
 import type { ToolId } from '../lib/site';
 
 interface Props {
-  id: ToolId | 'guide';
+  id: ToolId | 'guide' | 'blog';
   size?: number;
   class?: string;
 }
@@ -21,6 +39,12 @@ const Icon = {
   flight: Plane,
   stopping: OctagonAlert,
   guide: BookOpenText,
+  ruler: Ruler,
+  boat: Sailboat,
+  motorcycle: Motorbike,
+  speedoCalc: Calculator,
+  sightDistance: Signpost,
+  blog: Newspaper,
 }[id];
 ---
 

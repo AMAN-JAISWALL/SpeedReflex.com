@@ -1,0 +1,112 @@
+---
+import BlogArticle from '../../components/BlogArticle.astro';
+import DataTable from '../../components/DataTable.astro';
+import { postBySlug } from '../../lib/blog';
+import type { FaqItem } from '../../lib/schema';
+
+const post = postBySlug('why-speedometers-go-so-high');
+
+const faqs: FaqItem[] = [
+  {
+    q: 'Is the max speed on my speedometer my car’s top speed?',
+    a: 'Almost never. The dial’s maximum is a design choice; most cars are limited well below it by their engine power, gearing, an electronic governor or the speed rating of their tires.',
+  },
+  {
+    q: 'Why do speedometers go up to 140 or 160 mph?',
+    a: 'Mainly because one instrument cluster serves many versions of a car, because it puts everyday speeds in the most readable part of the dial, and because it gives headroom so the needle never hits the stop. A big number also looks sporty.',
+  },
+  {
+    q: 'What does it mean when a speedometer is pegged?',
+    a: 'The needle is resting against its stop at the top of the dial. Either the vehicle really is going faster than the dial shows, or — far more often in an everyday car — the gauge or its signal has a fault. A brief sweep to the maximum when you switch on is just a self-test.',
+  },
+  {
+    q: 'Why did some old cars have 85 mph speedometers?',
+    a: 'A US federal rule required speedometers on new cars to top out at 85 mph, with 55 mph highlighted, from the 1980 model year. It was meant to discourage speeding during the national 55 mph limit and was withdrawn after only a few years.',
+  },
+];
+
+const ratings = [
+  ['S', '112 mph', '180 km/h'],
+  ['T', '118 mph', '190 km/h'],
+  ['H', '130 mph', '210 km/h'],
+  ['V', '149 mph', '240 km/h'],
+  ['W', '168 mph', '270 km/h'],
+  ['Y', '186 mph', '300 km/h'],
+];
+---
+
+<BlogArticle post={post} faqs={faqs}>
+  <p>
+    <strong>Speedometers go far beyond a car’s real top speed because one dial has to suit many versions of a car, because it makes everyday
+    speeds easier to read, and because a needle that hits its stop looks broken.</strong> Marketing plays a part too. The maximum number on
+    your speedometer tells you a lot about design decisions — and very little about how fast the car can actually go.
+  </p>
+
+  <h2 id="top-speed">Top speed vs max speedometer reading</h2>
+  <p>
+    Most everyday cars are limited well below the end of the dial. Engine power and gearing set a natural limit, and many cars also have an
+    electronic governor — often set to match the speed rating of the tires fitted at the factory. Several German premium brands famously cap
+    their cars at 250 km/h (155 mph) even though the dial reads higher.
+  </p>
+  <DataTable
+    caption="Tire speed ratings"
+    head={['Speed rating', 'Maximum speed', 'Metric']}
+    rows={ratings}
+    note="The speed rating letter appears at the end of the tire size, e.g. 225/45R17 94V."
+  />
+
+  <h2 id="reasons">Why speedometers go so high</h2>
+  <ol>
+    <li>
+      <strong>Shared instrument clusters.</strong> The same cluster often goes into the base model and the high-powered version of a car, and
+      into versions sold in countries with very different speed limits. The dial has to cover the fastest of them.
+    </li>
+    <li>
+      <strong>Readability.</strong> On a typical 270-degree dial, the middle of the range sits at the top. On a 0–140 mph speedometer that puts
+      70 mph — the speed you spend hours at on the highway — straight up, where your eye finds it fastest.
+    </li>
+    <li>
+      <strong>Headroom.</strong> Speedometers already read a little high, and a car rolling downhill with a tailwind can exceed its usual top
+      speed. Designers don’t want the needle ever to bury itself against the stop.
+    </li>
+    <li>
+      <strong>Marketing.</strong> A dial that runs to 160 looks more exciting in the showroom than one that ends at 100.
+    </li>
+  </ol>
+
+  <h2 id="85-mph">The 85 mph speedometer era</h2>
+  <p>
+    For a few years the US went the other way. Under the national 55 mph speed limit, introduced in 1974, a federal rule required new cars
+    from the 1980 model year to have speedometers that read no higher than 85 mph and highlighted 55. The idea was to discourage speeding;
+    the result was a generation of cars whose needles disappeared off the end of the dial on the highway. The rule was withdrawn after only a
+    few years, and the 55 mph national limit itself was repealed in 1995 — which is why an 85 mph speedometer is now a period curiosity.
+  </p>
+
+  <h2 id="pegged">What a maxed-out or pegged speedometer means</h2>
+  <p>
+    A speedometer is “pegged” or “maxed out” when the needle rests against its stop at the top of the dial. In a race car, or an old car
+    with an 85 mph dial, that can genuinely mean you are going faster than the gauge can show. In an everyday modern car it almost always
+    means a fault: a failed gauge motor, a faulty cluster or a bad speed signal. One harmless exception: many cars sweep every needle to the
+    maximum for a second when you start them, as a self-test.
+  </p>
+
+  <h2 id="dial-ranges">100, 120, 140 and 160 mph speedometers</h2>
+  <p>
+    As a rough guide, older and smaller cars often have 100 mph or 120 mph speedometers; most mainstream cars today run to 140–160 mph; and
+    sports cars go to 180 mph or beyond. Motorcycle speedometers follow the same logic. None of it changes the speed limit — or how far you
+    need to stop, which is why the <a href="/stopping-distance-calculator/">stopping distance calculator</a> is worth a look at highway speeds.
+  </p>
+
+  <h2 id="tachometer-redline">Speedometer “red line” vs tachometer redline</h2>
+  <p>
+    Speedometers don’t have a redline. The red zone is on the tachometer, and it marks the maximum engine speed in rpm, not a road speed.
+    Our guide to <a href="/blog/how-to-read-a-speedometer/">reading a speedometer and tachometer</a> explains both dials.
+  </p>
+
+  <h2 id="track-max-speed">Measure your real top speed — safely</h2>
+  <p>
+    Curious what your vehicle really does? The <a href="/speedometer/">online GPS speedometer</a> records your max speed on any trip, and it
+    reads true speed rather than the optimistic dashboard number. Use it where speed is legal and safe: as a passenger, on a
+    <a href="/train-speed-test/">high-speed train</a> or a <a href="/flight-speed-test/">flight</a>, or at a track day.
+  </p>
+</BlogArticle>

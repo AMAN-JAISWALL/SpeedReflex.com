@@ -13,7 +13,7 @@ const { preset, locale = getLocaleFromPath(Astro.url.pathname) } = Astro.props;
 const t = getTranslations(locale);
 const ui = t.toolUi.speedometer;
 const p = PRESETS[preset];
-const unit = 'kmh';
+const unit = p.defaultUnit ?? 'kmh';
 const range = initialRange(p, unit);
 const ticks = gaugeTicks(range);
 const track = arcPath(GAUGE.start, GAUGE.start + GAUGE.sweep);

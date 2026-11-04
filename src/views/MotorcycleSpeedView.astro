@@ -1,0 +1,139 @@
+---
+// English-only page: GPS motorcycle speedometer and why bike speedometers read differently.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ToolHero from '../components/ToolHero.astro';
+import Speedometer from '../components/Speedometer.astro';
+import Section from '../components/Section.astro';
+import StepList from '../components/StepList.astro';
+import DataTable from '../components/DataTable.astro';
+import Callout from '../components/Callout.astro';
+import Faq from '../components/Faq.astro';
+import RelatedTools from '../components/RelatedTools.astro';
+import { toolById } from '../lib/site';
+import { toolCrumbs, toolPage, type FaqItem } from '../lib/schema';
+
+const tool = toolById('motorcycle');
+const title = 'Motorcycle Speed Test — Free GPS Motorcycle Speedometer';
+const description =
+  'Use your phone as a GPS motorcycle speedometer: live true speed, top speed, distance and a speed alert — and find out how far your bike’s speedometer is off.';
+const crumbs = toolCrumbs(tool, 'en');
+
+const steps = [
+  { title: 'Mount It Properly', text: 'Use a secure handlebar or stem mount with a vibration damper, and set the screen brightness before you ride.' },
+  { title: 'Start Before You Ride', text: 'Press Start and allow location access while you are stopped. The screen stays awake while a ride is running.' },
+  { title: 'Compare at a Steady Speed', text: 'On a straight, safe road, hold a steady speed and compare the GPS reading with your bike’s speedometer.' },
+];
+
+const faqs: FaqItem[] = [
+  {
+    q: 'How accurate is a GPS motorcycle speedometer?',
+    a: 'At a steady speed under open sky, phone GPS is typically accurate to about 1–2 km/h (around 1 mph). Unlike a wheel or sprocket sensor it isn’t affected by tire size, tire wear or gearing.',
+  },
+  {
+    q: 'Does leaning into corners affect GPS speed?',
+    a: 'No. GPS measures how fast you move over the ground, so lean angle makes no difference. Tight bends under trees or between buildings can briefly reduce signal quality, though.',
+  },
+  {
+    q: 'Will changing sprockets affect my speedometer?',
+    a: 'It depends where your speed sensor is. If it reads the front sprocket or gearbox output, fewer front teeth or more rear teeth make the speedometer read high. If the sensor reads the wheel, sprockets make no difference. Tire size changes affect both.',
+  },
+  {
+    q: 'Why does my motorcycle speedometer read higher than GPS?',
+    a: 'Like car speedometers, motorcycle speedometers are built never to read low, so most over-read by a few percent. A worn rear tire or shorter gearing adds to it.',
+  },
+  {
+    q: 'Is it legal to use a phone as a speedometer on a motorcycle?',
+    a: 'In most places a securely mounted phone is fine as long as you don’t handle it while riding — but rules vary, so check your local laws. It is not a replacement for the bike’s own speedometer where one is required.',
+  },
+  {
+    q: 'Can I use it on a track day?',
+    a: 'Yes — it records top speed and exports your ride as GPX. Phone GPS updates about once a second, so it shows speeds on straights well but won’t capture every corner like a dedicated lap timer.',
+  },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  jsonLd={toolPage(tool, title, description, faqs, 'en', tool.href, crumbs)}
+  locale="en"
+  localized={false}
+>
+  <ToolHero
+    crumbs={crumbs}
+    eyebrow="GPS speed test · Motorcycle"
+    title="Motorcycle Speed Test"
+    lede="Turn your phone into a GPS motorcycle speedometer. Mount it on the bars, press Start and see your true speed, top speed, moving average and distance — then compare it with your bike’s own speedometer, which very likely reads high."
+    features={['Live GPS speed', 'Top speed & moving average', 'Speed alert with vibration', 'Bright, glanceable display', 'GPX ride export', 'Location stays on your device']}
+  >
+    <Speedometer preset="motorcycle" locale="en" />
+    <div class="mt-4 max-w-3xl">
+      <Callout tone="warning" title="Set up before you ride">
+        Configure the speedometer while stopped and never handle your phone on the move. Keep your eyes on the road and obey speed limits.
+      </Callout>
+    </div>
+  </ToolHero>
+
+  <Section id="how-to" eyebrow="How it works" title="Turn Your Phone Into a Motorcycle GPS Speedometer">
+    <StepList steps={steps} />
+  </Section>
+
+  <Section id="speedometer-error" eyebrow="Accuracy" title="Why Your Motorcycle Speedometer Reads Differently From GPS" intro="Most motorcycle speedometers over-read by design. Changes to tires and gearing can push the error further either way.">
+    <DataTable
+      caption="How changes affect a motorcycle speedometer"
+      head={['Change', 'Sensor on sprocket / gearbox', 'Sensor on the wheel']}
+      rows={[
+        ['Smaller front sprocket', 'Reads high', 'No change'],
+        ['Larger rear sprocket', 'Reads high', 'No change'],
+        ['Taller (larger) rear tire', 'Reads low', 'Reads low (rear-wheel sensor)'],
+        ['Worn rear tire', 'Reads slightly high', 'Reads slightly high (rear-wheel sensor)'],
+        ['Taller front tire', 'No change', 'Reads low (front-wheel sensor)'],
+      ]}
+      note="Plug-in speedometer correction modules, or a dealer reprogram, can fix a known error. Work out tire-size effects with the speedometer calculator."
+    />
+    <div class="prose-sr mt-8 max-w-3xl">
+      <p>
+        A GPS reading sidesteps all of this, because it measures your movement over the ground rather than counting turns of a sprocket or
+        wheel. Use it to find your speedometer’s true error after a gearing change, then calculate tire effects with the
+        <a href="/speedometer-calculator/">speedometer calculator</a>.
+      </p>
+    </div>
+  </Section>
+
+  <Section id="mounting" eyebrow="Rider setup" title="Mounting a Phone on a Motorcycle">
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div class="card p-6">
+        <h3 class="text-heading-md">Damp the vibration</h3>
+        <p class="mt-2 text-sm leading-6 text-body">
+          Apple warns that the strong vibration of high-power motorcycle engines can damage the image stabilisation and autofocus in iPhone
+          cameras, and recommends a vibration-dampening mount on mopeds and scooters. A damper is worth it on any bike.
+        </p>
+      </div>
+      <div class="card p-6">
+        <h3 class="text-heading-md">Mind the heat and rain</h3>
+        <p class="mt-2 text-sm leading-6 text-body">Direct sun and a bright, always-on screen can make a phone overheat and dim itself. A shaded, weatherproof case helps on long rides.</p>
+      </div>
+      <div class="card p-6">
+        <h3 class="text-heading-md">Keep it powered</h3>
+        <p class="mt-2 text-sm leading-6 text-body">GPS is light on battery, but a screen on full brightness isn’t. A USB socket or a small power bank keeps it running all day.</p>
+      </div>
+      <div class="card p-6">
+        <h3 class="text-heading-md">Phone or dedicated gauge?</h3>
+        <p class="mt-2 text-sm leading-6 text-body">
+          For a permanent fit on a custom or classic bike, a universal digital motorcycle speedometer with its own GPS or wheel sensor is the
+          tidier option. For checking accuracy, recording rides or a backup, your phone does the job for free.
+        </p>
+      </div>
+    </div>
+    <div class="prose-sr mt-8 max-w-3xl">
+      <p>
+        Riding a bicycle or e-bike instead? The <a href="/bike-speed-test/">bike speed test</a> is tuned for cycling speeds. Curious how fast
+        you react on the road? Try the <a href="/reaction-time-test/">reaction time test</a> and see what it means for your
+        <a href="/stopping-distance-calculator/">stopping distance</a>.
+      </p>
+    </div>
+  </Section>
+
+  <Faq items={faqs} title="Motorcycle Speed Test FAQ" />
+  <RelatedTools current={tool.id} locale="en" />
+</BaseLayout>

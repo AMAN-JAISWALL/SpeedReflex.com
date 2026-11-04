@@ -1,0 +1,191 @@
+---
+import BlogArticle from '../../components/BlogArticle.astro';
+import DataTable from '../../components/DataTable.astro';
+import Callout from '../../components/Callout.astro';
+import { postBySlug } from '../../lib/blog';
+import type { FaqItem } from '../../lib/schema';
+
+const post = postBySlug('speedometer-not-working');
+
+const faqs: FaqItem[] = [
+  {
+    q: 'Why is my speedometer not working but the RPM gauge works?',
+    a: 'Because the two gauges use different signals. The tachometer reads engine speed, while the speedometer relies on a vehicle speed signal from the transmission or wheel sensors. A working tachometer means the cluster has power, so the fault is usually the speed sensor, its wiring, or the speedometer section of the cluster.',
+  },
+  {
+    q: 'How do I know if my speedometer sensor is bad?',
+    a: 'Typical signs are a speedometer that drops to zero or jumps around, cruise control that stops working, harsh or erratic automatic gear changes and a check-engine light with a speed-sensor code such as P0500. A scan tool that shows no vehicle speed in live data while you are moving confirms it.',
+  },
+  {
+    q: 'Can a bad speed sensor cause transmission problems?',
+    a: 'Yes. Automatic transmissions use the vehicle speed signal to decide when to shift, so a failing sensor can cause late, harsh or erratic shifts and sometimes a limp mode stuck in one gear.',
+  },
+  {
+    q: 'Why does my speedometer work sometimes and not others?',
+    a: 'An intermittent speedometer usually points to a loose or corroded connector, a chafed wire, or a sensor that fails when it gets hot. Wiggling the connector with the engine running (safely, with the vehicle stationary and a helper watching live data) often reveals the culprit.',
+  },
+  {
+    q: 'Can I drive with a broken speedometer?',
+    a: 'You can physically drive, but you can’t judge your speed, and in many places a working speedometer is required equipment. Use a GPS speedometer as a temporary backup and get the fault repaired soon.',
+  },
+];
+
+const sources = [
+  { t: 'NHTSA — Check for vehicle recalls by VIN', href: 'https://www.nhtsa.gov/recalls' },
+  { t: 'SAE J2012 — Diagnostic Trouble Code definitions (P0500 series: vehicle speed sensor)' },
+];
+---
+
+<BlogArticle post={post} faqs={faqs} sources={sources}>
+  <p>
+    <strong>When a speedometer stops working, the cause is usually one of five things: a failed vehicle speed sensor, a blown fuse, damaged
+    wiring, a faulty instrument cluster or — on older cars — a broken speedometer cable or drive gear.</strong> The symptoms tell you which
+    to check first, and the cheapest fixes are also the most common, so work from the top of this list down.
+  </p>
+
+  <Callout title="Need a speedometer right now?">
+    Open the free <a href="/speedometer/" class="text-link underline underline-offset-2">online GPS speedometer</a> on your phone and mount it
+    securely. It shows your true speed from satellites, so it works even when your car’s speed sensor doesn’t.
+  </Callout>
+
+  <h2 id="symptoms">Quick diagnosis: what the symptoms tell you</h2>
+  <p>Before you buy parts, match what you are seeing to the most likely cause:</p>
+  <DataTable
+    caption="Speedometer symptoms and their most likely causes"
+    head={['Symptom', 'Most likely cause']}
+    rows={[
+      ['Speedometer reads zero and the odometer has stopped too', 'No speed signal — sensor, wiring or fuse'],
+      ['Speedometer dead but the odometer still counts', 'Gauge motor or instrument cluster'],
+      ['Speedometer not working but the RPM gauge works', 'Speed-signal fault; the cluster has power'],
+      ['Speedometer, fuel and temperature gauges all dead', 'Cluster power, ground or fuse'],
+      ['Needle bounces or jumps while driving', 'Failing sensor, loose connector, or a dry cable'],
+      ['Stopped working, then started again', 'Intermittent connection or a heat-sensitive sensor'],
+      ['Speedometer dead plus ABS or traction lights', 'Wheel speed sensor or ABS module'],
+      ['Speedometer dead plus erratic automatic shifts', 'Vehicle speed sensor'],
+      ['Reads steadily wrong, not dead', 'Tire size or gearing change — not a fault'],
+    ]}
+  />
+  <p>
+    If your speedometer works but reads a consistent few percent off — especially after new wheels or tires — nothing is broken. Work out the
+    error with the <a href="/speedometer-calculator/">speedometer calculator</a> and see our guide to
+    <a href="/blog/speedometer-calibration/">speedometer calibration</a>.
+  </p>
+
+  <h2 id="speed-sensor">1. A faulty vehicle speed sensor</h2>
+  <p>
+    <strong>What is a speedometer sensor?</strong> Most cars made since the 1990s don’t drive the speedometer mechanically. A vehicle speed
+    sensor (VSS) — a magnetic or Hall-effect pickup next to a toothed ring — produces a stream of pulses as the wheels turn, and the engine
+    computer or instrument cluster turns the pulse rate into a speed. Many newer cars have no separate VSS at all and take speed from the ABS
+    wheel speed sensors.
+  </p>
+  <h3>Bad speedometer sensor symptoms</h3>
+  <ul>
+    <li>The speedometer drops to zero, reads erratically or bounces.</li>
+    <li>Cruise control stops working or won’t engage.</li>
+    <li>An automatic transmission shifts late, harshly or erratically, or goes into limp mode.</li>
+    <li>The check-engine light comes on, often with a code in the P0500 range (vehicle speed sensor).</li>
+    <li>ABS or traction-control warning lights come on, if wheel speed sensors are involved.</li>
+    <li>The odometer and trip meter stop counting.</li>
+  </ul>
+  <h3>Where is the speedometer sensor located?</h3>
+  <p>
+    On rear-wheel-drive cars and trucks, the speed sensor is usually on the transmission tail or extension housing, or on the rear axle
+    differential. On front-wheel-drive cars it is typically on the transaxle near the final drive. Where speed comes from the ABS system,
+    there is a sensor at each wheel hub. The exact location varies by model, so check a service manual for your vehicle.
+  </p>
+  <h3>How to test a speedometer sensor</h3>
+  <ol>
+    <li><strong>Scan for codes.</strong> An inexpensive OBD-II scanner will show speed-sensor and ABS codes.</li>
+    <li><strong>Watch live data.</strong> With a passenger reading the scanner, drive slowly and watch the “vehicle speed” value. If it reads correctly, the sensor works and the fault is further down the line, in the cluster or its communication.</li>
+    <li><strong>Inspect the connector and wiring</strong> for corrosion, oil contamination, broken locking tabs and chafed wires.</li>
+    <li><strong>Check the sensor itself.</strong> Two-wire magnetic sensors generate a small AC voltage when the wheels turn and have a resistance specification; three-wire Hall-effect sensors need a supply voltage and output a square wave. Compare readings with the manual’s values, with the vehicle safely supported.</li>
+  </ol>
+  <p>
+    Replacing a speed sensor is often a single bolt and a connector. Clear the codes afterwards and confirm the speedometer against
+    <a href="/car-speed-test/">GPS with the car speed test</a>.
+  </p>
+
+  <h2 id="fuse">2. A blown fuse</h2>
+  <p>
+    If the speedometer and other gauges died together, check the fuse first — it takes minutes and costs almost nothing. The speedometer
+    fuse is usually labelled for the instrument cluster, gauges or meter, in the interior fuse box (under the dash or in the side kick panel)
+    or the under-hood box; your owner’s manual shows the location. Replace it with one of the same rating. If the new fuse blows too, there
+    is a short circuit to track down.
+  </p>
+
+  <h2 id="wiring">3. Damaged wiring or connectors</h2>
+  <p>
+    The speed-sensor wiring runs close to hot, vibrating parts under the car, so chafed insulation and corroded connectors are common —
+    especially where road salt is used. Wiring faults tend to cause intermittent symptoms: a speedometer that stops working and then starts
+    again, or one that cuts out over bumps.
+  </p>
+
+  <h2 id="instrument-cluster">4. A failing instrument cluster</h2>
+  <p>
+    When the speed signal is fine (live data shows speed) but the needle won’t move, the problem is in the cluster: a failed gauge stepper
+    motor, cracked solder joints or a faulty circuit board. Several gauges misbehaving at once points the same way. Some models have had
+    widely reported cluster gauge failures — certain model years of GM trucks and SUVs among them — so check for recalls or extended coverage
+    with your VIN at <a href="https://www.nhtsa.gov/recalls" rel="noopener" target="_blank">NHTSA’s recall lookup</a> and with your dealer before
+    paying for a repair.
+  </p>
+  <p>
+    Cluster rebuild services can replace stepper motors and resolder boards, which is often cheaper than a new cluster. A replacement cluster
+    usually needs programming so the odometer shows the correct mileage.
+  </p>
+
+  <h2 id="speedometer-cable">5. Older cars: speedometer cable and drive gear</h2>
+  <p>
+    Mechanical speedometers, common until the 1990s and still found on classic cars and some motorcycles, are turned by a cable from the
+    transmission. A <strong>broken inner cable</strong> leaves the needle dead; a <strong>dry or kinked cable</strong> makes it bounce and
+    sometimes squeal; and a <strong>stripped plastic driven gear</strong> in the transmission stops it altogether.
+  </p>
+  <p>
+    To lubricate a speedometer cable, pull the inner cable out from the speedometer end, clean it, and apply a light coat of speedometer cable
+    lubricant or white lithium grease to the lower part, keeping the top several inches dry so grease can’t creep into the gauge head.
+    Replace the cable if it is frayed or kinked. If you change the gear after a tire or axle swap, the
+    <a href="/speedometer-calculator/#speedometer-gear-calculator">speedometer gear calculator</a> tells you which one you need.
+  </p>
+
+  <h2 id="other-causes">6. Software and other causes</h2>
+  <p>
+    Less often, the fault is a module rather than a part you can see: an engine or body control module that needs a software update, a data
+    network problem (usually accompanied by several warning lights), or poorly installed aftermarket electronics such as a remote starter or
+    stereo spliced into the wrong wire. A shop with a professional scan tool can see which module stopped sending or receiving speed data.
+  </p>
+
+  <h2 id="speedometer-bouncing">Speedometer bouncing or jumping while driving</h2>
+  <p>
+    A needle that flutters or jumps is the same list in a different order. On modern cars, suspect a failing speed sensor or a loose
+    connector first; on older cars with cables, a dry or kinked cable is the classic cause. If the needle only jumps over bumps, it is almost
+    always wiring. And if it bounces at one particular speed, a damaged tone ring or a worn cable is likely.
+  </p>
+
+  <h2 id="repair-cost">How much does it cost to fix a speedometer?</h2>
+  <DataTable
+    caption="Typical speedometer repair costs"
+    head={['Repair', 'Typical US cost']}
+    rows={[
+      ['Replace a fuse', 'Under $10 (DIY)'],
+      ['Vehicle speed sensor or ABS wheel sensor', 'About $100–$350 fitted'],
+      ['Wiring or connector repair', 'About $100–$300'],
+      ['Speedometer cable (older cars)', 'About $50–$200 fitted'],
+      ['Instrument cluster repair or rebuild', 'About $150–$500'],
+      ['Instrument cluster replacement and programming', '$500–$1,500 or more'],
+    ]}
+    note="Rough ranges including labour. Luxury and newer vehicles cost more; always get a written quote, and check for recalls first."
+  />
+
+  <h2 id="is-it-legal">Is it legal to drive with a broken speedometer?</h2>
+  <p>
+    Rules differ by country and state, but in many places a working speedometer is required equipment, and a police officer can cite you for
+    it — on top of the obvious risk of speeding without knowing. A phone GPS speedometer is a sensible stopgap while you arrange the repair,
+    as long as it is mounted securely and you don’t handle it while driving.
+  </p>
+
+  <h2 id="gps-backup">Use GPS as a backup speedometer</h2>
+  <p>
+    The <a href="/speedometer/">online speedometer</a> runs in your phone’s browser with no app: press Start, allow location, and it shows your
+    speed in mph or km/h with a speed alert and a windshield HUD mode for night driving. Once your car is fixed, the
+    <a href="/car-speed-test/">car speed test</a> is a quick way to confirm the repaired speedometer reads correctly.
+  </p>
+</BlogArticle>

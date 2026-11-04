@@ -83,6 +83,32 @@ export const en: Translations = {
       navLabel: 'Stopping Distance',
       summary: 'Thinking plus braking distance at any speed, reaction time and road condition.',
     },
+    // English-only tools.
+    ruler: {
+      name: 'Ruler Drop Test',
+      navLabel: 'Ruler Drop Test',
+      summary: 'Turn the centimetres or inches you caught a falling ruler at into a reaction time, with a full chart.',
+    },
+    boat: {
+      name: 'Boat Speed Test',
+      navLabel: 'Boat Speed',
+      summary: 'A GPS boat speedometer in knots, mph or km/h — speed over ground, max and distance.',
+    },
+    motorcycle: {
+      name: 'Motorcycle Speed Test',
+      navLabel: 'Motorcycle Speed',
+      summary: 'A GPS motorcycle speedometer on your phone: true speed, top speed and trip distance.',
+    },
+    speedoCalc: {
+      name: 'Speedometer Calculator',
+      navLabel: 'Speedometer Calculator',
+      summary: 'How new tire sizes or gears change your speedometer — true speed, error and the driven gear you need.',
+    },
+    sightDistance: {
+      name: 'Stopping Sight Distance Calculator',
+      navLabel: 'Sight Distance',
+      summary: 'AASHTO stopping sight distance for any design speed, reaction time and grade, in feet or metres.',
+    },
   },
   guides: {
     averageReactionTime: {
@@ -500,7 +526,75 @@ export const en: Translations = {
           q: 'Why was my attempt not counted?',
           a: 'Attempts are discarded if you respond before the panel turns blue, if you respond in under 100 ms (faster than a genuine visual reaction, so it was a guess), or if you switch tabs mid-attempt.',
         },
+        {
+          q: 'Is this the same as the Human Benchmark reaction time test?',
+          a: 'It uses the same format — wait for a colour change, react, five attempts, one average — so scores are broadly comparable. SpeedReflex times from the painted frame, counts the press on key-down or pointer-down, and adds your median, consistency and percentile. For a fair picture, compare scores on the same test and the same device.',
+        },
+        {
+          q: 'What is the world record for a reaction time test?',
+          a: 'There is no official record for online reaction tests, because nobody can verify the hardware or rule out anticipation. The best verified human reactions come from sprint starts, at roughly 0.12–0.15 s, and World Athletics counts anything under 0.100 s as a false start.',
+        },
+        {
+          q: 'Is this a simple or a choice reaction time test?',
+          a: 'A simple visual reaction time test: one signal (the panel turning blue) and one response. Choice reaction tests, where you must pick the right response for each signal, typically take 100 ms or more longer.',
+        },
+        {
+          q: 'Can I test my reaction time with a ruler instead?',
+          a: 'Yes. In the ruler drop test a partner drops a ruler between your fingers and you catch it; how far it fell tells you your reaction time. The <a href="/ruler-drop-test/">ruler drop test calculator</a> converts centimetres or inches into milliseconds.',
+        },
       ],
+      extra: {
+        sections: [
+          {
+            id: 'human-reaction-time-test',
+            eyebrow: 'Human reaction time',
+            title: 'What a Human Reaction Time Test Actually Measures',
+            intro: 'A simple reaction time test asks one question: how long does it take you to respond to a signal you are already waiting for?',
+            paragraphs: [
+              'Every press on this page is a chain of events. Light from the blue panel reaches your eyes, the retina turns it into nerve signals (that step alone takes 20–40 ms), your brain recognises the change and sends a command to your hand, and your finger moves. With zero-latency lab equipment the whole chain takes about 190 ms for a young adult. In a browser your screen and your mouse, keyboard or touchscreen add a few tens of milliseconds, which is why most people score between 200 and 300 ms on this reaction time speed test.',
+              'That makes it a <strong>simple visual reaction time test</strong>: one signal, one response, no decision. It is also a colour reaction time test in the most basic sense — you respond to the panel changing colour — but the change is dark to blue rather than red to green, so it works just as well with red–green colour blindness.',
+            ],
+            cards: [
+              {
+                title: 'Simple reaction time',
+                text: 'One expected signal, one response. The fastest kind of reaction, and the one this test measures — your raw reflex speed.',
+              },
+              {
+                title: 'Choice reaction time',
+                text: 'Two or more signals, each with its own response, such as “left for red, right for green”. The decision adds well over 100 ms, so choice and colour-naming tests usually score around 350–450 ms.',
+              },
+              {
+                title: 'Auditory reaction time',
+                text: 'Reacting to a sound is usually 30–50 ms quicker than reacting to light. Take the <a href="/audio-reaction-time-test/">audio reaction time test</a> and compare.',
+              },
+              {
+                title: 'Ruler drop test',
+                text: 'The classic screen-free reaction test: catch a falling ruler and convert the distance into time with our <a href="/ruler-drop-test/">ruler drop test calculator</a>.',
+              },
+            ],
+          },
+          {
+            id: 'human-benchmark',
+            eyebrow: 'Comparison',
+            title: 'A Human Benchmark–Style Reaction Time Test',
+            paragraphs: [
+              'If you have taken the reaction time test on Human Benchmark, the format here will feel familiar: wait for the colour to change, react as fast as you can, and repeat five times for an average. It is the simple-reaction design psychologists have used for well over a century, so both tests measure the same thing.',
+              'The differences are in the bookkeeping around your reaction. SpeedReflex starts its clock on the frame the blue panel is actually painted, counts your press on key-down or pointer-down using the event’s own timestamp, and discards anything under 100 ms as anticipation. Alongside your average you get your best, median, consistency and an estimated percentile, and your sessions stay on this device so you can follow your progress.',
+              'Can you compare scores between the two? Broadly, yes — on both, most people land between about 200 and 300 ms. Small gaps between sites are normal because each handles screen and input timing a little differently, so the fairest comparison is always the same test, on the same device, over several sessions. Human Benchmark is an independent website and is not affiliated with SpeedReflex.',
+            ],
+          },
+          {
+            id: 'world-record',
+            eyebrow: 'Records',
+            title: 'Reaction Time Test World Record: How Fast Can a Human Go?',
+            paragraphs: [
+              'There is no official world record for an online reaction time test. Leaderboards can’t check anyone’s hardware, and the very top scores are usually anticipation — pressing just before the signal and getting lucky — or the product of modified inputs. That is why this test throws out any reaction under 100 ms.',
+              'The best verified numbers come from sprinting, where the starting blocks time each athlete’s reaction to the gun. World Athletics treats a reaction under 0.100 s as a false start, and legal starts in major finals usually fall between about 0.12 and 0.18 s — Usain Bolt reacted in 0.146 s on the way to his 9.58 s world record in 2009. Those are sound reactions measured on dedicated equipment; on a screen, a consistent average of 150–170 ms is about as fast as humans get.',
+              'For perspective, a typical adult averages around 250 ms here, and an average under 200 ms beats roughly nine people in ten. The <a href="/average-reaction-time/">average reaction time guide</a> has benchmarks by age, stimulus and device.',
+            ],
+          },
+        ],
+      },
     },
     f1: {
       title: 'F1 Reaction Time Test — Beat the Formula 1 Start Lights',
@@ -574,7 +668,44 @@ export const en: Translations = {
           q: 'What is the penalty for a false start in Formula 1?',
           a: 'Under FIA Formula 1 regulations, an illegal start detected by transponders results in a 5-second or 10-second time penalty, or a drive-through penalty for severe jump starts.',
         },
+        {
+          q: 'Why is my F1 reaction time slower than on a normal reaction test?',
+          a: 'The F1 start makes you wait through five lights and a random hold, and tension or second-guessing slows many people down. Take the standard <a href="/reaction-time-test/">reaction time test</a> as well: if your simple reaction is quick but your F1 starts are slower, practise staying relaxed and ready through the hold.',
+        },
+        {
+          q: 'Can a normal person match F1 driver reaction time?',
+          a: 'Plenty of people can react in about 0.2 s to a signal they are waiting for. What sets F1 drivers apart is doing it every time, under pressure, at the start of a race — and then launching the car perfectly.',
+        },
       ],
+      extra: {
+        sections: [
+          {
+            id: 'average-f1-reaction-time',
+            eyebrow: 'Benchmarks',
+            title: 'Average F1 Reaction Time: How Fast Do F1 Drivers React?',
+            intro: 'Formula 1 drivers are usually quoted at around 0.2 seconds from lights out — and the very best starts are a little quicker.',
+            paragraphs: [
+              'The average reaction time of F1 drivers at a race start is commonly given as about 0.2 s, roughly 50 ms quicker than a typical adult on a simple reaction test. It isn’t superhuman nerve speed. Drivers practise thousands of starts, know exactly what the signal looks like, and spend the random hold in a state of total readiness with the clutch at its bite point.',
+              'A real start time also measures more than the reflex: once the lights go out the driver has to release the clutch paddle and the car has to move far enough to register, so a driver’s pure visual reaction is slightly faster than the start time suggests. In this F1 driver reaction time test you only have to press — but your screen and input device add a few tens of milliseconds that a racing car doesn’t, so matching a Grand Prix driver here is harder than it sounds.',
+              'Use the grid table above as your guide: a consistent average under 0.22 s is genuine F1 pace on a home setup, and anything under 0.18 s is exceptional. If you’re slower than you expected, compare with the <a href="/reaction-time-test/">standard reaction time test</a> — many people lose time to the five-light build-up and random hold rather than to slow reflexes.',
+            ],
+            cards: [
+              {
+                title: 'Trained readiness',
+                text: 'Drivers can’t predict the hold, but they know the light gantry intimately and stay coiled for the whole sequence. That readiness is most of their advantage.',
+              },
+              {
+                title: 'A hand reaction',
+                text: 'F1 starts are made with a clutch paddle behind the steering wheel, so a race start is a hand reaction — the same kind you make here with a key, click or tap.',
+              },
+              {
+                title: 'Light-board training',
+                text: 'Many drivers sharpen hand–eye speed on reaction light boards and cognitive drills between races. Repeating starts on a simulator like this one trains the same skill.',
+              },
+            ],
+          },
+        ],
+      },
     },
     audio: {
       title: 'Audio Reaction Time Test — How Fast Do You React to Sound?',
@@ -642,6 +773,14 @@ export const en: Translations = {
           q: 'Do headphones affect audio reaction time?',
           a: 'Yes, significantly. Standard Bluetooth audio codecs introduce between 100 and 250 ms of wireless latency. Use wired headphones or built-in speakers for accurate results.',
         },
+        {
+          q: 'Why can’t I hear the beep in the audio reaction test on my phone?',
+          a: 'Check that the volume is up and, on iPhone, that the ring/silent switch is not set to silent — it can mute sound from web pages. The built-in speaker or wired headphones give the most accurate auditory reaction time.',
+        },
+        {
+          q: 'Is auditory reaction time faster than visual reaction time for everyone?',
+          a: 'For most people, yes — usually by 30–50 ms. The gap varies from person to person, which is why it is worth taking both this audio reaction test and the <a href="/reaction-time-test/">visual reaction time test</a> to see your own difference.',
+        },
       ],
     },
     speedometer: {
@@ -701,7 +840,57 @@ export const en: Translations = {
           q: 'Does it use mobile data?',
           a: 'Only a few kilobytes to load the webpage initially. The GPS satellite receiver operates entirely via passive radio reception and consumes no mobile data.',
         },
+        {
+          q: 'Do I need a speedometer app for Android or iPhone?',
+          a: 'No. Open this page in Chrome on Android or Safari on iPhone, press Start and allow location access. Use “Add to Home Screen” if you want an app-style icon that opens full-screen.',
+        },
+        {
+          q: 'Is the Google Maps speedometer accurate?',
+          a: 'Generally, yes. Google Maps and this page both rely on your phone’s GPS, which is accurate to about 1–2 km/h at a steady speed under open sky — and both struggle in tunnels and between tall buildings.',
+        },
+        {
+          q: 'Can I use this if my car’s speedometer is not working?',
+          a: 'Yes, as a temporary backup: mount the phone securely and let a passenger operate it. Get the fault fixed soon, though — driving without a working speedometer can be an equipment offence. Our guide explains <a href="/blog/speedometer-not-working/">why speedometers stop working</a>.',
+        },
       ],
+      extra: {
+        sections: [
+          {
+            id: 'digital-speedometer',
+            eyebrow: 'Any phone',
+            title: 'A Free Digital Speedometer in Your Browser',
+            intro: 'There is no speedometer app to install: open this page and your phone becomes a digital speedometer with big, glanceable numbers.',
+            paragraphs: [
+              'The display pairs a large digital readout with an analog-style gauge, so you can read your speed at a glance in mph, km/h, knots or metres per second. Behind it is your phone’s own satellite receiver — the same one navigation apps use — read through the browser’s standard Geolocation API.',
+              'It works as a GPS speedometer in Chrome on Android and in Safari on iPhone, as well as in Edge and Firefox. Choose “Add to Home Screen” and it opens full-screen like an app. Once the page has loaded it keeps working without mobile data, which also makes it a handy backup if your car’s <a href="/blog/speedometer-not-working/">speedometer stops working</a>. New to the dials? Read <a href="/blog/how-to-read-a-speedometer/">how to read a speedometer</a>.',
+            ],
+            cards: [
+              {
+                title: 'On a boat',
+                text: 'Switch to knots, or open the <a href="/boat-speed-test/">boat speed test</a>, which starts in knots and explains speed over ground versus speed through water.',
+              },
+              {
+                title: 'On a motorcycle',
+                text: 'The <a href="/motorcycle-speed-test/">motorcycle speed test</a> adds rider-specific setup, mounting and vibration advice.',
+              },
+              {
+                title: 'After new tires',
+                text: 'Bigger or smaller tires make the dashboard read wrong. Work out by how much with the <a href="/speedometer-calculator/">speedometer calculator</a>.',
+              },
+            ],
+          },
+          {
+            id: 'gps-accuracy',
+            eyebrow: 'Accuracy',
+            title: 'Are GPS Speedometers Accurate?',
+            paragraphs: [
+              'Yes. At a steady speed under open sky, a phone GPS speedometer is typically accurate to about 1–2 km/h (around 1 mph) — better than most car dashboards. It is less reliable for a second or two after hard acceleration or braking, in tunnels and parking garages, between tall buildings where signals bounce, and when the phone is buried in a bag or footwell.',
+              'The speedometer in navigation apps uses the same GPS hardware, so Google Maps’ speed readout is generally just as accurate, with the same blind spots. The accuracy figure beside the GPS indicator on this page tells you how good the current fix is: the smaller the number, the better.',
+              'To compare your dashboard with GPS, use the <a href="/car-speed-test/">car speed test</a>, which explains why most speedometers read a little high.',
+            ],
+          },
+        ],
+      },
     },
     car: {
       title: 'Car Speed Test — Free GPS Speedometer vs Your Dashboard',
@@ -749,7 +938,46 @@ export const en: Translations = {
           q: 'Is it legal to use a phone GPS speedometer in a car?',
           a: 'Yes, provided your smartphone is mounted securely in a dedicated cradle and you do not hold or operate the device with your hands while driving.',
         },
+        {
+          q: 'Why is my speedometer off?',
+          a: 'Most speedometers read a few percent high by design. If yours reads low, or the error changed suddenly, the usual causes are a tire size change, a different axle ratio or a failing speed sensor. The <a href="/speedometer-calculator/">speedometer calculator</a> shows the effect of tire and gear changes.',
+        },
+        {
+          q: 'How can I check my car’s speed without GPS?',
+          a: 'Use highway mile markers and a stopwatch. At a steady indicated 60 mph, a mile should take exactly 60 seconds; your true speed is 3,600 ÷ the seconds it took. GPS gives the same answer faster.',
+        },
       ],
+      extra: {
+        sections: [
+          {
+            id: 'car-speed-testing',
+            eyebrow: 'Accuracy check',
+            title: 'Car Speed Testing: Is Your Speedometer Accurate?',
+            intro: 'Car speed testing with GPS takes a couple of minutes and tells you exactly how far your dashboard is off.',
+            ordered: true,
+            bullets: [
+              'Mount the phone before you set off, or have a passenger hold it.',
+              'Pick a straight, level road with open sky and drive at a steady speed — try 30, 50 and 70 mph (or 50, 80 and 110 km/h).',
+              'Hold each speed for a few seconds and note the dashboard reading next to the GPS reading.',
+              'Work out the error as a percentage: (dashboard − GPS) ÷ GPS × 100.',
+            ],
+            table: {
+              caption: 'What your car speed test result means',
+              head: ['Result', 'What it usually means', 'What to do'],
+              rows: [
+                ['Dash 1–8% above GPS', 'Normal: speedometers are built to over-read', 'Nothing'],
+                ['Dash matches GPS', 'Accurately calibrated', 'Nothing'],
+                ['Dash below GPS', 'Bigger tires or a gearing change — you are faster than shown', 'Check the size change, then recalibrate'],
+                ['Needle jumps or drops to zero', 'Failing speed sensor, wiring or instrument cluster', 'Diagnose the fault'],
+              ],
+            },
+            after: [
+              'If your dashboard reads low after fitting larger wheels or tires, the <a href="/speedometer-calculator/">speedometer calculator</a> shows your true speed at every indicated speed, and our guide to <a href="/blog/speedometer-calibration/">speedometer calibration</a> explains how to correct it. For a dead or erratic needle, see <a href="/blog/speedometer-not-working/">speedometer not working: causes and fixes</a>.',
+              'Want a digital car speedometer on the windshield? HUD mode mirrors the numbers so they read correctly as a reflection in the glass at night.',
+            ],
+          },
+        ],
+      },
     },
     bike: {
       title: 'Bike Speed Test — GPS Speedometer for Cycling & E-Bikes',
@@ -795,7 +1023,38 @@ export const en: Translations = {
           q: 'Can I export my ride to Strava or Komoot?',
           a: 'Yes. After your ride, tap Export GPX to save a standard track file that imports seamlessly into Strava, Komoot, or Garmin Connect.',
         },
+        {
+          q: 'Can I use this as an electric scooter speedometer?',
+          a: 'Yes. Mount the phone on the stem, press Start and set a speed alert if you want a warning at a particular speed. Many e-scooters limit their own top speed, and GPS is an easy way to check what yours really does.',
+        },
       ],
+      extra: {
+        sections: [
+          {
+            id: 'bike-speedometer-odometer',
+            eyebrow: 'Bike computer',
+            title: 'A Bike Speedometer and Odometer With No Sensors',
+            paragraphs: [
+              'Traditional bike computers count wheel revolutions with a magnet and sensor, so they need the correct wheel circumference to be accurate. A GPS bike speedometer measures your speed over the ground directly: no magnets, no calibration and nothing to fit. The trip odometer, moving time and moving average work the same way, and you can export every ride as GPX.',
+              'The one thing GPS can’t give you is cadence. A cadence sensor measures how fast you pedal, not how fast you are going, so it complements a GPS speedometer rather than replacing it.',
+            ],
+            cards: [
+              {
+                title: 'Road, gravel & MTB',
+                text: 'Speed, distance and moving average for any ride. Under heavy tree cover GPS can wander slightly, so averages are more reliable than single top speeds.',
+              },
+              {
+                title: 'E-bikes & e-scooters',
+                text: 'Works as an electric scooter speedometer too. Set a speed alert at your local limit and the phone beeps and vibrates if you go over it.',
+              },
+              {
+                title: 'Motorcycles',
+                text: 'Riding something with an engine? The <a href="/motorcycle-speed-test/">motorcycle speed test</a> covers higher speeds, mounting and engine vibration.',
+              },
+            ],
+          },
+        ],
+      },
     },
     bus: {
       title: 'Bus Speed Test — How Fast Is My Bus or Coach Going?',
@@ -899,6 +1158,10 @@ export const en: Translations = {
           q: 'Why does speed drop to 0 in tunnels?',
           a: 'Mountain tunnels block line-of-sight satellite signals. The speedometer will re-acquire your true speed within seconds of exiting.',
         },
+        {
+          q: 'Is there a train speedometer app?',
+          a: 'You don’t need one. This page is a train speedometer that runs in your browser: open it before departure, sit by a window and press Start. Once loaded it keeps working without mobile data.',
+        },
       ],
     },
     flight: {
@@ -959,6 +1222,10 @@ export const en: Translations = {
         {
           q: 'Do I need in-flight Wi-Fi to use this?',
           a: 'No. As long as you opened the webpage before losing connection, all tracking algorithms run locally in your browser with zero internet required.',
+        },
+        {
+          q: 'What is an aircraft’s speedometer called?',
+          a: 'The airspeed indicator. It measures speed through the air from pitot-tube pressure, while GPS measures ground speed — the two differ by the wind. Pilots also see GPS ground speed on their navigation displays.',
         },
       ],
     },
@@ -1027,7 +1294,98 @@ export const en: Translations = {
           q: 'What is the stopping distance at 70 mph?',
           a: 'At 70 mph on a dry road, total stopping distance is 96 meters (315 feet or ~24 car lengths). In wet weather, this extends to at least 171 meters.',
         },
+        {
+          q: 'What does total stopping distance include?',
+          a: 'The distance travelled while you perceive the hazard and react — called thinking distance, or split into perception and reaction distance in US driving courses — plus the braking distance until the vehicle stops.',
+        },
+        {
+          q: 'What is the stopping distance at 55 mph?',
+          a: 'About 274 ft (83 m) on a dry road with a typical 1.5 s perception–reaction time: 121 ft while reacting and 153 ft while braking. Allow roughly 426 ft (130 m) in the wet. A loaded semi truck needs around 450 ft.',
+        },
+        {
+          q: 'What is the stopping distance at 35 mph?',
+          a: 'About 139 ft (42 m) on a dry road with a 1.5 s reaction — 77 ft reacting and 62 ft braking — or about 96 ft (29 m) for an alert driver who reacts in 0.67 s.',
+        },
+        {
+          q: 'What do vehicle stopping distances never depend on?',
+          a: 'Anything that doesn’t change your speed, your reaction time or your tires’ grip — the colour of the vehicle, for example. They always depend on speed, the driver’s perception and reaction time, the road surface and weather, the tires and brakes, and the vehicle’s load.',
+        },
       ],
+      extra: {
+        lead: [
+          {
+            id: 'what-is-total-stopping-distance',
+            eyebrow: 'Definition',
+            title: 'What Is Total Stopping Distance?',
+            paragraphs: [
+              '<strong>Total stopping distance is the distance your vehicle travels from the moment you see a hazard to the moment it comes to a complete stop.</strong> It is the sum of the distance covered while you react and the distance covered while you brake: total stopping distance = thinking distance + braking distance.',
+              'The UK Highway Code uses those two parts. US driver’s-education courses usually split the reacting part in two, so in a US textbook the total stopping distance consists of <strong>perception distance, reaction distance and braking distance</strong>. Both describe exactly the same physics — the calculator above shows perception and reaction together as thinking distance.',
+            ],
+            table: {
+              caption: 'The elements of total stopping distance',
+              head: ['Element', 'What happens', 'Depends mainly on'],
+              rows: [
+                ['Perception distance', 'You see the hazard and recognise that you need to stop', 'Attention, visibility, fatigue'],
+                ['Reaction distance', 'Your foot moves from the accelerator to the brake', 'Reaction time, distraction, alcohol'],
+                ['Brake lag distance', 'Air brakes take about 0.4 s to build full pressure (trucks only)', 'Brake system'],
+                ['Braking distance', 'Brakes and tires slow the vehicle to a stop', 'Speed², road surface, tires, brakes, load'],
+              ],
+              note: 'Thinking distance = perception distance + reaction distance. Brake lag applies to vehicles with air brakes, such as semi trucks and buses.',
+            },
+            after: [
+              'So whether a quiz asks what total stopping distance includes, what it consists of, what it is the sum of or what it is based on, the answer is the same: the distance travelled while you perceive and react, plus the distance travelled while you brake.',
+              'Highway engineers apply the same idea with a deliberately cautious 2.5 s reaction time to decide how far ahead a driver must be able to see — the <a href="/stopping-sight-distance-calculator/">stopping sight distance</a>.',
+            ],
+          },
+        ],
+        chart: {
+          id: 'stopping-distance-by-speed',
+          eyebrow: 'US speeds',
+          title: 'Stopping Distance at 25–75 mph, Including 35 and 55 mph',
+          intro: 'Calculated with the same model as the calculator, using the 1.5 s perception–reaction time taught in many US driving courses.',
+          table: {
+            caption: 'Total stopping distance by speed in mph',
+            head: ['Speed', 'Reaction distance (1.5 s)', 'Braking distance (dry)', 'Total (dry road)', 'Total (wet road)'],
+            note: 'Dry-road deceleration of 6.5 m/s² (about 0.66 g) — the figure behind the Highway Code distances. Wet roads double the braking distance. Real distances vary with tires, brakes and load.',
+          },
+          after: [
+            '<strong>Stopping distance at 55 mph:</strong> about 274 feet (83 m) on a dry road with a 1.5 s reaction — 121 ft while you react and 153 ft while you brake, nearly the length of a football field. On a wet road it grows to roughly 426 ft (130 m); an alert driver who reacts in 0.67 s needs about 207 ft (63 m).',
+            '<strong>Stopping distance at 35 mph:</strong> about 139 feet (42 m) dry — 77 ft reacting and 62 ft braking — and about 201 ft (61 m) on a wet road.',
+          ],
+        },
+        sections: [
+          {
+            id: 'what-stopping-distance-depends-on',
+            eyebrow: 'Quick answers',
+            title: 'What Stopping Distance Depends On (and What It Never Depends On)',
+            paragraphs: [
+              'Stopping distance depends on three things: <strong>how fast you are going, how quickly you react, and how well the tires can grip the road.</strong> Everything else works through those three — fatigue and phones slow your reaction, rain and ice cut grip, worn tires and heavy loads lengthen braking, and a downhill slope makes gravity work against the brakes.',
+              'That is why vehicle stopping distances never depend on things that change none of them, such as the colour of the car or the brand of fuel in the tank. When a driver’s-ed question lists something that doesn’t affect speed, reaction time or grip, that is the factor stopping distance doesn’t depend on.',
+            ],
+            cards: [
+              {
+                title: 'Speed',
+                text: 'The biggest factor. Braking distance grows with the square of speed, so driving 10% faster needs about 21% more braking distance.',
+              },
+              {
+                title: 'Reaction time',
+                text: 'A tired, distracted or impaired driver can take 1.5–2 s to react. At 60 mph every extra second is 88 feet travelled before the brakes even start working.',
+              },
+              {
+                title: 'Road, weather & tires',
+                text: 'Wet roads at least double braking distance and ice can multiply it by ten. Worn tread makes both worse.',
+              },
+              {
+                title: 'Vehicle size and weight',
+                text: 'In idealised friction physics mass cancels out, but real heavy vehicles stop longer because their brakes and tires work near their limits. A loaded semi needs around 450 ft from 55 mph — see the <a href="/blog/semi-truck-stopping-distance/">semi truck stopping distance chart</a>.',
+              },
+            ],
+            after: [
+              'If you can’t stop in time, the speed at which you hit rises steeply with your starting speed: a car that starts braking from 35 mph is still doing about 21 mph at the point where the same car from 30 mph would have stopped. Read more about <a href="/blog/stopping-distance-crash-severity/">stopping distances and the severity of crashes</a>.',
+            ],
+          },
+        ],
+      },
     },
     averageReaction: {
       title: 'Average Reaction Time: What’s Normal, Good and Fast?',
@@ -1106,7 +1464,79 @@ export const en: Translations = {
           q: 'Do gamers have faster reactions?',
           a: 'Yes. Regular players of fast-paced esports routinely test 20–50 ms faster than non-gamers due to visual priming and low-latency gaming peripherals.',
         },
+        {
+          q: 'What is the average reaction time for driving?',
+          a: 'About 0.7 s when you are alert and expecting to brake, rising to around 1.5 s for a sudden surprise. Many US driving manuals use 1.5 s, and highway engineers design roads around 2.5 s.',
+        },
+        {
+          q: 'What is the average foot reaction time?',
+          a: 'Driving manuals usually give about ¾ of a second (0.75 s) to move your foot from the gas to the brake once you have spotted a hazard, on top of roughly ¾ second of perception time.',
+        },
       ],
+      extra: {
+        lead: [
+          {
+            id: 'at-a-glance',
+            eyebrow: 'Summary',
+            title: 'Reaction Time Average at a Glance',
+            paragraphs: [
+              'The average human reaction time depends on what you are reacting to and how it is measured. In one line: about a quarter of a second for a flash on a screen, a little less for a sound, and far longer — 0.7 to 1.5 s — to get your foot on the brake in a car.',
+            ],
+            table: {
+              caption: 'Average reaction times by stimulus and situation',
+              head: ['Stimulus or situation', 'Average reaction time'],
+              rows: [
+                ['Simple visual reaction, online test', '≈ 250 ms (0.25 s)'],
+                ['Simple visual reaction, lab equipment', '≈ 190 ms'],
+                ['Reacting to a sound', '≈ 150–160 ms'],
+                ['Choice reaction (two options)', '≈ 350 ms'],
+                ['F1 driver at a race start', '≈ 200 ms'],
+                ['Braking for an expected hazard', '≈ 0.7 s'],
+                ['Braking for a sudden surprise', '≈ 1.5 s'],
+              ],
+            },
+            after: [
+              'Want your own number? The <a href="/reaction-time-test/">reaction time test</a> takes about 30 seconds. For racing benchmarks, see the <a href="/f1-reaction-time-test/#average-f1-reaction-time">average F1 reaction time</a>.',
+            ],
+          },
+        ],
+        sections: [
+          {
+            id: 'driving',
+            eyebrow: 'On the road',
+            title: 'Average Reaction Time While Driving',
+            intro: 'Braking reaction time is far longer than a reflex test, because you first have to notice the hazard and decide to stop.',
+            paragraphs: [
+              'Driver perception–reaction time runs from the moment a hazard appears to the moment your foot starts pressing the brake. Research reviewed by Green (2000) puts it at about 0.7 s when a driver is alert and expecting to brake, about 1.25 s for an unexpected but common signal such as brake lights ahead, and about 1.5 s for a genuine surprise like a pedestrian stepping out.',
+              'US driver’s education usually teaches a round 1.5 s: roughly ¾ second of perception plus ¾ second of reaction. Road designers are more cautious still and use 2.5 s, long enough for around 90% of drivers — the figure behind the <a href="/stopping-sight-distance-calculator/">stopping sight distance</a> used on highways.',
+            ],
+            table: {
+              caption: 'Typical driver brake reaction times',
+              head: ['Situation', 'Perception–reaction time'],
+              rows: [
+                ['Alert, expecting to brake', '≈ 0.7 s'],
+                ['Unexpected brake lights ahead', '≈ 1.25 s'],
+                ['Sudden surprise hazard', '≈ 1.5 s'],
+                ['US driver’s-ed rule of thumb', '1.5 s (¾ s + ¾ s)'],
+                ['Highway design value (AASHTO)', '2.5 s'],
+              ],
+              note: 'Sources: Green (2000); AASHTO, A Policy on Geometric Design of Highways and Streets.',
+            },
+            after: [
+              'Every tenth of a second matters: at 60 mph you cover almost 9 feet in 0.1 s. Try your own numbers in the <a href="/stopping-distance-calculator/">stopping distance calculator</a>.',
+            ],
+          },
+          {
+            id: 'foot-reaction-time',
+            eyebrow: 'Hands vs feet',
+            title: 'Average Foot Reaction Time',
+            paragraphs: [
+              'In driver’s-ed terms, the average foot reaction time is about ¾ of a second (0.75 s): the time it takes, once you have recognised a hazard, to lift your foot off the accelerator and get it onto the brake pedal. Add roughly ¾ second of perception time and you get the 1.5 s total used in many US driving manuals.',
+              'In the lab, a simple foot press is only slightly slower than a finger press — typically by a few tens of milliseconds — because the nerve path to the leg is longer and the muscles are larger. The big difference in a car is movement: your foot has to travel from one pedal to the other, which is why covering the brake in busy traffic shortens your stopping distance.',
+            ],
+          },
+        ],
+      },
     },
     about: {
       title: 'About SpeedReflex — How Our Tests Work',

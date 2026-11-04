@@ -6,15 +6,19 @@ interface Props {
   currentLocale?: Locale;
   currentPath?: string;
   isMobile?: boolean;
+  /** False when the current page exists in English only: other languages then link to their home page. */
+  localized?: boolean;
 }
 
 const {
   currentPath = Astro.url.pathname,
   currentLocale = getLocaleFromPath(currentPath),
   isMobile = false,
+  localized = true,
 } = Astro.props;
 
 const currentInfo = LOCALE_INFO[currentLocale] || LOCALE_INFO.en;
+const targetFor = (loc: Locale) => (localized || loc === currentLocale ? getLocalizedPath(currentPath, loc) : getLocalizedPath('/', loc));
 ---
 
 {
@@ -27,7 +31,7 @@ const currentInfo = LOCALE_INFO[currentLocale] || LOCALE_INFO.en;
       <div class="grid grid-cols-2 gap-1.5">
         {LOCALES.map((loc) => {
           const info = LOCALE_INFO[loc];
-          const targetUrl = getLocalizedPath(currentPath, loc);
+          const targetUrl = targetFor(loc);
           const isActive = loc === currentLocale;
           return (
             <a
@@ -76,7 +80,7 @@ const currentInfo = LOCALE_INFO[currentLocale] || LOCALE_INFO.en;
         <div class="grid gap-0.5">
           {LOCALES.map((loc) => {
             const info = LOCALE_INFO[loc];
-            const targetUrl = getLocalizedPath(currentPath, loc);
+            const targetUrl = targetFor(loc);
             const isActive = loc === currentLocale;
             return (
               <a

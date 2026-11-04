@@ -126,7 +126,7 @@ export const toolPage = (
       url: abs(href),
       description,
       inLanguage: lang,
-      applicationCategory: tool.category === 'reflex' ? 'GameApplication' : 'UtilitiesApplication',
+      applicationCategory: tool.appCategory ?? (tool.category === 'reflex' ? 'GameApplication' : 'UtilitiesApplication'),
       operatingSystem: 'Any (runs in the browser)',
       browserRequirements:
         tool.category === 'speed' ? 'Requires JavaScript and location access; needs a device with GPS.' : 'Requires JavaScript.',
@@ -147,15 +147,30 @@ interface ArticleInput {
   crumbs: Crumb[];
   faq?: FaqItem[];
   locale?: Locale;
+  /** Blog posts use the more specific BlogPosting type. */
+  type?: 'Article' | 'BlogPosting';
+  /** Topics the article covers, emitted as `about` / `keywords`. */
+  keywords?: string[];
 }
 
 /** A guide: WebPage + breadcrumb + Article written and published by SpeedReflex. */
-export const articlePage = ({ href, headline, description, datePublished, dateModified, crumbs, faq, locale = 'en' }: ArticleInput): Node[] => {
+export const articlePage = ({
+  href,
+  headline,
+  description,
+  datePublished,
+  dateModified,
+  crumbs,
+  faq,
+  locale = 'en',
+  type = 'Article',
+  keywords,
+}: ArticleInput): Node[] => {
   const lang = LOCALE_INFO[locale]?.htmlLang ?? 'en';
   return [
     ...webPage({ href, name: headline, description, crumbs, faq, locale }),
     {
-      '@type': 'Article',
+      '@type': type,
       '@id': `${abs(href)}#article`,
       headline,
       description,
@@ -163,9 +178,44 @@ export const articlePage = ({ href, headline, description, datePublished, dateMo
       dateModified,
       inLanguage: lang,
       image: abs('/og.png'),
+      ...(keywords?.length ? { keywords: keywords.join(', ') } : {}),
+      ...(type === 'BlogPosting' ? { isPartOf: { '@id': `${abs('/blog/')}#blog` } } : {}),
       author: { '@id': ORG_ID },
       publisher: { '@id': ORG_ID },
       mainEntityOfPage: { '@id': pageId(href) },
     },
   ];
 };
+
+/** The blog index: a CollectionPage + Blog node listing every post. */
+export const blogIndexPage = ({
+  href,
+  name,
+  description,
+  crumbs,
+  posts,
+}: {
+  href: string;
+  name: string;
+  description: string;
+  crumbs: Crumb[];
+  posts: { href: string; title: string; published: string }[];
+}): Node[] => [
+  ...webPage({ href, name, description, crumbs, type: 'CollectionPage' }),
+  {
+    '@type': 'Blog',
+    '@id': `${abs(href)}#blog`,
+    name,
+    description,
+    url: abs(href),
+    inLanguage: 'en',
+    publisher: { '@id': ORG_ID },
+    blogPost: posts.map((p) => ({
+      '@type': 'BlogPosting',
+      '@id': `${abs(p.href)}#article`,
+      headline: p.title,
+      url: abs(p.href),
+      datePublished: p.published,
+    })),
+  },
+];

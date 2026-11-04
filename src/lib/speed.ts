@@ -11,12 +11,14 @@ export const UNITS: Record<SpeedUnit, { label: string; short: string; perMs: num
 
 const METERS_PER: Record<'km' | 'mi' | 'nm', number> = { km: 1000, mi: 1609.344, nm: 1852 };
 
-export type SpeedPresetId = 'general' | 'car' | 'bike' | 'bus' | 'train' | 'flight';
+export type SpeedPresetId = 'general' | 'car' | 'bike' | 'motorcycle' | 'boat' | 'bus' | 'train' | 'flight';
 
 export interface SpeedPreset {
   id: SpeedPresetId;
   noun: string;
   units: SpeedUnit[];
+  /** Unit to start in before the visitor picks one (otherwise mph or km/h from the browser region). */
+  defaultUnit?: SpeedUnit;
   /** Starting gauge range in km/h; the gauge auto-extends if you go faster. */
   rangeKmh: number;
   /** Positions implying more than this (m/s) are treated as GPS glitches. */
@@ -66,6 +68,33 @@ export const PRESETS: Record<SpeedPresetId, SpeedPreset> = {
     defaultAlertKmh: 25,
     hud: true,
     showAltitude: true,
+  },
+  motorcycle: {
+    id: 'motorcycle',
+    noun: 'motorcycle',
+    units: ['kmh', 'mph', 'ms'],
+    rangeKmh: 200,
+    maxPlausibleMs: 110,
+    maxAccuracyM: 40,
+    speedAlert: true,
+    defaultAlertKmh: 100,
+    hud: true,
+    showAltitude: true,
+  },
+  // Marine speed is spoken in knots, so boats start there whatever the browser region.
+  boat: {
+    id: 'boat',
+    noun: 'boat',
+    units: ['kn', 'mph', 'kmh', 'ms'],
+    defaultUnit: 'kn',
+    rangeKmh: 80,
+    maxPlausibleMs: 70,
+    maxAccuracyM: 40,
+    speedAlert: true,
+    // 5 knots — a common no-wake / harbour limit.
+    defaultAlertKmh: 9.26,
+    hud: false,
+    showAltitude: false,
   },
   bus: {
     id: 'bus',

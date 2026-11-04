@@ -1,0 +1,149 @@
+---
+import BlogArticle from '../../components/BlogArticle.astro';
+import DataTable from '../../components/DataTable.astro';
+import Callout from '../../components/Callout.astro';
+import { postBySlug } from '../../lib/blog';
+import { DRY_DECEL, M_TO_FT, MS_PER, stoppingDistance } from '../../lib/stopping';
+import type { FaqItem } from '../../lib/schema';
+
+const post = postBySlug('stopping-distance-crash-severity');
+
+const REACTION = 0.67; // Highway Code thinking time, as in the calculator.
+const mph = (ms: number) => ms / MS_PER.mph;
+
+/** Speed (mph) still carried at the point where a car starting at `baseMph` would have stopped. */
+const impactAt = (baseMph: number, startMph: number): number => {
+  const d = stoppingDistance(baseMph * MS_PER.mph, REACTION, 'dry').total;
+  const v = startMph * MS_PER.mph;
+  const thinking = v * REACTION;
+  if (d <= thinking) return startMph;
+  const v2 = v * v - 2 * DRY_DECEL * (d - thinking);
+  return v2 <= 0 ? 0 : mph(Math.sqrt(v2));
+};
+
+const stop30 = stoppingDistance(30 * MS_PER.mph, REACTION, 'dry').total;
+const stop20 = stoppingDistance(20 * MS_PER.mph, REACTION, 'dry').total;
+const from30 = [32, 35, 40, 45, 50].map((s) => [`${s} mph`, `${Math.round(impactAt(30, s))} mph`, `${Math.round(((s / 30) ** 2 - 1) * 100)}% more`]);
+const from20 = [25, 30, 35, 40].map((s) => [`${s} mph`, `${Math.round(impactAt(20, s))} mph`]);
+const at35 = Math.round(impactAt(30, 35));
+const at40 = Math.round(impactAt(30, 40));
+
+const faqs: FaqItem[] = [
+  {
+    q: 'How are stopping distances and the severity of crashes related?',
+    a: 'Both rise steeply with speed. Braking distance grows with the square of speed, so a faster car needs much more room to stop — and if that room isn’t there, it hits whatever is in the way at a much higher speed, with more energy.',
+  },
+  {
+    q: 'How does speed affect the severity of a crash?',
+    a: 'Crash energy is proportional to speed squared, so 35 mph carries about 36% more energy than 30 mph, and 60 mph four times as much as 30 mph. Injury risk rises accordingly: for pedestrians, the average risk of death roughly doubles between about 23 and 32 mph.',
+  },
+  {
+    q: `Why does driving 5 mph faster make such a difference?`,
+    a: `Because the faster car covers more ground before the driver even reacts, and then needs more distance to brake. With a typical alert reaction, a car starting at 35 mph is still doing about ${at35} mph at the point where the same car from 30 mph would have stopped.`,
+  },
+  {
+    q: 'At what speed does a pedestrian usually survive being hit?',
+    a: 'Survival is likely at low speeds and falls quickly after that. In a large US study, the average risk of death for a pedestrian was 10% at 23 mph, 25% at 32 mph, 50% at 42 mph and 90% at 58 mph — higher for older pedestrians.',
+  },
+];
+
+const sources = [
+  { t: 'Tefft, B. C. (2011) — Impact Speed and a Pedestrian’s Risk of Severe Injury or Death, AAA Foundation for Traffic Safety' },
+  { t: 'UK Highway Code, Rule 126 — Typical stopping distances' },
+];
+---
+
+<BlogArticle post={post} faqs={faqs} sources={sources}>
+  <p>
+    <strong>Stopping distances and the severity of crashes are linked by one fact: braking distance grows with the square of speed.</strong>
+    So a small increase in speed doesn’t just mean stopping a little later. If something appears at the distance you would have needed at the
+    lower speed, you reach it while still travelling surprisingly fast — and the energy of the impact rises even faster than the speed.
+  </p>
+
+  <h2 id="example">The 30 mph vs 35 mph example</h2>
+  <p>
+    Take an alert driver (0.67 s thinking time, as in the Highway Code figures) on a dry road. From 30 mph the car stops in about
+    {Math.round(stop30)} m ({Math.round(stop30 * M_TO_FT)} ft). Now start the same stop at 35 mph. The car covers more ground while the driver
+    reacts, then needs more room to brake — and at the point where the 30 mph car came to rest, <strong>it is still doing about {at35} mph</strong>.
+    From 40 mph it would still be doing about {at40} mph there.
+  </p>
+  <DataTable
+    caption="Impact speed where a car from 30 mph would have stopped"
+    head={['Starting speed', `Still travelling at ${Math.round(stop30 * M_TO_FT)} ft`, 'Kinetic energy vs 30 mph']}
+    rows={from30}
+    note="Calculated with the same model as the stopping distance calculator: 0.67 s thinking time and dry-road braking at 6.5 m/s²."
+  />
+  <p>
+    The effect is just as stark at low speeds, which is why school zones and residential streets often have 20 mph limits. From 20 mph a car
+    stops in about {Math.round(stop20)} m ({Math.round(stop20 * M_TO_FT)} ft):
+  </p>
+  <DataTable
+    caption="Impact speed where a car from 20 mph would have stopped"
+    head={['Starting speed', `Still travelling at ${Math.round(stop20 * M_TO_FT)} ft`]}
+    rows={from20}
+  />
+
+  <h2 id="why">Why a little more speed makes a big difference</h2>
+  <ul>
+    <li>
+      <strong>Thinking distance happens at full speed.</strong> During the reaction time you haven’t slowed at all, so a faster car is already
+      further down the road when braking begins.
+    </li>
+    <li>
+      <strong>Braking distance grows with speed squared.</strong> The brakes have to absorb the car’s kinetic energy, ½mv². Going from 30 to
+      35 mph raises that energy by about 36%; doubling your speed quadruples it.
+    </li>
+    <li>
+      <strong>Most of the speed comes off at the end.</strong> Under steady braking a car loses speed slowly over the first part of the stop
+      and quickly over the last part, so a car that runs out of room even a short way before its stopping point still carries a lot of
+      speed.
+    </li>
+  </ul>
+
+  <h2 id="injury-risk">Impact speed and the risk of injury</h2>
+  <p>
+    The energy a crash delivers is what injures people, and injury risk climbs steeply with impact speed. A widely cited AAA Foundation
+    study of US crashes estimated the average risk to a pedestrian struck by a car:
+  </p>
+  <DataTable
+    caption="Average pedestrian injury risk by impact speed"
+    head={['Average risk', 'Severe injury', 'Death']}
+    rows={[
+      ['10%', '16 mph', '23 mph'],
+      ['25%', '23 mph', '32 mph'],
+      ['50%', '31 mph', '42 mph'],
+      ['75%', '39 mph', '50 mph'],
+      ['90%', '46 mph', '58 mph'],
+    ]}
+    note="Tefft (2011), AAA Foundation for Traffic Safety. Risks are higher for older pedestrians."
+  />
+  <p>
+    Put the two tables together and the point is clear: the {at35} mph impact from a 35 mph start sits right where pedestrian risk is rising
+    fastest, while the car that started at 30 mph never hit anything at all.
+  </p>
+
+  <Callout title="The driver’s-ed answer">
+    As speed increases, stopping distances get longer and crashes become more severe — and both rise faster than the speed itself. Slowing
+    down is the single most effective way to reduce both.
+  </Callout>
+
+  <h2 id="reaction-time">Reaction time matters too</h2>
+  <p>
+    Speed isn’t the only lever. A distracted or tired driver who reacts a second later travels another 44 feet at 30 mph — at full speed —
+    before braking even starts. Find out how quickly you react with the <a href="/reaction-time-test/">reaction time test</a>, then plug your
+    own number into the <a href="/stopping-distance-calculator/">stopping distance calculator</a> to see what it means at different speeds.
+  </p>
+
+  <h2 id="reduce-risk">How to cut your stopping distance — and crash risk</h2>
+  <ul>
+    <li><strong>Slow down where hazards appear suddenly</strong>: near schools, parked cars, junctions and pedestrian crossings.</li>
+    <li><strong>Leave a bigger gap</strong> — at least three seconds in good conditions, more in the wet and behind large vehicles.</li>
+    <li><strong>Stay alert</strong>: put the phone away and take breaks on long drives; fatigue slows reactions as much as alcohol can.</li>
+    <li><strong>Cover the brake</strong> in busy streets so your foot is already in place.</li>
+    <li><strong>Keep tires and brakes in good condition</strong>, and double your expectations of braking distance on wet roads.</li>
+  </ul>
+  <p>
+    Heavier vehicles need even more room; see the <a href="/blog/semi-truck-stopping-distance/">semi truck stopping distance chart</a> for how
+    an 18-wheeler compares with a car.
+  </p>
+</BlogArticle>

@@ -4,9 +4,12 @@ import ToolHero from '../components/ToolHero.astro';
 import StoppingCalculator from '../components/StoppingCalculator.astro';
 import Section from '../components/Section.astro';
 import Faq from '../components/Faq.astro';
+import ExtraSections from '../components/ExtraSections.astro';
 import RelatedTools from '../components/RelatedTools.astro';
+import DataTable from '../components/DataTable.astro';
 import { toolById } from '../lib/site';
 import { toolCrumbs, toolPage } from '../lib/schema';
+import { M_TO_FT, MS_PER, stoppingDistance } from '../lib/stopping';
 import { getLocalizedPath, type Locale } from '../lib/i18n';
 import { getTranslations } from '../i18n';
 
@@ -23,6 +26,15 @@ const localizedHref = getLocalizedPath(tool.href, locale);
 const crumbs = toolCrumbs(tool, locale, {
   home: t.nav.home,
   tool: t.tools.stopping.name,
+});
+
+// US-speed chart (English only): same model as the calculator, with a 1.5 s perception–reaction time.
+const chart = p.extra?.chart;
+const both = (m: number) => `${Math.round(m * M_TO_FT)} ft (${Math.round(m)} m)`;
+const chartRows = [25, 35, 45, 55, 65, 75].map((mph) => {
+  const dry = stoppingDistance(mph * MS_PER.mph, 1.5, 'dry');
+  const wet = stoppingDistance(mph * MS_PER.mph, 1.5, 'wet');
+  return [`${mph} mph (${Math.round(mph * 1.609344)} km/h)`, both(dry.thinking), both(dry.braking), both(dry.total), both(wet.total)];
 });
 ---
 
@@ -41,6 +53,8 @@ const crumbs = toolCrumbs(tool, locale, {
   >
     <StoppingCalculator locale={locale} />
   </ToolHero>
+
+  <ExtraSections sections={p.extra?.lead} />
 
   <Section
     id="formula"
@@ -96,6 +110,21 @@ const crumbs = toolCrumbs(tool, locale, {
     </div>
   </Section>
 
+  {
+    chart?.table && (
+      <Section id={chart.id} eyebrow={chart.eyebrow} title={chart.title} intro={chart.intro}>
+        <DataTable caption={chart.table.caption} head={chart.table.head} rows={chartRows} note={chart.table.note} />
+        {chart.after?.length ? (
+          <div class="prose-sr mt-8 max-w-3xl">
+            {chart.after.map((para) => (
+              <p set:html={para} />
+            ))}
+          </div>
+        ) : null}
+      </Section>
+    )
+  }
+
   <Section
     id="physics"
     eyebrow={p.physicsEyebrow}
@@ -140,6 +169,9 @@ const crumbs = toolCrumbs(tool, locale, {
       </p>
     </div>
   </Section>
+
+  <ExtraSections sections={p.extra?.sections} />
+
 
   <Faq items={p.faqs} title={p.faqTitle} />
   <RelatedTools current={tool.id} locale={locale} />

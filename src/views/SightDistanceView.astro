@@ -1,0 +1,177 @@
+---
+// English-only page: AASHTO stopping sight distance calculator, formula and design tables.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ToolHero from '../components/ToolHero.astro';
+import SightDistanceCalculator from '../components/SightDistanceCalculator.astro';
+import Section from '../components/Section.astro';
+import DataTable from '../components/DataTable.astro';
+import Faq from '../components/Faq.astro';
+import RelatedTools from '../components/RelatedTools.astro';
+import { toolById } from '../lib/site';
+import { toolCrumbs, toolPage, type FaqItem } from '../lib/schema';
+import { SSD_DEFAULTS, stoppingSightDistance } from '../lib/sight';
+
+const tool = toolById('sightDistance');
+const title = 'Stopping Sight Distance Calculator (AASHTO SSD Formula)';
+const description =
+  'Calculate AASHTO stopping sight distance from design speed, reaction time, deceleration and grade in feet or metres — with the SSD formula and design tables.';
+const crumbs = toolCrumbs(tool, 'en');
+
+const t = SSD_DEFAULTS.reactionS;
+const usRows = [15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80].map((v) => {
+  const r = stoppingSightDistance(v, t, SSD_DEFAULTS.us.decel, 0, 'us');
+  return [`${v} mph`, `${r.reaction.toFixed(1)} ft`, `${r.braking.toFixed(1)} ft`, `${r.total.toFixed(1)} ft`, `${r.design} ft`];
+});
+const metricRows = [20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130].map((v) => {
+  const r = stoppingSightDistance(v, t, SSD_DEFAULTS.metric.decel, 0, 'metric');
+  return [`${v} km/h`, `${r.reaction.toFixed(1)} m`, `${r.braking.toFixed(1)} m`, `${r.total.toFixed(1)} m`, `${r.design} m`];
+});
+const grades = [-9, -6, -3, 3, 6, 9];
+const gradeRows = [30, 40, 50, 60, 70].map((v) => [
+  `${v} mph`,
+  ...grades.map((g) => `${stoppingSightDistance(v, t, SSD_DEFAULTS.us.decel, g, 'us').design} ft`),
+]);
+const ssd55 = stoppingSightDistance(55, t, SSD_DEFAULTS.us.decel, 0, 'us');
+
+const faqs: FaqItem[] = [
+  {
+    q: 'What is stopping sight distance?',
+    a: 'The length of road ahead a driver must be able to see in order to stop before reaching an object in the lane. It is the brake reaction distance plus the braking distance, and every point on a road should provide at least this much sight distance.',
+  },
+  {
+    q: 'What is the AASHTO stopping sight distance formula?',
+    a: 'In US customary units, SSD = 1.47Vt + 1.075V²/a, with V in mph, t the brake reaction time in seconds (2.5 s) and a the deceleration in ft/s² (11.2). In metric units, SSD = 0.278Vt + 0.039V²/a, with V in km/h and a in m/s² (3.4).',
+  },
+  {
+    q: 'What is the stopping sight distance at 55 mph?',
+    a: `With AASHTO defaults on a level road, ${Math.round(ssd55.reaction)} ft of brake reaction distance plus ${Math.round(ssd55.braking)} ft of braking gives ${Math.round(ssd55.total)} ft, which rounds up to a design stopping sight distance of ${ssd55.design} ft.`,
+  },
+  {
+    q: 'What perception–reaction time does AASHTO use for stopping sight distance?',
+    a: '2.5 seconds. It is long enough for about 90% of drivers to perceive an unexpected object and begin braking, which is far more conservative than the 0.7–1.5 s typical of alert drivers.',
+  },
+  {
+    q: 'How does grade affect stopping sight distance?',
+    a: 'Downgrades lengthen the braking distance because gravity works against the brakes; upgrades shorten it. AASHTO’s grade formula is d = V² ÷ (30 × (a ÷ 32.2 ± G)), with G the grade as a decimal — plus for uphill, minus for downhill.',
+  },
+  {
+    q: 'What eye and object heights are used for stopping sight distance?',
+    a: 'AASHTO measures stopping sight distance from a driver’s eye height of 3.5 ft (1.08 m) to an object 2.0 ft (0.60 m) high on the road — roughly the height of a vehicle’s tail lights.',
+  },
+  {
+    q: 'What is the difference between stopping distance and stopping sight distance?',
+    a: 'Stopping distance is how far a particular driver and vehicle need to stop in given conditions. Stopping sight distance is a road-design value: a cautious stopping distance, using a slow 2.5 s reaction and modest braking, that the road’s sightlines must provide.',
+  },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  jsonLd={toolPage(tool, title, description, faqs, 'en', tool.href, crumbs)}
+  locale="en"
+  localized={false}
+>
+  <ToolHero
+    crumbs={crumbs}
+    eyebrow="Road design · AASHTO"
+    title="Stopping Sight Distance Calculator"
+    lede="Stopping sight distance (SSD) is the length of road a driver needs to see ahead to stop for an object in the lane. Enter a design speed, brake reaction time, deceleration rate and grade to calculate SSD the way the AASHTO Green Book does — in US customary or metric units."
+    features={['US customary & metric', 'Grade adjustment', 'Calculated & design values', 'AASHTO defaults built in', 'Full design tables']}
+  >
+    <SightDistanceCalculator />
+  </ToolHero>
+
+  <Section id="what-is-ssd" eyebrow="Definition" title="What Is Stopping Sight Distance?">
+    <div class="prose-sr max-w-3xl">
+      <p>
+        <strong>Stopping sight distance is the sum of the brake reaction distance — how far a vehicle travels while the driver perceives an
+        object and starts braking — and the braking distance needed to stop.</strong> A road must give drivers at least this much clear view
+        ahead at every point, which is why it controls the design of crest curves, curves past buildings or cuttings, and sightlines at
+        junctions.
+      </p>
+      <p>
+        AASHTO measures it from a driver’s eye height of 3.5 ft (1.08 m) to an object 2.0 ft (0.60 m) high on the road. The method is the same
+        idea as the everyday <a href="/stopping-distance-calculator/">stopping distance calculator</a>, but with deliberately cautious inputs
+        so the road works for slow-reacting drivers in poor conditions.
+      </p>
+    </div>
+  </Section>
+
+  <Section id="formula" eyebrow="Formula" title="The AASHTO Stopping Sight Distance Formula">
+    <div class="grid gap-4 md:grid-cols-2">
+      <div class="card p-6">
+        <p class="eyebrow">US customary</p>
+        <p class="mt-3 font-mono text-lg text-ink">SSD = 1.47Vt + 1.075V²/a</p>
+        <p class="mt-2 text-sm leading-6 text-body">SSD in feet · V = design speed (mph) · t = brake reaction time (2.5 s) · a = deceleration (11.2 ft/s²)</p>
+      </div>
+      <div class="card p-6">
+        <p class="eyebrow">Metric</p>
+        <p class="mt-3 font-mono text-lg text-ink">SSD = 0.278Vt + 0.039V²/a</p>
+        <p class="mt-2 text-sm leading-6 text-body">SSD in metres · V = design speed (km/h) · t = brake reaction time (2.5 s) · a = deceleration (3.4 m/s²)</p>
+      </div>
+    </div>
+    <div class="prose-sr mt-8 max-w-3xl">
+      <p>
+        The first term is the <strong>brake reaction distance</strong> (1.47 converts mph to ft/s; 0.278 converts km/h to m/s). The second is
+        the <strong>braking distance</strong>. The 2.5 s reaction time covers about 90% of drivers facing an unexpected object, and 11.2 ft/s²
+        (about 0.35 g) is a deceleration roughly 90% of drivers exceed when braking hard, while staying in control on most wet surfaces.
+      </p>
+      <p>
+        On a grade, the braking term becomes V² ÷ (30 × (a ÷ 32.2 ± G)) in US units or V² ÷ (254 × (a ÷ 9.81 ± G)) in metric, with G the grade
+        as a decimal — plus uphill, minus downhill. Design values are rounded up to the next 5 ft or 5 m.
+      </p>
+    </div>
+  </Section>
+
+  <Section id="design-table" eyebrow="Design values" title="Stopping Sight Distance Table" intro="Level roads, 2.5 s brake reaction time and AASHTO deceleration — calculated with the formula above.">
+    <div class="grid gap-6">
+      <DataTable
+        caption="Stopping sight distance in US customary units"
+        head={['Design speed', 'Brake reaction distance', 'Braking distance', 'Calculated SSD', 'Design SSD']}
+        rows={usRows}
+      />
+      <DataTable
+        caption="Stopping sight distance in metric units"
+        head={['Design speed', 'Brake reaction distance', 'Braking distance', 'Calculated SSD', 'Design SSD']}
+        rows={metricRows}
+        note="Source formula: AASHTO, A Policy on Geometric Design of Highways and Streets (the “Green Book”), Chapter 3."
+      />
+    </div>
+  </Section>
+
+  <Section id="grades" eyebrow="Grades" title="Stopping Sight Distance on Grades" intro="Downhill, gravity adds to the braking distance; uphill, it helps you stop.">
+    <DataTable
+      caption="Design stopping sight distance on grades (US customary)"
+      head={['Design speed', '−9%', '−6%', '−3%', '+3%', '+6%', '+9%']}
+      rows={gradeRows}
+      note="Calculated with AASHTO’s grade equation and rounded up to the next 5 ft. Many agencies use the level-road value on upgrades as a conservative choice."
+    />
+  </Section>
+
+  <Section id="related-distances" eyebrow="Context" title="Stopping, Decision and Passing Sight Distance">
+    <div class="grid gap-4 md:grid-cols-3">
+      <div class="card p-6">
+        <h3 class="text-heading-md">Stopping sight distance</h3>
+        <p class="mt-2 text-sm leading-6 text-body">The minimum: enough to see an object and stop. It applies everywhere on every road.</p>
+      </div>
+      <div class="card p-6">
+        <h3 class="text-heading-md">Decision sight distance</h3>
+        <p class="mt-2 text-sm leading-6 text-body">Longer distances for complex locations — lane drops, interchanges, toll plazas — where drivers must also decide and manoeuvre, not just stop.</p>
+      </div>
+      <div class="card p-6">
+        <h3 class="text-heading-md">Passing sight distance</h3>
+        <p class="mt-2 text-sm leading-6 text-body">On two-lane roads, the view needed to overtake safely against oncoming traffic — much longer than stopping sight distance.</p>
+      </div>
+    </div>
+    <div class="prose-sr mt-8 max-w-3xl">
+      <p>
+        How quickly do real drivers react? See <a href="/average-reaction-time/#driving">average reaction time while driving</a>, or measure
+        your own with the <a href="/reaction-time-test/">reaction time test</a>.
+      </p>
+    </div>
+  </Section>
+
+  <Faq items={faqs} title="Stopping Sight Distance FAQ" />
+  <RelatedTools current={tool.id} locale="en" />
+</BaseLayout>

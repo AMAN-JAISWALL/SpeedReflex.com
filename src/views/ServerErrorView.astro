@@ -2,7 +2,7 @@
 import { House, ArrowLeft, RotateCcw, ServerCrash, MessageSquare } from '@lucide/astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ToolCard from '../components/ToolCard.astro';
-import { GUIDES, TOOLS } from '../lib/site';
+import { GUIDES, toolsFor } from '../lib/site';
 import { getLocalizedPath, type Locale } from '../lib/i18n';
 import { getTranslations } from '../i18n';
 
@@ -15,7 +15,7 @@ const { locale, error } = Astro.props;
 const t = getTranslations(locale);
 const p = t.pages.serverError;
 
-const tools = TOOLS.map((tool) => ({
+const tools = toolsFor(locale).map((tool) => ({
   id: tool.id,
   href: getLocalizedPath(tool.href, locale),
   name: t.tools[tool.id]?.name ?? tool.name,

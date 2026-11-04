@@ -1,0 +1,134 @@
+---
+// English-only page: tire-size speedometer error and speedometer gear calculators.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ToolHero from '../components/ToolHero.astro';
+import TireSpeedoCalculator from '../components/TireSpeedoCalculator.astro';
+import SpeedoGearCalculator from '../components/SpeedoGearCalculator.astro';
+import Section from '../components/Section.astro';
+import DataTable from '../components/DataTable.astro';
+import Faq from '../components/Faq.astro';
+import RelatedTools from '../components/RelatedTools.astro';
+import { toolById } from '../lib/site';
+import { toolCrumbs, toolPage, type FaqItem } from '../lib/schema';
+import { parseTire, speedoErrorPct, trueSpeed } from '../lib/tires';
+
+const tool = toolById('speedoCalc');
+const title = 'Speedometer Calculator: Tire Size Difference & Gear Ratio';
+const description =
+  'Free speedometer calculator: see how a new tire size changes your true speed and speedometer reading, or find the speedometer driven gear for your axle ratio.';
+const crumbs = toolCrumbs(tool, 'en');
+
+// Common upsizes, computed with the same maths as the calculator.
+const upsizes = [
+  ['245/75R16', '265/75R16'],
+  ['265/70R17', '285/70R17'],
+  ['265/70R17', '33x12.50R17'],
+  ['275/55R20', '275/65R20'],
+  ['255/75R17', '35x12.50R17'],
+].map(([from, to]) => {
+  const a = parseTire(from)!;
+  const b = parseTire(to)!;
+  const err = speedoErrorPct(a.diameterIn, b.diameterIn);
+  return [`${from} → ${to}`, `${a.diameterIn.toFixed(1)}″ → ${b.diameterIn.toFixed(1)}″`, `${Math.abs(err).toFixed(1)}% ${err < 0 ? 'low' : 'high'}`, `${trueSpeed(60, a.diameterIn, b.diameterIn).toFixed(1)} mph`];
+});
+
+const faqs: FaqItem[] = [
+  {
+    q: 'Do bigger tires affect the speedometer?',
+    a: 'Yes. Your speedometer counts wheel (or driveshaft) revolutions, and a taller tire covers more ground per turn. With bigger tires the speedometer reads low — you are going faster than it shows — and the odometer records fewer miles than you actually drive. Smaller tires do the opposite.',
+  },
+  {
+    q: 'How much will my speedometer be off with bigger tires?',
+    a: 'By roughly the same percentage as the change in overall diameter. Going from a 31.6″ to a 32.7″ tire (265/70R17 to 285/70R17) is about 3.5% taller, so an indicated 60 mph is really about 62 mph.',
+  },
+  {
+    q: 'How do you calculate speedometer error from tire size?',
+    a: 'Work out each tire’s overall diameter — rim diameter + 2 × (width × aspect ratio ÷ 25.4) for metric sizes — then true speed = indicated speed × new diameter ÷ original diameter.',
+  },
+  {
+    q: 'How do I calculate which speedometer gear I need?',
+    a: 'Driven gear teeth = (axle ratio × drive gear teeth × tire revolutions per mile) ÷ 1001, where revolutions per mile ≈ 20,168 ÷ tire diameter in inches. Round to the nearest gear you can buy.',
+  },
+  {
+    q: 'Does tire size affect the odometer too?',
+    a: 'Yes, by the same percentage. Bigger tires make the odometer under-record your mileage, which matters for lease limits, warranties and service intervals.',
+  },
+  {
+    q: 'What are tire revolutions per mile?',
+    a: 'How many times a tire turns in one mile. Theoretically it is 63,360 ÷ (π × diameter in inches); real tires turn about 2–3% more because they flatten under load. Manufacturers publish measured figures for each size.',
+  },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  jsonLd={toolPage(tool, title, description, faqs, 'en', tool.href, crumbs)}
+  locale="en"
+  localized={false}
+>
+  <ToolHero
+    crumbs={crumbs}
+    eyebrow="Driving · Tires & gears"
+    title="Speedometer Calculator"
+    lede="Fitted bigger tires or changed your gears? Enter your original and new tire sizes to see how far your speedometer is off and your true speed at every reading — or use the speedometer gear calculator below to find the driven gear that puts it right."
+    features={['Metric & flotation tire sizes', 'True speed at any reading', 'Diameter & revs per mile', 'Speedometer gear calculator', 'mph or km/h']}
+  >
+    <TireSpeedoCalculator />
+  </ToolHero>
+
+  <Section id="tire-size" eyebrow="Tire size" title="How Tire Size Affects Your Speedometer" intro="A speedometer doesn’t measure speed directly. It counts how fast the wheels or driveshaft turn and assumes a tire of the original size.">
+    <div class="prose-sr max-w-3xl">
+      <p>
+        Fit a taller tire and every revolution covers more road, so you travel faster than the speedometer thinks: <strong>bigger tires make
+        your speedometer read low</strong>, and smaller tires make it read high. The error is almost exactly the percentage change in overall
+        diameter, which is why this tire size speedometer calculator compares diameters first.
+      </p>
+      <p>
+        The odometer is affected by the same amount, so after a 4% upsize your truck clocks roughly 96 miles for every 100 it drives. Even
+        tread wear matters a little: a worn tire is a few tenths of an inch shorter than a new one, which nudges the reading up.
+      </p>
+    </div>
+    <div class="mt-8">
+      <DataTable
+        caption="Speedometer error for common tire upsizes"
+        head={['Tire change', 'Diameter', 'Speedometer reads', 'True speed at 60']}
+        rows={upsizes}
+        note="Calculated from nominal sizes. Actual diameters vary slightly by brand and tread depth."
+      />
+    </div>
+  </Section>
+
+  <Section id="speedometer-gear-calculator" eyebrow="Cable speedometers" title="Speedometer Gear Calculator" intro="On vehicles with a cable-driven speedometer, the reading is set by a small driven gear in the transmission. Change the tires or the axle ratio and you need a different gear.">
+    <SpeedoGearCalculator />
+    <div class="mt-8 grid gap-4 md:grid-cols-2">
+      <div class="card p-6">
+        <p class="eyebrow">Formula</p>
+        <p class="mt-3 font-mono text-sm leading-6 text-ink">Driven teeth = (axle ratio × drive teeth × tire revs per mile) ÷ 1001</p>
+        <p class="mt-2 text-sm leading-6 text-body">Tire revolutions per mile ≈ 20,168 ÷ tire diameter in inches. GM-style speedometers are calibrated for 1,001 cable turns per mile.</p>
+      </div>
+      <div class="card p-6">
+        <p class="eyebrow">Finding your gear counts</p>
+        <p class="mt-3 text-sm leading-6 text-body">
+          The driven gear’s tooth count is usually moulded on the gear itself, where it sits in the transmission tail housing. The drive gear
+          is on the output shaft inside the transmission — check your transmission’s specs or look when the housing is off.
+        </p>
+      </div>
+    </div>
+    <div class="prose-sr mt-8 max-w-3xl">
+      <p>
+        This speedometer gear ratio calculator suits classic cars and trucks with cable speedometers, including those with GM transmissions
+        such as the TH350, TH400 and 700R4. Driven gears only come in whole teeth, so the calculator shows the nearest gear and how far off it
+        will still read. If no gear gets you close enough, an inline ratio adapter on the speedometer cable can make up the difference.
+      </p>
+      <p>
+        Modern vehicles with electronic speedometers don’t have a gear to swap: the tire size is set in the engine or body computer. See
+        <a href="/blog/speedometer-calibration/">how to calibrate a speedometer</a> for the options, and verify the result with the
+        <a href="/car-speed-test/">GPS car speed test</a>.
+      </p>
+    </div>
+  </Section>
+
+  <Faq items={faqs} title="Speedometer Calculator FAQ" />
+  <RelatedTools current={tool.id} locale="en" />
+</BaseLayout>

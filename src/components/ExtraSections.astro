@@ -1,0 +1,72 @@
+---
+// Renders optional, English-only content sections defined in the locale file (see PageExtras in i18n/types).
+// Copy is author-written; inline HTML (links, <strong>) is intentional, so it is rendered with set:html.
+import Section from './Section.astro';
+import DataTable from './DataTable.astro';
+import type { ExtraSection } from '../i18n/types';
+
+interface Props {
+  sections?: ExtraSection[];
+}
+
+const { sections = [] } = Astro.props;
+---
+
+{
+  sections.map((s) => (
+    <Section id={s.id} eyebrow={s.eyebrow} title={s.title} intro={s.intro}>
+      {s.paragraphs?.length ? (
+        <div class="prose-sr max-w-3xl">
+          {s.paragraphs.map((para) => (
+            <p set:html={para} />
+          ))}
+        </div>
+      ) : null}
+      {s.bullets?.length ? (
+        <div class:list={['prose-sr max-w-3xl', s.paragraphs?.length && 'mt-6']}>
+          {s.ordered ? (
+            <ol>
+              {s.bullets.map((b) => (
+                <li set:html={b} />
+              ))}
+            </ol>
+          ) : (
+            <ul>
+              {s.bullets.map((b) => (
+                <li set:html={b} />
+              ))}
+            </ul>
+          )}
+        </div>
+      ) : null}
+      {s.cards?.length ? (
+        <div
+          class:list={[
+            'grid gap-4 sm:grid-cols-2',
+            s.cards.length === 3 || s.cards.length > 4 ? 'lg:grid-cols-3' : '',
+            (s.paragraphs?.length || s.bullets?.length) && 'mt-8',
+          ]}
+        >
+          {s.cards.map((c) => (
+            <div class="card p-6">
+              <h3 class="text-heading-md">{c.title}</h3>
+              <p class="mt-2 text-sm leading-6 text-body [&_a]:text-link [&_a]:underline [&_a]:underline-offset-2" set:html={c.text} />
+            </div>
+          ))}
+        </div>
+      ) : null}
+      {s.table?.rows?.length ? (
+        <div class:list={[(s.paragraphs?.length || s.bullets?.length || s.cards?.length) && 'mt-8']}>
+          <DataTable caption={s.table.caption} head={s.table.head} rows={s.table.rows} note={s.table.note} />
+        </div>
+      ) : null}
+      {s.after?.length ? (
+        <div class="prose-sr mt-8 max-w-3xl">
+          {s.after.map((para) => (
+            <p set:html={para} />
+          ))}
+        </div>
+      ) : null}
+    </Section>
+  ))
+}

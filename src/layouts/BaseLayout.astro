@@ -16,6 +16,11 @@ interface Props {
   noindex?: boolean;
   ogType?: 'website' | 'article';
   locale?: Locale;
+  /** False for pages published in English only: no hreflang alternates, and the language picker links to each locale's home. */
+  localized?: boolean;
+  /** ISO dates for article pages (article:published_time / article:modified_time). */
+  published?: string;
+  modified?: string;
 }
 
 const {
@@ -25,12 +30,15 @@ const {
   noindex = false,
   ogType = 'website',
   locale = getLocaleFromPath(Astro.url.pathname),
+  localized = true,
+  published,
+  modified,
 } = Astro.props;
 
 const t = getTranslations(locale);
 const locInfo = LOCALE_INFO[locale] || LOCALE_INFO.en;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? SITE.url).href;
-const alternates = getAlternateUrls(Astro.url.pathname, Astro.site?.toString() ?? SITE.url);
+const alternates = localized ? getAlternateUrls(Astro.url.pathname, Astro.site?.toString() ?? SITE.url) : [];
 const ogImage = new URL('/og.png', Astro.site ?? SITE.url).href;
 const ogImageAlt = `${t.site.name} — ${t.site.tagline}`;
 const graph = JSON.stringify({ '@context': 'https://schema.org', '@graph': [organization(), website(locale), ...jsonLd] }).replace(/</g, '\\u003c');
@@ -121,6 +129,8 @@ const clarityScript = `(function(c,l,a,r,i,t,y){
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
     <meta name="twitter:image:alt" content={ogImageAlt} />
+    {published && <meta property="article:published_time" content={published} />}
+    {modified && <meta property="article:modified_time" content={modified} />}
     <meta name="generator" content={Astro.generator} />
 
     {!noindex && <script type="application/ld+json" set:html={graph} />}
@@ -133,7 +143,7 @@ const clarityScript = `(function(c,l,a,r,i,t,y){
     >
       {t.nav.skipToContent}
     </a>
-    <SiteHeader locale={locale} />
+    <SiteHeader locale={locale} localized={localized} />
     <main id="main" class="flex-1">
       <slot />
     </main>

@@ -363,6 +363,38 @@
     margin-top: 2rem;
   }
 
+  /* Long-form blog articles (always combined with .prose-sr). */
+  .article-prose h2 {
+    color: var(--color-ink);
+    font-size: 1.5rem;
+    line-height: 2rem;
+    letter-spacing: -0.03em;
+    font-weight: 600;
+    margin-top: 3rem;
+    scroll-margin-top: 5rem;
+  }
+
+  .article-prose h3 {
+    scroll-margin-top: 5rem;
+  }
+
+  .article-prose > :first-child {
+    margin-top: 0;
+  }
+
+  .article-prose > :is(h2, h3) + * {
+    margin-top: 0.75rem;
+  }
+
+  /* Tables, call-outs and cards get a little more air than paragraphs. */
+  .article-prose > :is(div, aside, figure) {
+    margin-top: 1.5rem;
+  }
+
+  .article-prose > :is(div, aside, figure) + * {
+    margin-top: 1.5rem;
+  }
+
   .data-table {
     width: 100%;
     border-collapse: collapse;

@@ -1,0 +1,124 @@
+---
+import { parseTire, revsPerMile, speedoErrorPct, trueSpeed } from '../lib/tires';
+
+// Server render: a common truck upsize at an indicated 60 mph. The script recalculates on input.
+const initial = { original: '265/70R17', fitted: '285/70R17', speed: 60 };
+const a = parseTire(initial.original)!;
+const b = parseTire(initial.fitted)!;
+const actual = trueSpeed(initial.speed, a.diameterIn, b.diameterIn);
+const err = speedoErrorPct(a.diameterIn, b.diameterIn);
+const rows = [
+  { label: 'Overall diameter', a: `${a.diameterIn.toFixed(2)} in`, b: `${b.diameterIn.toFixed(2)} in` },
+  { label: 'Sidewall height', a: `${a.sidewallIn!.toFixed(2)} in`, b: `${b.sidewallIn!.toFixed(2)} in` },
+  { label: 'Circumference', a: `${(Math.PI * a.diameterIn).toFixed(1)} in`, b: `${(Math.PI * b.diameterIn).toFixed(1)} in` },
+  { label: 'Revolutions per mile', a: Math.round(revsPerMile(a.diameterIn)).toString(), b: Math.round(revsPerMile(b.diameterIn)).toString() },
+];
+const speeds = [20, 30, 40, 50, 60, 70, 80];
+---
+
+<tire-speedo class="block">
+  <div class="card overflow-hidden shadow-whisper">
+    <div class="grid grid-cols-1 lg:grid-cols-2">
+      <form class="grid content-start gap-5 p-5 sm:p-6" data-form>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label for="ts-original" class="text-label text-ink">Original tire size</label>
+            <input
+              id="ts-original"
+              type="text"
+              value={initial.original}
+              autocomplete="off"
+              spellcheck="false"
+              data-original
+              aria-describedby="ts-format"
+              class="mt-2 h-11 w-full rounded-sm border border-hairline px-3 text-base uppercase tabular-nums focus-visible:border-link aria-invalid:border-error"
+            />
+          </div>
+          <div>
+            <label for="ts-fitted" class="text-label text-ink">New tire size</label>
+            <input
+              id="ts-fitted"
+              type="text"
+              value={initial.fitted}
+              autocomplete="off"
+              spellcheck="false"
+              data-fitted
+              aria-describedby="ts-format"
+              class="mt-2 h-11 w-full rounded-sm border border-hairline px-3 text-base uppercase tabular-nums focus-visible:border-link aria-invalid:border-error"
+            />
+          </div>
+        </div>
+        <p id="ts-format" class="-mt-2 text-xs text-mute">Formats: 265/70R17, LT285/75R16, 33x12.50R15, or an overall diameter in inches (31.5).</p>
+
+        <div>
+          <div class="flex items-center justify-between gap-3">
+            <label for="ts-speed" class="text-label text-ink">Speedometer reading</label>
+            <div class="segmented" role="group" aria-label="Speed unit" data-units>
+              <button type="button" data-unit="mph" aria-pressed="true">mph</button>
+              <button type="button" data-unit="kmh" aria-pressed="false">km/h</button>
+            </div>
+          </div>
+          <input
+            id="ts-speed"
+            type="number"
+            inputmode="decimal"
+            min="1"
+            max="300"
+            step="1"
+            value={initial.speed}
+            autocomplete="off"
+            data-speed
+            class="mt-2 h-11 w-28 rounded-sm border border-hairline px-3 text-base tabular-nums focus-visible:border-link"
+          />
+        </div>
+        <p class="text-xs text-mute" data-error role="alert"></p>
+      </form>
+
+      <div class="border-t border-hairline bg-canvas p-5 sm:p-6 lg:border-l lg:border-t-0" aria-live="polite">
+        <p class="eyebrow">True speed</p>
+        <p class="mt-2 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <span class="text-[3rem] font-semibold leading-none tracking-[-0.05em] tabular-nums" data-actual>{actual.toFixed(1)} mph</span>
+          <span class="text-sm text-body" data-actual-sub>when the speedometer shows {initial.speed} mph</span>
+        </p>
+        <p class="mt-3 text-sm text-body">
+          Speedometer error: <strong class="font-medium text-ink" data-err>{Math.abs(err).toFixed(1)}% {err < 0 ? 'low' : 'high'}</strong>
+          <span data-err-note>{err < 0 ? ' — you are going faster than shown.' : ' — you are going slower than shown.'}</span>
+        </p>
+
+        <div class="mt-5 overflow-x-auto rounded-md border border-hairline bg-surface">
+          <table class="data-table">
+            <caption class="sr-only">Original vs new tire</caption>
+            <thead>
+              <tr><th scope="col">Spec</th><th scope="col">Original</th><th scope="col">New</th></tr>
+            </thead>
+            <tbody data-specs>
+              {rows.map((r) => <tr><td>{r.label}</td><td>{r.a}</td><td>{r.b}</td></tr>)}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="border-t border-hairline p-5 sm:p-6">
+      <p class="text-label text-ink">Speedometer reading vs true speed</p>
+      <div class="mt-3 overflow-x-auto rounded-md border border-hairline bg-surface">
+        <table class="data-table">
+          <caption class="sr-only">Speedometer reading vs true speed on the new tires</caption>
+          <thead>
+            <tr><th scope="col">Speedometer shows</th>{speeds.map((s) => <th scope="col" data-speed-head>{s}</th>)}</tr>
+          </thead>
+          <tbody>
+            <tr data-true-row>
+              <td>True speed</td>
+              {speeds.map((s) => <td>{trueSpeed(s, a.diameterIn, b.diameterIn).toFixed(1)}</td>)}
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</tire-speedo>
+
+<script>
+  import '../scripts/tire-speedo';
+</script>

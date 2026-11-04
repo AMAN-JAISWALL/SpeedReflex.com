@@ -124,6 +124,7 @@ class GpsSpeedometer extends HTMLElement {
     if (fromUrl && allowed.includes(fromUrl)) return fromUrl;
     const saved = store.get<SpeedUnit | null>(`sr:speed:unit:${this.preset.id}`, null);
     if (saved && allowed.includes(saved)) return saved;
+    if (this.preset.defaultUnit && allowed.includes(this.preset.defaultUnit)) return this.preset.defaultUnit;
     const guess = defaultUnitFor(navigator.language || 'en');
     return allowed.includes(guess) ? guess : allowed[0];
   }

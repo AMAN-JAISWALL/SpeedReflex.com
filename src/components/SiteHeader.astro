@@ -4,21 +4,23 @@ import Logo from './Logo.astro';
 import ThemeToggle from './ThemeToggle.astro';
 import ToolIcon from './ToolIcon.astro';
 import LanguagePicker from './LanguagePicker.astro';
-import { GUIDES, NAV_TOOLS, REFLEX_TOOLS, SPEED_TOOLS, TOOLS, toolById, type ToolId } from '../lib/site';
+import { BLOG_HREF, GUIDES, NAV_TOOLS, drivingToolsFor, reflexToolsFor, speedToolsFor, toolById, type ToolId } from '../lib/site';
 import { getLocaleFromPath, getLocalizedPath, type Locale } from '../lib/i18n';
 import { getTranslations } from '../i18n';
 
 interface Props {
   locale?: Locale;
+  /** False on English-only pages (see BaseLayout). */
+  localized?: boolean;
 }
 
-const { locale = getLocaleFromPath(Astro.url.pathname) } = Astro.props;
+const { locale = getLocaleFromPath(Astro.url.pathname), localized = true } = Astro.props;
 const t = getTranslations(locale);
 
 const path = Astro.url.pathname.endsWith('/') ? Astro.url.pathname : `${Astro.url.pathname}/`;
 const current = (href: string) => (path === href ? 'page' : undefined);
 
-type Item = { id: ToolId | 'guide'; href: string; name: string };
+type Item = { id: ToolId | 'guide' | 'blog'; href: string; name: string };
 
 const guides: Item[] = GUIDES.map((g) => ({
   id: 'guide',
@@ -26,10 +28,13 @@ const guides: Item[] = GUIDES.map((g) => ({
   name: t.guides.averageReactionTime.name,
 }));
 
+// The blog is English-only.
+const blog: Item[] = locale === 'en' ? [{ id: 'blog', href: BLOG_HREF, name: 'Blog' }] : [];
+
 const groups: { label: string; items: Item[] }[] = [
   {
     label: t.nav.reflexTests,
-    items: REFLEX_TOOLS.map((tool) => ({
+    items: reflexToolsFor(locale).map((tool) => ({
       id: tool.id,
       href: getLocalizedPath(tool.href, locale),
       name: t.tools[tool.id]?.name ?? tool.name,
@@ -37,7 +42,7 @@ const groups: { label: string; items: Item[] }[] = [
   },
   {
     label: t.nav.gpsSpeedTests,
-    items: SPEED_TOOLS.map((tool) => ({
+    items: speedToolsFor(locale).map((tool) => ({
       id: tool.id,
       href: getLocalizedPath(tool.href, locale),
       name: t.tools[tool.id]?.name ?? tool.name,
@@ -46,12 +51,13 @@ const groups: { label: string; items: Item[] }[] = [
   {
     label: t.nav.drivingAndGuides,
     items: [
-      ...TOOLS.filter((tool) => tool.category === 'driving').map((tool) => ({
+      ...drivingToolsFor(locale).map((tool) => ({
         id: tool.id,
         href: getLocalizedPath(tool.href, locale),
         name: t.tools[tool.id]?.name ?? tool.name,
       })),
       ...guides,
+      ...blog,
     ],
   },
 ];
@@ -100,7 +106,7 @@ const nav = NAV_TOOLS.map((id) => {
     </nav>
     <div class="ml-auto flex items-center gap-2">
       <ThemeToggle />
-      <LanguagePicker currentLocale={locale} currentPath={Astro.url.pathname} />
+      <LanguagePicker currentLocale={locale} currentPath={Astro.url.pathname} localized={localized} />
       <a href={getLocalizedPath('/reaction-time-test/', locale)} class="btn btn-sm btn-primary hidden sm:inline-flex">
         {t.nav.startTest}
       </a>
@@ -168,7 +174,7 @@ const nav = NAV_TOOLS.map((id) => {
       </div>
     </div>
     <div class="shell pb-6">
-      <LanguagePicker currentLocale={locale} currentPath={Astro.url.pathname} isMobile={true} />
+      <LanguagePicker currentLocale={locale} currentPath={Astro.url.pathname} isMobile={true} localized={localized} />
     </div>
   </nav>
 </header>

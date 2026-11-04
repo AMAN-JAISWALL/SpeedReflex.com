@@ -1,0 +1,155 @@
+---
+import BlogArticle from '../../components/BlogArticle.astro';
+import DataTable from '../../components/DataTable.astro';
+import Callout from '../../components/Callout.astro';
+import { postBySlug } from '../../lib/blog';
+import type { FaqItem } from '../../lib/schema';
+
+const post = postBySlug('speedometer-calibration');
+
+// Mile-marker method at a steady indicated 60 mph: true speed = 3600 ÷ seconds per mile.
+const mileRows = [56, 58, 60, 62, 64, 66].map((s) => {
+  const mph = 3600 / s;
+  const err = ((60 - mph) / mph) * 100;
+  return [`${s} s`, `${mph.toFixed(1)} mph`, Math.abs(err) < 0.05 ? 'Accurate' : `${Math.abs(err).toFixed(1)}% ${err > 0 ? 'high' : 'low'}`];
+});
+
+const faqs: FaqItem[] = [
+  {
+    q: 'How do I know if my speedometer is accurate?',
+    a: 'Compare it with GPS at a few steady speeds, or time a measured mile with a stopwatch. A reading a few percent above GPS is normal; a reading below GPS, or an error that changed suddenly, needs attention.',
+  },
+  {
+    q: 'How much does it cost to calibrate a speedometer?',
+    a: 'Often under $200. A dealer reprogram is typically about an hour of labour, a handheld programmer costs roughly $150–$450 to buy, and a driven-gear swap on an older vehicle is a few dollars in parts. A shop calibration certificate for court is usually a modest fee.',
+  },
+  {
+    q: 'Can I calibrate my speedometer myself?',
+    a: 'Often, yes. Many trucks and SUVs can be recalibrated with a plug-in handheld programmer, and cable speedometers by swapping the driven gear. Newer vehicles may need a dealer scan tool. Always confirm the result against GPS.',
+  },
+  {
+    q: 'Is it normal for a speedometer to read high?',
+    a: 'Yes. Speedometers are designed never to show less than your true speed, so most read a little high — commonly by a few percent at highway speeds.',
+  },
+  {
+    q: 'Do I need to recalibrate after fitting bigger tires?',
+    a: 'If the overall diameter changed by more than a couple of percent, yes. Besides an inaccurate speedometer, the odometer will under-record mileage, and on some vehicles shift points and stability systems rely on correct speed data.',
+  },
+];
+
+const sources = [
+  { t: 'UN ECE Regulation No. 39 — Uniform provisions concerning the approval of vehicles with regard to the speedometer equipment' },
+  { t: 'NHTSA — Check for vehicle recalls by VIN', href: 'https://www.nhtsa.gov/recalls' },
+];
+---
+
+<BlogArticle post={post} faqs={faqs} sources={sources}>
+  <p>
+    <strong>Speedometer calibration means making your speedometer show your true speed again</strong> — usually after a change of tire size,
+    axle ratio or instrument cluster. It is a two-step job: first measure how far off the speedometer is, then correct it with the method
+    that suits your vehicle. Both steps are easier than most people expect.
+  </p>
+
+  <h2 id="check-accuracy">Step 1: Check your speedometer’s accuracy</h2>
+  <h3>With GPS (the quick way)</h3>
+  <p>
+    Mount your phone, open the <a href="/car-speed-test/">GPS car speed test</a> and drive at a steady speed on a straight, level road with
+    open sky. Compare the dashboard with GPS at three speeds — say 30, 50 and 70 mph — so you can tell a fixed error from one that grows with
+    speed. Phone GPS is accurate to about 1 mph at a steady speed, which is better than most speedometers.
+  </p>
+  <h3>With mile markers and a stopwatch</h3>
+  <p>
+    Hold a steady indicated 60 mph and time the gap between two highway mile markers. At a true 60 mph a mile takes exactly 60 seconds, and
+    your true speed is <strong>3,600 ÷ the seconds it took</strong>. Time two or three miles and average them, and have a passenger work the
+    stopwatch.
+  </p>
+  <DataTable
+    caption="Mile-marker speedometer check at an indicated 60 mph"
+    head={['Time for one mile', 'True speed', 'Your speedometer reads']}
+    rows={mileRows}
+  />
+
+  <h2 id="why-speedometers-read-wrong">Why your speedometer is off</h2>
+  <ul>
+    <li>
+      <strong>It is built to read high.</strong> International rules (UN ECE Regulation 39) forbid a speedometer from ever showing less than
+      your true speed and allow it to read up to 10% plus 4 km/h over. The US has no federal accuracy requirement for cars, but manufacturers
+      generally follow the same practice. A few percent high is normal.
+    </li>
+    <li>
+      <strong>Your tires changed size.</strong> Bigger tires make the speedometer read low; smaller or worn tires make it read high. This is
+      the most common reason for a speedometer reading faster than your actual speed, or slower.
+    </li>
+    <li><strong>The gearing changed.</strong> A different axle ratio, transfer case or transmission changes how fast the speed sensor turns.</li>
+    <li><strong>Parts came from another model.</strong> A swapped instrument cluster or engine computer may be programmed for a different tire or axle.</li>
+    <li>
+      <strong>Something is failing.</strong> An erratic or bouncing reading is a fault rather than a calibration issue — see
+      <a href="/blog/speedometer-not-working/">speedometer not working: causes and fixes</a>.
+    </li>
+  </ul>
+
+  <h2 id="bigger-tires">Do bigger tires affect the speedometer?</h2>
+  <p>
+    Yes, by almost exactly the percentage change in overall tire diameter. A truck moving from 31.6-inch to 32.7-inch tires (265/70R17 to
+    285/70R17) has a speedometer that reads about 3.4% low: an indicated 60 mph is really about 62 mph, and the odometer under-records every
+    mile by the same amount. Enter your own sizes in the <a href="/speedometer-calculator/">speedometer calculator</a> to see the exact error
+    at every speed.
+  </p>
+
+  <h2 id="how-to-calibrate">Step 2: How to calibrate a speedometer</h2>
+  <ol>
+    <li>
+      <strong>Dealer reprogramming.</strong> On most modern vehicles, tire size and axle ratio are settings in the engine or body control
+      module. A dealer or a well-equipped independent shop can change them with a scan tool. This is the cleanest fix for late-model cars.
+    </li>
+    <li>
+      <strong>A handheld programmer.</strong> Plug-in calibrators sold for pickups, Jeeps and SUVs let you enter the new tire size yourself
+      through the OBD-II port — popular after lift kits and big-tire upgrades. Check that a tool supports your exact model and year.
+    </li>
+    <li>
+      <strong>An inline signal calibrator.</strong> A small module wired between the speed sensor and the computer rescales the pulse signal.
+      Useful for older electronic systems, engine swaps and custom builds where no setting exists.
+    </li>
+    <li>
+      <strong>A new speedometer gear.</strong> Cable-driven speedometers are corrected by changing the driven gear in the transmission. The
+      <a href="/speedometer-calculator/#speedometer-gear-calculator">speedometer gear calculator</a> works out which one you need.
+    </li>
+    <li>
+      <strong>An adjustable aftermarket gauge.</strong> Many aftermarket electronic and GPS speedometers have a calibration mode: drive a
+      measured distance, press a button, done.
+    </li>
+  </ol>
+  <p>Motorcycles have their own version: plug-in correction modules that sit in the speed-sensor wiring, or a dealer reprogram on newer bikes.</p>
+
+  <h2 id="cost">How much does speedometer calibration cost?</h2>
+  <DataTable
+    caption="Typical speedometer calibration costs"
+    head={['Method', 'Typical US cost']}
+    rows={[
+      ['Dealer or shop reprogram', 'About $50–$200 (often ~1 hour of labour)'],
+      ['Handheld programmer (DIY)', 'About $150–$450 to buy'],
+      ['Inline signal calibrator', 'About $100–$250 plus fitting'],
+      ['Driven gear swap (cable speedometers)', 'About $10–$40 in parts'],
+      ['Calibration test and certificate', 'Usually a modest shop fee'],
+    ]}
+    note="Ballpark figures; prices vary by vehicle and region."
+  />
+  <p>
+    Searching for speedometer calibration near you? Dealers, speedometer and instrument repair shops, and tire or lift-kit installers all do
+    it. Ask whether they can give you a printed result if you need one for court.
+  </p>
+
+  <h2 id="calibration-for-court">Speedometer calibration for court</h2>
+  <p>
+    After a speeding ticket, some drivers have their speedometer tested to show it was reading low, or to show it has been repaired. Courts
+    generally expect a dated certificate from a qualified shop, done soon after the ticket — a screenshot from a phone app is unlikely to
+    count as calibration evidence. In some US states, with North Carolina the best-known example, a minor speeding charge may be reduced to
+    an “improper equipment – speedometer” violation, and proof that the speedometer was checked or fixed can be part of that process. Rules
+    and outcomes vary a great deal, so ask a local traffic attorney before relying on it.
+  </p>
+
+  <Callout title="Verify after any calibration">
+    Whichever method you use, finish with a quick check against the <a href="/car-speed-test/" class="text-link underline underline-offset-2">GPS car speed test</a>.
+    A correctly calibrated speedometer should match GPS or read very slightly high.
+  </Callout>
+</BlogArticle>

@@ -4,11 +4,11 @@ import ToolIcon from './ToolIcon.astro';
 import type { ToolId } from '../lib/site';
 
 interface Props {
-  tool: { id: ToolId | 'guide'; href: string; name: string; summary: string };
+  tool: { id: ToolId | 'guide' | 'blog'; href: string; name: string; summary: string };
   cta?: string;
 }
 
-const { tool, cta = tool.id === 'guide' ? 'Read Guide' : 'Open Test' } = Astro.props;
+const { tool, cta = tool.id === 'guide' || tool.id === 'blog' ? 'Read Guide' : 'Open Test' } = Astro.props;
 ---
 
 <a

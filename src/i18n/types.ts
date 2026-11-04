@@ -1,4 +1,4 @@
-import type { ToolId } from '../lib/site';
+import type { EnglishToolId, LocalizedToolId } from '../lib/site';
 import type { FaqItem } from '../lib/schema';
 
 export interface PrincipleItem {
@@ -43,6 +43,47 @@ export interface LegalSection {
   content: string;
 }
 
+export interface ToolText {
+  name: string;
+  navLabel: string;
+  summary: string;
+}
+
+export interface ExtraTable {
+  caption: string;
+  head: string[];
+  /** Omitted when the view computes the rows itself. */
+  rows?: string[][];
+  note?: string;
+}
+
+/**
+ * A self-contained content section. Strings in `paragraphs`, `bullets`, `after` and card text are
+ * trusted, author-written HTML (inline links and <strong> only) and are rendered with set:html.
+ */
+export interface ExtraSection {
+  id: string;
+  eyebrow?: string;
+  title: string;
+  intro?: string;
+  paragraphs?: string[];
+  bullets?: string[];
+  ordered?: boolean;
+  cards?: { title: string; text: string }[];
+  table?: ExtraTable;
+  after?: string[];
+}
+
+/** Optional page additions. Only the English locale defines them, so localized pages render unchanged. */
+export interface PageExtras {
+  /** Placed directly after the hero / tool. */
+  lead?: ExtraSection[];
+  /** Placed before the FAQ. */
+  sections?: ExtraSection[];
+  /** A section whose table rows are computed by the view (copy and column heads only). */
+  chart?: ExtraSection;
+}
+
 export interface Translations {
   site: {
     name: string;
@@ -74,14 +115,8 @@ export interface Translations {
     relatedToolsTitle: string;
     relatedToolsIntro: string;
   };
-  tools: Record<
-    ToolId,
-    {
-      name: string;
-      navLabel: string;
-      summary: string;
-    }
-  >;
+  /** Every locale names the shared tools; English-only tools are named in the English file alone. */
+  tools: Record<LocalizedToolId, ToolText> & Partial<Record<EnglishToolId, ToolText>>;
   guides: {
     averageReactionTime: {
       name: string;
@@ -325,6 +360,8 @@ export interface Translations {
       stats: StatItem[];
       features: FeatureItem[];
       faqs: FaqItem[];
+      /** English-only additions (rendered only when present). */
+      extra?: PageExtras;
     };
     reaction: {
       title: string;
@@ -364,6 +401,8 @@ export interface Translations {
       improveTips: string[];
       faqTitle: string;
       faqs: FaqItem[];
+      /** English-only additions (rendered only when present). */
+      extra?: PageExtras;
     };
     f1: {
       title: string;
@@ -396,6 +435,8 @@ export interface Translations {
       launchTips: string[];
       faqTitle: string;
       faqs: FaqItem[];
+      /** English-only additions (rendered only when present). */
+      extra?: PageExtras;
     };
     audio: {
       title: string;
@@ -428,6 +469,8 @@ export interface Translations {
       tips: string[];
       faqTitle: string;
       faqs: FaqItem[];
+      /** English-only additions (rendered only when present). */
+      extra?: PageExtras;
     };
     speedometer: {
       title: string;
@@ -455,6 +498,8 @@ export interface Translations {
       phoneTips: string[];
       faqTitle: string;
       faqs: FaqItem[];
+      /** English-only additions (rendered only when present). */
+      extra?: PageExtras;
     };
     car: {
       title: string;
@@ -482,6 +527,8 @@ export interface Translations {
       safetyPoints: FactorItem[];
       faqTitle: string;
       faqs: FaqItem[];
+      /** English-only additions (rendered only when present). */
+      extra?: PageExtras;
     };
     bike: {
       title: string;
@@ -506,6 +553,8 @@ export interface Translations {
       mountingPoints: FactorItem[];
       faqTitle: string;
       faqs: FaqItem[];
+      /** English-only additions (rendered only when present). */
+      extra?: PageExtras;
     };
     bus: {
       title: string;
@@ -529,6 +578,8 @@ export interface Translations {
       limitsRows: { road: string; limit: string }[];
       faqTitle: string;
       faqs: FaqItem[];
+      /** English-only additions (rendered only when present). */
+      extra?: PageExtras;
     };
     train: {
       title: string;
@@ -553,6 +604,8 @@ export interface Translations {
       railGpsCards: AccuracyItem[];
       faqTitle: string;
       faqs: FaqItem[];
+      /** English-only additions (rendered only when present). */
+      extra?: PageExtras;
     };
     flight: {
       title: string;
@@ -580,6 +633,8 @@ export interface Translations {
       tips: string[];
       faqTitle: string;
       faqs: FaqItem[];
+      /** English-only additions (rendered only when present). */
+      extra?: PageExtras;
     };
     stopping: {
       title: string;
@@ -609,6 +664,8 @@ export interface Translations {
       factors: FactorItem[];
       faqTitle: string;
       faqs: FaqItem[];
+      /** English-only additions (rendered only when present). */
+      extra?: PageExtras;
     };
     averageReaction: {
       title: string;
@@ -644,6 +701,8 @@ export interface Translations {
       deviceLagCards: AccuracyItem[];
       faqTitle: string;
       faqs: FaqItem[];
+      /** English-only additions (rendered only when present). */
+      extra?: PageExtras;
     };
     about: {
       title: string;
@@ -703,6 +762,8 @@ export interface Translations {
       quickLegalTitle: string;
       faqTitle: string;
       faqs: FaqItem[];
+      /** English-only additions (rendered only when present). */
+      extra?: PageExtras;
       ctaTitle: string;
       ctaText: string;
       ctaPrimary: string;

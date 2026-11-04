@@ -1,0 +1,167 @@
+---
+import BlogArticle from '../../components/BlogArticle.astro';
+import DataTable from '../../components/DataTable.astro';
+import Callout from '../../components/Callout.astro';
+import { postBySlug } from '../../lib/blog';
+import { DRY_DECEL, M_TO_FT, MS_PER } from '../../lib/stopping';
+import type { FaqItem } from '../../lib/schema';
+
+const post = postBySlug('semi-truck-stopping-distance');
+
+// CDL-manual breakdown: 1.75 s perception + 0.75 s reaction + ~0.4 s air-brake lag, and ~216 ft of braking from 55 mph
+// on dry pavement with good brakes. That braking figure implies ~4.6 m/s² (0.47 g), used to scale the chart to other speeds.
+const PERCEPTION_S = 1.75;
+const REACTION_S = 0.75;
+const LAG_S = 0.4;
+const v55 = 55 * MS_PER.mph;
+const TRUCK_DECEL = (v55 * v55) / (2 * (216 / M_TO_FT));
+
+const ft = (m: number) => Math.round(m * M_TO_FT);
+const truck = (mph: number) => {
+  const v = mph * MS_PER.mph;
+  const perception = v * PERCEPTION_S;
+  const reaction = v * REACTION_S;
+  const lag = v * LAG_S;
+  const braking = (v * v) / (2 * TRUCK_DECEL);
+  return { perception, reaction, lag, braking, total: perception + reaction + lag + braking };
+};
+// A car with the same 2.5 s perception–reaction time, no brake lag, and the Highway Code dry-road deceleration.
+const car = (mph: number) => {
+  const v = mph * MS_PER.mph;
+  return v * (PERCEPTION_S + REACTION_S) + (v * v) / (2 * DRY_DECEL);
+};
+
+const t55 = truck(55);
+const breakdown = [
+  ['Perception distance (1¾ s)', `${ft(t55.perception)} ft`],
+  ['Reaction distance (¾ s)', `${ft(t55.reaction)} ft`],
+  ['Brake lag distance (~0.4 s, air brakes)', `${ft(t55.lag)} ft`],
+  ['Braking distance (dry, good brakes)', `${ft(t55.braking)} ft`],
+  ['Total stopping distance', `${ft(t55.total)} ft (${Math.round(t55.total)} m)`],
+];
+
+const chart = [20, 30, 40, 50, 55, 60, 65, 70].map((mph) => {
+  const t = truck(mph);
+  const c = car(mph);
+  return [
+    `${mph} mph`,
+    `${ft(t.perception + t.reaction)} ft`,
+    `${ft(t.lag)} ft`,
+    `${ft(t.braking)} ft`,
+    `${ft(t.total)} ft (${Math.round(t.total)} m)`,
+    `${ft(c)} ft`,
+  ];
+});
+
+const stopTime55 = PERCEPTION_S + REACTION_S + LAG_S + v55 / TRUCK_DECEL;
+const t65 = truck(65);
+
+const faqs: FaqItem[] = [
+  {
+    q: 'How far does it take a semi truck to stop at 55 mph?',
+    a: `About ${ft(t55.total)} feet on a dry road with good brakes: ${ft(t55.perception)} ft of perception distance, ${ft(t55.reaction)} ft of reaction distance, ${ft(t55.lag)} ft of air-brake lag and about ${ft(t55.braking)} ft of braking. Including reaction time, that is roughly ${Math.round(stopTime55)} seconds.`,
+  },
+  {
+    q: 'What is the stopping distance of a semi truck at 65 mph?',
+    a: `Roughly ${ft(t65.total)} feet (${Math.round(t65.total)} m) on dry pavement — and considerably more on a wet road, a downgrade or with worn brakes.`,
+  },
+  {
+    q: 'How much longer does a truck take to stop than a car?',
+    a: `With the same driver reaction time, a loaded semi needs roughly a quarter more distance than a car — about ${ft(t55.total - car(55))} ft more from 55 mph — because of air-brake lag and lower braking deceleration.`,
+  },
+  {
+    q: 'Why do empty trucks take longer to stop?',
+    a: 'An empty or lightly loaded truck has much less weight on its tires, so they have less traction and can lock up more easily. Truck brakes are designed for a full load, so an empty truck can actually need more distance to stop safely.',
+  },
+  {
+    q: 'What is brake lag on a truck?',
+    a: 'The delay between pressing the brake pedal and the air brakes applying fully, while air flows through the lines to the brake chambers. It is typically around 0.4–0.5 seconds and adds roughly 32 ft at 55 mph.',
+  },
+];
+
+const sources = [
+  { t: 'AAMVA Commercial Driver’s License Manual — Section 2 (Speed and stopping distance) and Section 5 (Air brakes), used by US state licensing agencies' },
+  { t: 'FHWA — Federal truck size and weight limits, 23 CFR Part 658 (80,000 lb gross vehicle weight on the Interstate System)' },
+  { t: 'UK Highway Code, Rule 126 — Typical stopping distances (car deceleration used for comparison)' },
+];
+---
+
+<BlogArticle post={post} faqs={faqs} sources={sources}>
+  <p>
+    <strong>A fully loaded semi truck traveling at 55 mph on a dry road needs about {ft(t55.total)} feet to stop</strong> — around one and a
+    half football fields, and roughly {ft(t55.total - car(55))} feet more than a car whose driver reacts just as quickly. Most of the extra
+    comes from two things cars don’t have: a delay while the air brakes build pressure, and lower braking deceleration for an 80,000-pound
+    vehicle.
+  </p>
+
+  <h2 id="cdl-formula">How truck stopping distance is calculated</h2>
+  <p>
+    US commercial driver’s licence (CDL) manuals break a heavy truck’s total stopping distance into four parts. Cars have the same parts
+    except brake lag:
+  </p>
+  <ul>
+    <li><strong>Perception distance</strong> — travelled while the driver sees the hazard and recognises the need to stop (about 1¾ seconds for an alert driver).</li>
+    <li><strong>Reaction distance</strong> — travelled while the driver’s foot moves from the accelerator to the brake (about ¾ second).</li>
+    <li><strong>Brake lag distance</strong> — travelled while air flows through the lines and the brakes apply (about 0.4 s; trucks and buses with air brakes only).</li>
+    <li><strong>Braking distance</strong> — travelled while the brakes slow the truck to a stop.</li>
+  </ul>
+  <DataTable caption="Semi truck stopping distance at 55 mph" head={['Part of the stop', 'Distance at 55 mph']} rows={breakdown} />
+
+  <h2 id="chart">Semi truck stopping distance chart</h2>
+  <p>
+    The chart scales the CDL manual’s 55 mph example to other speeds, keeping the same reaction and brake-lag times and the same braking
+    performance (about 0.47 g). The last column shows a car with an equally quick driver for comparison.
+  </p>
+  <DataTable
+    caption="Truck stopping distance chart by speed"
+    head={['Speed', 'Perception + reaction', 'Brake lag', 'Braking', 'Truck total', 'Car total']}
+    rows={chart}
+    note="Dry pavement, good brakes, 2.5 s perception–reaction time. Real trucks vary with load, brake condition, tires and road surface; wet roads and downgrades add a lot."
+  />
+  <p>
+    Notice how the braking column grows: doubling speed from 30 to 60 mph multiplies the braking distance by four, because the energy the
+    brakes must absorb rises with the square of speed. Try your own speeds and road conditions in the
+    <a href="/stopping-distance-calculator/">stopping distance calculator</a>.
+  </p>
+
+  <h2 id="why-longer">Why trucks need so much more room</h2>
+  <ul>
+    <li><strong>Weight.</strong> A loaded tractor-trailer can weigh 80,000 lb — around twenty times a car. Its brakes and tires work much closer to their limits, so it can’t decelerate as hard.</li>
+    <li><strong>Air brakes.</strong> Brake lag adds roughly 30 feet at highway speed before the brakes do anything.</li>
+    <li><strong>Brake fade.</strong> On long downgrades, hot brakes lose effectiveness. That is why truck drivers choose a low gear before the descent.</li>
+    <li><strong>Empty trucks.</strong> Counter-intuitively, an empty truck can take longer to stop: there is little weight on the tires, so they lock up and lose traction more easily.</li>
+  </ul>
+
+  <h2 id="vehicle-size">Car vs motorcycle vs truck: does vehicle size define stopping distance?</h2>
+  <p>
+    In the simplest physics, mass cancels out: braking distance depends on speed and tire grip, so a heavy and a light vehicle on identical
+    tires would stop in the same distance. Real vehicles don’t work that way. Heavy vehicles are limited by how much heat their brakes can
+    absorb and how hard their tires can be loaded, so in practice <strong>bigger, heavier vehicles need longer stopping distances</strong>.
+  </p>
+  <p>
+    Motorcycles sit at the other end of the scale but rarely stop shorter than cars. A skilled rider on a modern bike with ABS can come
+    close to a car, but braking a motorcycle hard means balancing front and rear brakes without locking a wheel, so most riders take
+    somewhat longer than a car — especially in an emergency or on a wet road. Riders should leave at least the same gap as a car, and
+    preferably more. The <a href="/motorcycle-speed-test/">motorcycle speed test</a> shows your true speed if you want to see what your
+    speedometer is hiding.
+  </p>
+
+  <h2 id="following-distance">Following distance: the gap that makes it work</h2>
+  <p>
+    CDL manuals teach truck drivers to leave at least one second for every 10 feet of vehicle length below 40 mph, plus an extra second
+    above 40 mph — about 8 seconds for a typical 70-foot rig at highway speed. For car drivers the lesson is simple:
+  </p>
+
+  <Callout tone="warning" title="Never cut in close in front of a truck">
+    If you merge into the gap in front of a semi and then brake, the truck may need around {ft(t55.total)} feet to stop from 55 mph — and the
+    driver can’t see a car tucked close under the cab.
+  </Callout>
+
+  <h2 id="conditions">Wet roads, downhill grades and reaction time</h2>
+  <p>
+    On wet pavement braking distance roughly doubles, and on a downgrade gravity works against the brakes for the whole stop. Reaction time
+    matters for every vehicle: a tired or distracted driver who takes an extra second to react travels another 80 feet at 55 mph before
+    the brakes even start working. Measure your own with the <a href="/reaction-time-test/">reaction time test</a>, and see how highway
+    designers allow for slow reactions in the <a href="/stopping-sight-distance-calculator/">stopping sight distance calculator</a>.
+  </p>
+</BlogArticle>

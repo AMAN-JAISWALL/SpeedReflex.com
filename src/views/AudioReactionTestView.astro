@@ -6,6 +6,7 @@ import Section from '../components/Section.astro';
 import DataTable from '../components/DataTable.astro';
 import Callout from '../components/Callout.astro';
 import Faq from '../components/Faq.astro';
+import ExtraSections from '../components/ExtraSections.astro';
 import RelatedTools from '../components/RelatedTools.astro';
 import { toolById } from '../lib/site';
 import { toolCrumbs, toolPage } from '../lib/schema';
@@ -48,6 +49,8 @@ const crumbs = toolCrumbs(tool, locale, {
       </Callout>
     </div>
   </ToolHero>
+
+  <ExtraSections sections={p.extra?.lead} />
 
   <Section id="how-it-works" eyebrow={p.howItWorksEyebrow} title={p.howItWorksTitle}>
     <ol class="grid gap-4 md:grid-cols-3">
@@ -134,6 +137,9 @@ const crumbs = toolCrumbs(tool, locale, {
       </div>
     </div>
   </Section>
+
+  <ExtraSections sections={p.extra?.sections} />
+
 
   <Faq items={p.faqs} title={p.faqTitle} />
   <RelatedTools current={tool.id} locale={locale} />
