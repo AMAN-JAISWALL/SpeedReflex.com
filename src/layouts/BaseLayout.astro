@@ -34,6 +34,14 @@ const alternates = getAlternateUrls(Astro.url.pathname, Astro.site?.toString() ?
 const ogImage = new URL('/og.png', Astro.site ?? SITE.url).href;
 const ogImageAlt = `${t.site.name} — ${t.site.tagline}`;
 const graph = JSON.stringify({ '@context': 'https://schema.org', '@graph': [organization(), website(locale), ...jsonLd] }).replace(/</g, '\\u003c');
+
+// Microsoft Clarity. Loaded in production builds only, so local `astro dev` sessions stay out of the dashboard.
+const CLARITY_ID = 'z8ce6jhkd1';
+const clarityScript = `(function(c,l,a,r,i,t,y){
+    c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+    t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+    y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+})(window, document, "clarity", "script", "${CLARITY_ID}");`;
 ---
 
 <!doctype html>
@@ -116,6 +124,7 @@ const graph = JSON.stringify({ '@context': 'https://schema.org', '@graph': [orga
     <meta name="generator" content={Astro.generator} />
 
     {!noindex && <script type="application/ld+json" set:html={graph} />}
+    {import.meta.env.PROD && <script type="text/javascript" is:inline set:html={clarityScript} />}
   </head>
   <body class="flex min-h-dvh flex-col">
     <a
